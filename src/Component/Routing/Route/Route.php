@@ -127,16 +127,6 @@ class Route implements RouteInterface
 
 
 
-    /**
-     * @var array
-    */
-    protected array $controller = [
-        'class'  => '',
-        'action' => ''
-    ];
-
-
-
 
     /**
      * @var array
@@ -235,18 +225,6 @@ class Route implements RouteInterface
 
 
 
-
-    /**
-     * @inheritDoc
-    */
-    public function hasName(): bool
-    {
-        return ! empty($this->name);
-    }
-
-
-
-
     /**
      * @inheritDoc
     */
@@ -313,9 +291,29 @@ class Route implements RouteInterface
             throw new \InvalidArgumentException("Unavailable controller namespace.");
         }
 
-        return trim($namespace, '\\');
+        return $namespace;
     }
 
+
+
+
+    /**
+     * @param string $method
+     *
+     * @return bool
+    */
+    public function matchMethods(string $method): bool
+    {
+        return in_array($method, $this->methods);
+    }
+
+
+
+
+    public function matchPath(string $path): bool
+    {
+         return true;
+    }
 
 
 
@@ -325,8 +323,9 @@ class Route implements RouteInterface
     */
     public function match(string $method, string $path): bool
     {
-         return true;
+         return $this->matchMethods($method) && $this->matchPath($path);
     }
+
 
 
 
@@ -354,6 +353,8 @@ class Route implements RouteInterface
 
         return $this;
     }
+
+
 
 
 
@@ -393,7 +394,7 @@ class Route implements RouteInterface
     */
     public function namespace(string $namespace): static
     {
-         $this->prefixes['namespace'] = $namespace;
+         $this->prefixes['namespace'] = trim($namespace, '\\');
 
          return $this;
     }
@@ -458,15 +459,6 @@ class Route implements RouteInterface
     */
     public function action(mixed $action): static
     {
-        if (is_string($action)) {
-           $action = $this->resolveActionFromString($action);
-        }
-
-        if (is_array($action)) {
-            [$class, $method] = $this->resolveActionFromArray($action);
-            return $this->controller($class, $method);
-        }
-
         $this->action = $action;
 
         return $this;
@@ -476,19 +468,25 @@ class Route implements RouteInterface
 
 
     /**
-     * @param string $class
-     *
-     * @param string $action
+     * @param string|array $action
      *
      * @return $this
     */
-    public function controller(string $class, string $action): static
+    public function controller(string|array $action): static
     {
-         $this->controller = compact('class', 'action');
+          if (is_string($action)) {
+             $action = $this->resolveActionFromString($action);
+          }
 
-         $this->action = [$class, $action];
+          if (! is_array($action)) {
+              return $this;
+          }
 
-         return $this;
+          [$controller, $action] = $this->resolveActionFromArray($action);
+
+          $this->action(compact('controller', 'action'));
+
+          return $this;
     }
 
 
@@ -501,6 +499,33 @@ class Route implements RouteInterface
     public function callable(): bool
     {
         return is_callable($this->action);
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function hasName(): bool
+    {
+        return ! empty($this->name);
+    }
+
+
+
+
+
+    /**
+     * @return bool
+    */
+    public function hasController(): bool
+    {
+        if (! is_array($this->action)) {
+            return false;
+        }
+
+        return ! empty($this->action['controller']);
     }
 
 
@@ -562,6 +587,7 @@ class Route implements RouteInterface
 
 
 
+
     /**
      * @param string $action
      *
@@ -575,7 +601,7 @@ class Route implements RouteInterface
             return [$controller, $method];
         }
 
-        return $action;
+        return [$action];
     }
 
 
