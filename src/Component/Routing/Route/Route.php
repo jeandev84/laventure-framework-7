@@ -546,31 +546,6 @@ class Route implements RouteInterface
 
 
     /**
-     * @param mixed $action
-     *
-     * @return mixed
-    */
-    private function resolveAction(mixed $action): mixed
-    {
-        if (is_array($action)) {
-            [$class, $method] = $this->resolveActionFromArray($action);
-            $this->controller($class, $method);
-        }
-
-        if (is_string($action) && stripos($action, '@') !== false) {
-            [$class, $method] = explode('@', $action, 2);
-            $class = sprintf('%s\\%s', $this->getNamespace(), $class);
-            $this->controller($class, $method);
-        }
-
-        return $action;
-    }
-
-
-
-
-
-    /**
      * @param array $action
      *
      * @return array
