@@ -76,7 +76,7 @@ class RouteCollection implements RouteCollectionInterface
            }
 
            if ($name = $route->getName()) {
-               $this->namedRoutes[$name][] = $route;
+               $this->namedRoutes[$name] = $route;
            }
 
            $this->routes[] = $route;

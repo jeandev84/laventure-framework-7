@@ -82,6 +82,8 @@ class Router implements RouterInterface
 
 
 
+
+
     /**
      * @param string $namespace
      *
@@ -178,6 +180,17 @@ class Router implements RouterInterface
 
 
 
+    /**
+     * @return RouteCollection
+    */
+    public function getCollection(): RouteCollection
+    {
+        return $this->collection;
+    }
+
+
+
+
 
 
     /**
@@ -224,6 +237,10 @@ class Router implements RouterInterface
 
           return $route->generateUri($parameters);
     }
+
+
+
+
 
 
     /**
