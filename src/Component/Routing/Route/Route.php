@@ -330,7 +330,9 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function name(string $name): static
     {
-        $this->name = $name;
+        $prefix = $this->prefix('name', '');
+
+        $this->name = sprintf('%s%s', $prefix, $name);
 
         return $this;
     }
@@ -706,9 +708,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function getName(): string
     {
-        $prefixed = $this->prefix('name', '');
-
-        return sprintf('%s%s', $prefixed, $this->name);
+        return $this->name;
     }
 
 
