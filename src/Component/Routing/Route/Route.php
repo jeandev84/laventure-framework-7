@@ -104,6 +104,14 @@ class Route implements RouteInterface
 
 
 
+    /**
+     * Route placeholders
+     *
+     * @var array
+    */
+    protected $placeholders = [];
+
+
 
 
     /**
@@ -136,7 +144,6 @@ class Route implements RouteInterface
         'namespace'   => '',
         'name'        => ''
     ];
-
 
 
 
@@ -225,6 +232,8 @@ class Route implements RouteInterface
 
 
 
+
+
     /**
      * @inheritDoc
     */
@@ -291,8 +300,204 @@ class Route implements RouteInterface
             throw new \InvalidArgumentException("Unavailable controller namespace.");
         }
 
-        return $namespace;
+        return trim($namespace, '\\');
     }
+
+
+
+
+
+
+
+    /**
+     * @param array $prefixes
+     *
+     * @return $this
+     */
+    public function prefixes(array $prefixes): static
+    {
+        if (! empty($prefixes['name'])) {
+            $this->name($prefixes['name']);
+        }
+
+        $this->prefixes = array_merge($this->prefixes, $prefixes);
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param $default
+     *
+     * @return mixed|null
+     */
+    public function prefix(string $name, $default = null): mixed
+    {
+        return $this->prefixes[$name] ?? $default;
+    }
+
+
+
+
+
+    /**
+     * @param string $domain
+     *
+     * @return $this
+     */
+    public function domain(string $domain): static
+    {
+        $this->domain = rtrim($domain, '\\/');
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * @param string $namespace
+     *
+     * @return $this
+     */
+    public function namespace(string $namespace): static
+    {
+        return $this->prefixes(compact('namespace'));
+    }
+
+
+
+
+
+
+    /**
+     * @param array|string $methods
+     *
+     * @return $this
+     */
+    public function methods(array|string $methods): static
+    {
+        $this->methods = $this->resolveMethods($methods);
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    public function path(string $path): static
+    {
+        $this->path = $this->resolvePath($path);
+
+        $this->pattern($this->path);
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $pattern
+     *
+     * @return $this
+     */
+    public function pattern(string $pattern): static
+    {
+        $this->pattern = $pattern;
+
+        return $this;
+    }
+
+
+
+
+
+
+    /**
+     * @param mixed $action
+     *
+     * @return $this
+    */
+    public function action(mixed $action): static
+    {
+        if (is_string($action)) {
+            $action = $this->resolveActionFromString($action);
+        }
+
+        if (is_array($action)) {
+            [$controller, $action] = $this->resolveActionFromArray($action);
+            $action = compact('controller', 'action');
+        }
+
+        $this->action = $action;
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+    */
+    public function name(string $name): static
+    {
+        $this->name .= $name;
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * Set route pattern
+     *
+     * @param string $name
+     *
+     * @param string $pattern
+     *
+     * @return $this
+    */
+    public function where(string $name, string $pattern): static
+    {
+        if (! $this->pattern) {
+            return $this;
+        }
+
+        $pattern = $this->resolvePattern($pattern);
+
+        $placeholders = [
+            //"searched" => ["#{{$name}}#", "#{{$name}.?}#"],
+            "#{{$name}}#"   => "(?P<$name>$pattern)",
+            "#{{$name}.?}#" => "?(?P<$name>$pattern)?"
+        ];
+
+        $searched = array_keys($placeholders);
+        $replaces = array_values($placeholders);
+
+        $this->pattern(preg_replace($searched, $replaces, $this->pattern));
+
+        $this->placeholders[$name] = $placeholders;
+        $this->patterns[$name] = $pattern;
+
+        return $this;
+    }
+
 
 
 
@@ -310,6 +515,13 @@ class Route implements RouteInterface
 
 
 
+
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+    */
     public function matchPath(string $path): bool
     {
          return true;
@@ -335,158 +547,15 @@ class Route implements RouteInterface
     */
     public function generateURI(array $parameters = []): string
     {
-        return '';
-    }
+         $path = $this->getPath();
 
+         foreach ($parameters as $name => $value) {
+              if (! empty($this->placeholders[$name])) {
+                  $path = preg_replace(array_keys($this->placeholders[$name]), [$value], $path);
+              }
+         }
 
-
-
-
-    /**
-     * @param array $prefixes
-     *
-     * @return $this
-    */
-    public function prefixes(array $prefixes): static
-    {
-        $this->prefixes = array_merge($this->prefixes, $prefixes);
-
-        return $this;
-    }
-
-
-
-
-
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-    */
-    public function prefixed(string $name): bool
-    {
-        return ! empty($this->prefixes[$name]);
-    }
-
-
-
-
-    /**
-     * @param string $domain
-     *
-     * @return $this
-    */
-    public function domain(string $domain): static
-    {
-         $this->domain = rtrim($domain, '\\/');
-
-         return $this;
-    }
-
-
-
-
-    /**
-     * @param string $namespace
-     *
-     * @return $this
-    */
-    public function namespace(string $namespace): static
-    {
-         $this->prefixes['namespace'] = trim($namespace, '\\');
-
-         return $this;
-    }
-
-
-
-
-
-
-    /**
-     * @param array|string $methods
-     *
-     * @return $this
-    */
-    public function methods(array|string $methods): static
-    {
-        $this->methods = $this->resolveMethods($methods);
-
-        return $this;
-    }
-
-
-
-
-
-    /**
-     * @param string $path
-     * @return $this
-    */
-    public function path(string $path): static
-    {
-        $this->path = $this->resolvePath($path);
-
-        $this->pattern($this->path);
-
-        return $this;
-    }
-
-
-
-
-
-    /**
-     * @param string $pattern
-     *
-     * @return $this
-    */
-    public function pattern(string $pattern): static
-    {
-         $this->pattern = $pattern;
-
-         return $this;
-    }
-
-
-
-
-    /**
-     * @param mixed $action
-     *
-     * @return $this
-    */
-    public function action(mixed $action): static
-    {
-        $this->action = $action;
-
-        return $this;
-    }
-
-
-
-
-    /**
-     * @param string|array $action
-     *
-     * @return $this
-    */
-    public function controller(string|array $action): static
-    {
-          if (is_string($action)) {
-             $action = $this->resolveActionFromString($action);
-          }
-
-          if (! is_array($action)) {
-              return $this;
-          }
-
-          [$controller, $action] = $this->resolveActionFromArray($action);
-
-          $this->action(compact('controller', 'action'));
-
-          return $this;
+         return $path;
     }
 
 
@@ -606,18 +675,12 @@ class Route implements RouteInterface
 
 
 
-
-
-
     /**
-     * @param string $name
-     *
-     * @param $default
-     *
-     * @return mixed|null
+     * @param string $pattern
+     * @return string
     */
-    private function prefix(string $name, $default = null): mixed
+    private function resolvePattern(string $pattern): string
     {
-        return $this->prefixes[$name] ?? $default;
+        return str_replace('(', '(?:', $pattern);
     }
 }
