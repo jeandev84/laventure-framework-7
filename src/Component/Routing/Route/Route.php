@@ -160,210 +160,16 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
-    private const MAP = [];
-
-
-
     /**
      * @param array $prefixes
      *
-     * @param array $middlewares
+     * @param array $options
     */
-    public function __construct(array $prefixes = [], array $middlewares = [])
+    public function __construct(array $prefixes = [], array $options = [])
     {
          $this->prefixes($prefixes);
     }
 
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getDomain(): string
-    {
-        return $this->domain;
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getMethods(): array
-    {
-        return $this->methods;
-    }
-
-
-
-
-    /**
-     * @param string $separator
-     *
-     * @return string
-     */
-    public function getMethodsAsString(string $separator = '|'): string
-    {
-        return join($separator, $this->methods);
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getAction(): mixed
-    {
-        return $this->action;
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getPattern(): string
-    {
-        return $this->pattern;
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getMiddlewares(): array
-    {
-        return $this->middlewares;
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-
-
-
-
-    /**
-     * @return array
-    */
-    public function getPrefixes(): array
-    {
-        return $this->prefixes;
-    }
-
-
-
-
-    /**
-     * @return mixed
-    */
-    public function getNamespace(): string
-    {
-        if(! $namespace = $this->prefix('namespace', '')) {
-            throw new \InvalidArgumentException("Unavailable controller namespace.");
-        }
-
-        return trim($namespace, '\\');
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getMatches(): array
-    {
-        return $this->matches;
-    }
-
-
-
-
-
-    /**
-     * @return array
-    */
-    public function getPatterns(): array
-    {
-        return $this->patterns;
-    }
-
-
-
-
-
-    /**
-     * @return array
-    */
-    public static function getPlaceholders(): array
-    {
-        return self::$placeholders;
-    }
-
-
-
-
-
-
-    /**
-     * @return string
-    */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
 
 
 
@@ -384,6 +190,20 @@ class Route implements RouteInterface, \ArrayAccess
         return $this;
     }
 
+
+
+
+    /**
+     * @param array $options
+     *
+     * @return $this
+    */
+    public function options(array $options): static
+    {
+         $this->options = array_merge($this->options, $options);
+
+         return $this;
+    }
 
 
 
@@ -472,7 +292,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param string $pattern
      *
      * @return $this
-     */
+    */
     public function pattern(string $pattern): static
     {
         $this->pattern = $pattern;
@@ -492,16 +312,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function action(mixed $action): static
     {
-        if (is_string($action)) {
-            $action = $this->resolveActionFromString($action);
-        }
-
-        if (is_array($action)) {
-            [$controller, $action] = $this->resolveActionFromArray($action);
-            $action = compact('controller', 'action');
-        }
-
-        $this->action = $action;
+        $this->action = $this->resolveAction($action);
 
         return $this;
     }
@@ -521,6 +332,19 @@ class Route implements RouteInterface, \ArrayAccess
         return $this;
     }
 
+
+
+
+
+    /**
+     * @param string|array $middleware
+     *
+     * @return $this
+    */
+    public function middleware(string|array $middleware): static
+    {
+          return $this;
+    }
 
 
 
@@ -657,12 +481,12 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
      * @param string $uri
      *
      * @return bool
      *
-     * @throws RouteException
     */
     public function matchUri(string $uri): bool
     {
@@ -683,10 +507,10 @@ class Route implements RouteInterface, \ArrayAccess
     }
 
 
+
+
     /**
      * @inheritDoc
-     *
-     * @throws RouteException
     */
     public function match(string $method, string $path): bool
     {
@@ -743,6 +567,23 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
+    /**
+     * @return false|mixed
+    */
+    public function callAction(): mixed
+    {
+         if (! $this->callable()) {
+              return false;
+         }
+
+         return call_user_func_array($this->action, array_values($this->params));
+    }
+
+
+
+
+
     /**
      * @inheritDoc
     */
@@ -754,18 +595,201 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+    /**
+     * @inheritDoc
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+
+
 
     /**
-     * @return bool
+     * @inheritDoc
+     */
+    public function getMethods(): array
+    {
+        return $this->methods;
+    }
+
+
+
+
+
+    /**
+     * @return string
     */
-    public function hasController(): bool
+    public function getMethodsAsString(): string
+    {
+        return join('|', $this->methods);
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getAction(): mixed
+    {
+        return $this->action;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getPattern(): string
+    {
+        return $this->pattern;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+
+
+
+
+    /**
+     * @return array
+     */
+    public function getPrefixes(): array
+    {
+        return $this->prefixes;
+    }
+
+
+
+
+
+    /**
+     * @return string|false
+    */
+    public function getController(): string|false
     {
         if (! is_array($this->action)) {
             return false;
         }
 
-        return ! empty($this->action['controller']);
+        return $this->action['controller'] ?? false;
     }
+
+
+
+
+
+    /**
+     * @return mixed
+    */
+    public function getNamespace(): string
+    {
+        if(! $namespace = $this->prefix('namespace', '')) {
+            throw new \InvalidArgumentException("Unavailable controller namespace.");
+        }
+
+        return trim($namespace, '\\');
+    }
+
+
+
+
+
+
+    /**
+     * @return array
+     */
+    public function getMatches(): array
+    {
+        return $this->matches;
+    }
+
+
+
+
+
+    /**
+     * @return array
+   */
+    public function getPatterns(): array
+    {
+        return $this->patterns;
+    }
+
+
+
+
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+
 
 
 
@@ -802,7 +826,7 @@ class Route implements RouteInterface, \ArrayAccess
             $methods = explode('|', $methods);
         }
 
-        return $methods;
+        return (array)$methods;
     }
 
 
@@ -858,6 +882,27 @@ class Route implements RouteInterface, \ArrayAccess
         }, ARRAY_FILTER_USE_KEY);
     }
 
+
+
+
+    /**
+     * @param mixed $action
+     *
+     * @return mixed
+    */
+    private function resolveAction(mixed $action): mixed
+    {
+        if (is_string($action)) {
+            return $this->resolveActionFromString($action);
+        }
+
+        if (is_array($action)) {
+            [$controller, $action] = $this->resolveActionFromArray($action);
+            return compact('controller', 'action');
+        }
+
+        return $action;
+    }
 
 
 
