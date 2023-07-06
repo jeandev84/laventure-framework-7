@@ -91,7 +91,7 @@ class RouteGroup implements RouteGroupInterface
     {
           foreach ($attributes as $name => $value) {
               if (property_exists($this, $name)) {
-                  call_user_func($name, $value);
+                  call_user_func([$this, $name], $value);
               }
           }
 

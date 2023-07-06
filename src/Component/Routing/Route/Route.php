@@ -304,7 +304,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param mixed $action
      *
      * @return mixed
-     */
+    */
     private function resolveAction(mixed $action): mixed
     {
         if (is_string($action)) {

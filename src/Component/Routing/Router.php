@@ -70,14 +70,18 @@ class Router implements RouterInterface
 
 
 
+
     /**
      * @param string $domain
+     *
+     * @param array $middlewares
     */
-    public function __construct(string $domain)
+    public function __construct(string $domain, array $middlewares = [])
     {
          $this->collection = new RouteCollection();
          $this->group      = new RouteGroup();
          $this->domain     = $domain;
+         $this->middlewareStack($middlewares);
     }
 
 
@@ -143,6 +147,22 @@ class Router implements RouterInterface
         $this->group->name($name);
 
         return $this;
+    }
+
+
+
+
+
+    /**
+     * @param array $middlewares
+     *
+     * @return $this
+    */
+    public function middlewareStack(array $middlewares): static
+    {
+         $this->middlewares = array_merge($this->middlewares, $middlewares);
+
+         return $this;
     }
 
 
