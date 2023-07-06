@@ -67,16 +67,6 @@ interface RouteInterface
 
 
 
-    /**
-     * Determine if route has name
-     *
-     * @return bool
-    */
-    public function hasName(): bool;
-
-
-
-
 
     /**
      * Return name of route
@@ -146,5 +136,5 @@ interface RouteInterface
      *
      * @return string
     */
-    public function generate(array $parameters = []): string;
+    public function generateUri(array $parameters = []): string;
 }

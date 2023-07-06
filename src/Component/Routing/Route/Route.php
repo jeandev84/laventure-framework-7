@@ -109,29 +109,11 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
-     * @var array
-    */
-    protected $namedMiddlewares = [];
-
-
-
-
-    /**
      * Route patterns
      *
      * @var array
     */
     protected $patterns = [];
-
-
-
-
-    /**
-     * Route options
-     *
-     * @var array
-    */
-    protected $options = [];
 
 
 
@@ -149,25 +131,26 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
+     * Route options
+     *
      * @var array
     */
-    protected array $prefixes = [
-        'path'        => '',
-        'namespace'   => '',
-        'name'        => ''
+    protected $options = [
+        'prefixes' => [
+            'path'        => '',
+            'namespace'   => '',
+            'name'        => ''
+        ],
+        'middlewareStack' => []
     ];
 
 
-
-
     /**
-     * @param array $prefixes
-     *
      * @param array $options
     */
-    public function __construct(array $prefixes = [], array $options = [])
+    public function __construct(array $options = [])
     {
-         $this->prefixes($prefixes);
+         $this->options($options);
     }
 
 
@@ -181,28 +164,22 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function prefixes(array $prefixes): static
     {
-        if (! empty($prefixes['name'])) {
-            $this->name($prefixes['name']);
-        }
-
-        $this->prefixes = array_merge($this->prefixes, $prefixes);
-
-        return $this;
+        return $this->options(compact('prefixes'));
     }
 
 
 
 
+
+
     /**
-     * @param array $options
+     * @param array $middlewareStack
      *
      * @return $this
     */
-    public function options(array $options): static
+    public function middlewareStack(array $middlewareStack): static
     {
-         $this->options = array_merge($this->options, $options);
-
-         return $this;
+        return $this->options(compact('middlewareStack'));
     }
 
 
@@ -218,7 +195,7 @@ class Route implements RouteInterface, \ArrayAccess
      */
     public function prefix(string $name, $default = null): mixed
     {
-        return $this->prefixes[$name] ?? $default;
+        return $this->options['prefixes'][$name] ?? $default;
     }
 
 
@@ -240,11 +217,12 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
      * @param string $namespace
      *
      * @return $this
-     */
+    */
     public function namespace(string $namespace): static
     {
         return $this->prefixes(compact('namespace'));
@@ -259,7 +237,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param array|string $methods
      *
      * @return $this
-     */
+    */
     public function methods(array|string $methods): static
     {
         $this->methods = $this->resolveMethods($methods);
@@ -320,6 +298,31 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
+
+    /**
+     * @param mixed $action
+     *
+     * @return mixed
+     */
+    private function resolveAction(mixed $action): mixed
+    {
+        if (is_string($action)) {
+            $action = $this->resolveActionFromString($action);
+        }
+
+        if (is_array($action)) {
+            [$controller, $action] = $this->resolveActionFromArray($action);
+            return compact('controller', 'action');
+        }
+
+        return $action;
+    }
+
+
+
+
+
     /**
      * @param string $name
      *
@@ -327,7 +330,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function name(string $name): static
     {
-        $this->name .= $name;
+        $this->name = $name;
 
         return $this;
     }
@@ -336,15 +339,56 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
-     * @param string|array $middleware
+     * @param string|array $middlewares
      *
      * @return $this
     */
-    public function middleware(string|array $middleware): static
+    public function middleware(string|array $middlewares): static
     {
-          return $this;
+         foreach ((array)$middlewares as $name => $middleware) {
+              if (array_key_exists($name, $this->getMiddlewareStack())) {
+                  $middleware = $this->getMiddlewareStack()[$name];
+              }
+              $this->middlewares[] = $middleware;
+         }
+
+
+         return $this;
     }
+
+
+
+
+    /**
+     * @param array $options
+     *
+     * @return $this
+    */
+    public function options(array $options): static
+    {
+        $this->options = array_merge($this->options, $options);
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param $default
+     *
+     * @return mixed|null
+    */
+    public function option(string $name, $default = null): mixed
+    {
+        return $this->options[$name] ?? $default;
+    }
+
+
 
 
 
@@ -400,11 +444,12 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
      * @param string $name
      * @return $this
      */
-    public function whereNumber(string $name): self
+    public function number(string $name): self
     {
         return $this->where($name, '\d+');
     }
@@ -418,7 +463,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param string $name
      * @return $this
     */
-    public function whereText(string $name): self
+    public function text(string $name): self
     {
         return $this->where($name, '\w+');
     }
@@ -432,7 +477,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param string $name
      * @return $this
     */
-    public function whereAlphaNumeric(string $name): self
+    public function alphaNumeric(string $name): self
     {
         return $this->where($name, '[^a-z_\-0-9]');
     }
@@ -445,7 +490,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param string $name
      * @return $this
     */
-    public function whereSlug(string $name): self
+    public function slug(string $name): self
     {
         return $this->where($name, '[a-z\-0-9]+');
     }
@@ -524,7 +569,7 @@ class Route implements RouteInterface, \ArrayAccess
     /**
      * @inheritDoc
     */
-    public function generate(array $parameters = []): string
+    public function generateUri(array $parameters = []): string
     {
          $path = $this->getPath();
 
@@ -548,7 +593,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function url(array $parameters = []): string
     {
-        return sprintf('%s%s', $this->domain, $this->generate($parameters));
+        return sprintf('%s%s', $this->domain, $this->generateUri($parameters));
     }
 
 
@@ -584,16 +629,6 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
-    /**
-     * @inheritDoc
-    */
-    public function hasName(): bool
-    {
-        return ! empty($this->name);
-    }
-
-
-
 
     /**
      * @inheritDoc
@@ -621,7 +656,7 @@ class Route implements RouteInterface, \ArrayAccess
     /**
      * @return string
     */
-    public function getMethodsAsString(): string
+    public function getMethod(): string
     {
         return join('|', $this->methods);
     }
@@ -668,11 +703,15 @@ class Route implements RouteInterface, \ArrayAccess
 
     /**
      * @inheritDoc
-     */
+    */
     public function getName(): string
     {
-        return $this->name;
+        $prefixed = $this->prefix('name', '');
+
+        return sprintf('%s%s', $prefixed, $this->name);
     }
+
+
 
 
 
@@ -717,7 +756,20 @@ class Route implements RouteInterface, \ArrayAccess
      */
     public function getPrefixes(): array
     {
-        return $this->prefixes;
+        return $this->option('prefixes');
+    }
+
+
+
+
+
+
+    /**
+     * @return array
+    */
+    private function getMiddlewareStack(): array
+    {
+         return $this->option('middlewareStack', []);
     }
 
 
@@ -788,8 +840,6 @@ class Route implements RouteInterface, \ArrayAccess
     {
         return $this->url;
     }
-
-
 
 
 
@@ -882,27 +932,6 @@ class Route implements RouteInterface, \ArrayAccess
         }, ARRAY_FILTER_USE_KEY);
     }
 
-
-
-
-    /**
-     * @param mixed $action
-     *
-     * @return mixed
-    */
-    private function resolveAction(mixed $action): mixed
-    {
-        if (is_string($action)) {
-            return $this->resolveActionFromString($action);
-        }
-
-        if (is_array($action)) {
-            [$controller, $action] = $this->resolveActionFromArray($action);
-            return compact('controller', 'action');
-        }
-
-        return $action;
-    }
 
 
 
