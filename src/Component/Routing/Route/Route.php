@@ -11,7 +11,7 @@ namespace Laventure\Component\Routing\Route;
  *
  * @package Laventure\Component\Routing\Route
 */
-class Route implements RouteInterface
+class Route implements RouteInterface, \ArrayAccess
 {
 
     /**
@@ -40,7 +40,7 @@ class Route implements RouteInterface
      *
      * @var string
     */
-    protected $path;
+    protected $path = '/';
 
 
 
@@ -50,7 +50,7 @@ class Route implements RouteInterface
      *
      * @var string
     */
-    protected $pattern;
+    protected $pattern = '/';
 
 
 
@@ -76,6 +76,18 @@ class Route implements RouteInterface
 
 
 
+
+    /**
+     * Request url
+     *
+     * @var string
+    */
+    protected $url;
+
+
+
+
+
     /**
      * Route params
      *
@@ -95,21 +107,21 @@ class Route implements RouteInterface
 
 
 
+
+    /**
+     * @var array
+    */
+    protected $namedMiddlewares = [];
+
+
+
+
     /**
      * Route patterns
      *
      * @var array
     */
     protected $patterns = [];
-
-
-
-    /**
-     * Route placeholders
-     *
-     * @var array
-    */
-    protected $placeholders = [];
 
 
 
@@ -145,6 +157,10 @@ class Route implements RouteInterface
         'name'        => ''
     ];
 
+
+
+
+    private const MAP = [];
 
 
 
@@ -304,7 +320,50 @@ class Route implements RouteInterface
     }
 
 
+    /**
+     * @return array
+     */
+    public function getMatches(): array
+    {
+        return $this->matches;
+    }
 
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getPatterns(): array
+    {
+        return $this->patterns;
+    }
+
+
+
+
+
+    /**
+     * @return array
+    */
+    public static function getPlaceholders(): array
+    {
+        return self::$placeholders;
+    }
+
+
+
+
+
+
+    /**
+     * @return string
+    */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
 
 
 
@@ -313,7 +372,7 @@ class Route implements RouteInterface
      * @param array $prefixes
      *
      * @return $this
-     */
+    */
     public function prefixes(array $prefixes): static
     {
         if (! empty($prefixes['name'])) {
@@ -324,6 +383,7 @@ class Route implements RouteInterface
 
         return $this;
     }
+
 
 
 
@@ -464,6 +524,9 @@ class Route implements RouteInterface
 
 
 
+
+
+
     /**
      * Set route pattern
      *
@@ -475,28 +538,106 @@ class Route implements RouteInterface
     */
     public function where(string $name, string $pattern): static
     {
-        if (! $this->pattern) {
-            return $this;
-        }
+        $pattern = str_replace('(', '(?:', $pattern);
 
-        $pattern = $this->resolvePattern($pattern);
-
-        $placeholders = [
-            //"searched" => ["#{{$name}}#", "#{{$name}.?}#"],
+        $this->patterns[$name] = [
             "#{{$name}}#"   => "(?P<$name>$pattern)",
             "#{{$name}.?}#" => "?(?P<$name>$pattern)?"
         ];
 
-        $searched = array_keys($placeholders);
-        $replaces = array_values($placeholders);
+        $searched = array_keys($this->patterns[$name]);
+        $replaces = array_values($this->patterns[$name]);
 
         $this->pattern(preg_replace($searched, $replaces, $this->pattern));
 
-        $this->placeholders[$name] = $placeholders;
-        $this->patterns[$name] = $pattern;
 
         return $this;
     }
+
+
+
+
+
+    /**
+     * @param array $patterns
+     *
+     * @return $this
+    */
+    public function wheres(array $patterns): static
+    {
+        foreach ($patterns as $name => $pattern) {
+            $this->where($name, $pattern);
+        }
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function whereNumber(string $name): self
+    {
+        return $this->where($name, '\d+');
+    }
+
+
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+    */
+    public function whereText(string $name): self
+    {
+        return $this->where($name, '\w+');
+    }
+
+
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+    */
+    public function whereAlphaNumeric(string $name): self
+    {
+        return $this->where($name, '[^a-z_\-0-9]');
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+    */
+    public function whereSlug(string $name): self
+    {
+        return $this->where($name, '[a-z\-0-9]+');
+    }
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+    */
+    public function anything(string $name): self
+    {
+        return $this->where($name, '.*');
+    }
+
 
 
 
@@ -516,26 +657,40 @@ class Route implements RouteInterface
 
 
 
-
     /**
-     * @param string $path
+     * @param string $uri
      *
      * @return bool
+     *
+     * @throws RouteException
     */
-    public function matchPath(string $path): bool
+    public function matchUri(string $uri): bool
     {
+         $path    = parse_url($uri, PHP_URL_PATH);
+         $pattern = $this->getPattern();
+
+         preg_match("#^$pattern$#i", $path, $matches);
+
+         if (empty($matches)) {
+              return false;
+         }
+
+         $this->params  = $this->resolveParams($matches);
+         $this->matches = $matches;
+         $this->url     = sprintf('%s%s', $this->domain, $uri);
+
          return true;
     }
 
 
-
-
     /**
      * @inheritDoc
+     *
+     * @throws RouteException
     */
     public function match(string $method, string $path): bool
     {
-         return $this->matchMethods($method) && $this->matchPath($path);
+         return $this->matchMethods($method) && $this->matchUri($path);
     }
 
 
@@ -545,18 +700,33 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
     */
-    public function generateURI(array $parameters = []): string
+    public function generate(array $parameters = []): string
     {
          $path = $this->getPath();
 
          foreach ($parameters as $name => $value) {
-              if (! empty($this->placeholders[$name])) {
-                  $path = preg_replace(array_keys($this->placeholders[$name]), [$value], $path);
+              if (! empty($this->patterns[$name])) {
+                  $path = preg_replace(array_keys($this->patterns[$name]), [$value], $path);
               }
          }
 
          return $path;
     }
+
+
+
+
+
+    /**
+     * @param array $parameters
+     *
+     * @return string
+    */
+    public function url(array $parameters = []): string
+    {
+        return sprintf('%s%s', $this->domain, $this->generate($parameters));
+    }
+
 
 
 
@@ -675,12 +845,67 @@ class Route implements RouteInterface
 
 
 
+
     /**
-     * @param string $pattern
-     * @return string
+     * @param array $matches
+     *
+     * @return array
     */
-    private function resolvePattern(string $pattern): string
+    private function resolveParams(array $matches): array
     {
-        return str_replace('(', '(?:', $pattern);
+        return array_filter($matches, function ($key) {
+            return ! is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetExists(mixed $offset)
+    {
+        return property_exists($this, $offset);
+    }
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetGet(mixed $offset)
+    {
+        if (! $this->offsetExists($offset)) {
+            return false;
+        }
+
+        return $this->{$offset};
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet(mixed $offset, mixed $value)
+    {
+        if ($this->offsetExists($offset)) {
+            $this->{$offset} = $value;
+        }
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function offsetUnset(mixed $offset)
+    {
+        if ($this->offsetExists($offset)) {
+            unset($this->{$offset});
+        }
     }
 }

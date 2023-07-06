@@ -146,5 +146,5 @@ interface RouteInterface
      *
      * @return string
     */
-    public function generateURI(array $parameters = []): string;
+    public function generate(array $parameters = []): string;
 }
