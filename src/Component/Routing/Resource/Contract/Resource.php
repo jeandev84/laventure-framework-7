@@ -67,11 +67,15 @@ abstract class Resource
     /**
      * @param string $action
      *
-     * @return array
+     * @return array|string
     */
-    protected function action(string $action): array
+    protected function action(string $action): array|string
     {
-        return [$this->controller, $action];
+        if (class_exists($this->controller)) {
+            return [$this->controller, $action];
+        }
+
+        return "$this->controller@$action";
     }
 
 

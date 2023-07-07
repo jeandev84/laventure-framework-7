@@ -3,7 +3,8 @@
   "description": "MVC framework using php language for building web application",
   "autoload": {
     "psr-4": {
-      "Laventure\\": "src/"
+      "Laventure\\": "src/",
+      "App\\": "app/"
     }
   },
   "authors": [

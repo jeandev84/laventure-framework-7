@@ -130,6 +130,16 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+    /**
+     * @var string[]
+    */
+    protected $prefixes = [
+        'path'        => '',
+        'namespace'   => '',
+        'name'        => ''
+    ];
+
+
 
 
     /**
@@ -138,11 +148,6 @@ class Route implements RouteInterface, \ArrayAccess
      * @var array
     */
     protected $options = [
-        'prefixes' => [
-            'path'        => '',
-            'namespace'   => '',
-            'name'        => ''
-        ],
         'middlewareStack' => []
     ];
 
@@ -151,11 +156,14 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
-     * @param array $options
+     * @param array $prefixes
+     *
+     * @param array $middlewares
     */
-    public function __construct(array $options = [])
+    public function __construct(array $prefixes = [], array $middlewares = [])
     {
-         $this->options($options);
+         $this->prefixes($prefixes);
+         $this->middlewareStack($middlewares);
     }
 
 
@@ -169,7 +177,9 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function prefixes(array $prefixes): static
     {
-        return $this->options(compact('prefixes'));
+        $this->prefixes = array_merge($this->prefixes, $prefixes);
+
+        return $this;
     }
 
 
@@ -200,7 +210,7 @@ class Route implements RouteInterface, \ArrayAccess
      */
     public function prefix(string $name, $default = null): mixed
     {
-        return $this->options['prefixes'][$name] ?? $default;
+        return $this->prefixes[$name] ?? $default;
     }
 
 
@@ -317,10 +327,9 @@ class Route implements RouteInterface, \ArrayAccess
         }
 
         if (is_array($action)) {
-            [$controller, $action] = $this->resolveActionFromArray($action);
-            $this->options(compact('controller', 'action'));
-            return [$controller, $action];
+            return $this->resolveActionFromArray($action);
         }
+
 
         return $action;
     }
@@ -330,11 +339,11 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
-     * @param string $name
+     * @param string|null $name
      *
      * @return $this
     */
-    public function name(string $name): static
+    public function name(?string $name): static
     {
         $prefix = $this->prefix('name', '');
 
@@ -910,7 +919,12 @@ class Route implements RouteInterface, \ArrayAccess
             throw new \InvalidArgumentException("Unavailable controller name.");
         }
 
-        return [$action[0], $action[1] ?? '__invoke'];
+        $controller = $action[0];
+        $action     = $action[1] ?? '__invoke';
+
+        $this->options(compact('controller', 'action'));
+
+        return [$controller, $action];
     }
 
 
