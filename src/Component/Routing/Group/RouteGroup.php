@@ -59,7 +59,7 @@ class RouteGroup implements RouteGroupInterface
     */
     public function __construct(array $attributes = [])
     {
-        $this->attributes($attributes);
+         $this->attributes($attributes);
     }
 
 
@@ -119,6 +119,7 @@ class RouteGroup implements RouteGroupInterface
 
 
 
+
     /**
      * @return string
     */
@@ -142,6 +143,7 @@ class RouteGroup implements RouteGroupInterface
 
          return $this;
     }
+
 
 
 
@@ -215,36 +217,6 @@ class RouteGroup implements RouteGroupInterface
 
 
 
-
-    /**
-     * @inheritDoc
-    */
-    public function call(Closure $routes, array $arguments = []): void
-    {
-         call_user_func_array($routes, $arguments);
-    }
-
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function rewind(): void
-    {
-        $this->path   = [];
-        $this->module = [];
-        $this->middlewares = [];
-        $this->name = [];
-    }
-
-
-
-
-
-
     /**
      * @return string
     */
@@ -275,6 +247,33 @@ class RouteGroup implements RouteGroupInterface
         ];
     }
 
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function call(Closure $routes, array $arguments = []): void
+    {
+         call_user_func_array($routes, $arguments);
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function rewind(): void
+    {
+        $this->path   = [];
+        $this->module = [];
+        $this->middlewares = [];
+        $this->name = [];
+    }
 
 
 
