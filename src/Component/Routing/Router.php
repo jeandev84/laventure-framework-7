@@ -108,6 +108,7 @@ class Router implements RouterInterface
 
 
 
+
     /**
      * @param string $path
      *
@@ -158,6 +159,7 @@ class Router implements RouterInterface
 
 
 
+
     /**
      * @param array $middlewares
      *
@@ -175,7 +177,6 @@ class Router implements RouterInterface
 
 
 
-
     /**
      * @param array|string $middleware
      *
@@ -187,8 +188,6 @@ class Router implements RouterInterface
 
         return $this;
     }
-
-
 
 
 
@@ -237,6 +236,7 @@ class Router implements RouterInterface
 
 
 
+
     /**
      * @return RouteGroup
     */
@@ -244,6 +244,10 @@ class Router implements RouterInterface
     {
         return $this->group;
     }
+
+
+
+
 
 
     /**
@@ -265,6 +269,8 @@ class Router implements RouterInterface
     {
         return $this->domain;
     }
+
+
 
 
 
@@ -318,6 +324,41 @@ class Router implements RouterInterface
 
 
     /**
+     * @param Route $route
+     *
+     * @return Route
+    */
+    public function addRoute(Route $route): Route
+    {
+        return $this->collection->addRoute($route);
+    }
+
+
+
+
+
+
+    /**
+     * @param Resource $resource
+     *
+     * @return $this
+    */
+    public function addResource(Resource $resource): static
+    {
+         $resource->map($this);
+
+         $this->collection->addResource($resource);
+
+         return $this;
+    }
+
+
+
+
+
+
+
+    /**
      * Map route
      *
      * @param $methods
@@ -332,8 +373,9 @@ class Router implements RouterInterface
     */
     public function map($methods, $path, $action, $name = null): Route
     {
-         return $this->collection->addRoute($this->makeRoute($methods, $path, $action, $name));
+         return $this->addRoute($this->makeRoute($methods, $path, $action, $name));
     }
+
 
 
 
@@ -360,6 +402,7 @@ class Router implements RouterInterface
 
 
 
+
     /**
      * Map route called by method POST
      *
@@ -380,6 +423,8 @@ class Router implements RouterInterface
 
 
 
+
+
     /**
      * Map route called by method PUT
      *
@@ -393,6 +438,9 @@ class Router implements RouterInterface
     {
         return $this->map('PUT', $path, $action);
     }
+
+
+
 
 
 
@@ -429,11 +477,13 @@ class Router implements RouterInterface
      * @param null $name
      *
      * @return Route
-     */
+    */
     public function delete($path, $action, $name = null): Route
     {
         return $this->map('DELETE', $path, $action, $name);
     }
+
+
 
 
 
@@ -459,24 +509,6 @@ class Router implements RouterInterface
 
 
 
-    /**
-     * @param Resource $resource
-     *
-     * @return $this
-    */
-    public function addResource(Resource $resource): static
-    {
-        $resource->map($this);
-
-        $this->collection->addResource($resource);
-
-        return $this;
-    }
-
-
-
-
-
 
     /**
      * @param string $name
@@ -489,6 +521,7 @@ class Router implements RouterInterface
     {
         return $this->addResource(new WebResource($name, $controller));
     }
+
 
 
 

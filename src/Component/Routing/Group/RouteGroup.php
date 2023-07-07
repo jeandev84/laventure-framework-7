@@ -55,12 +55,13 @@ class RouteGroup implements RouteGroupInterface
 
 
     /**
-     * @param string $namespace
+     * @param array $attributes
     */
-    public function __construct(string $namespace = '')
+    public function __construct(array $attributes = [])
     {
-        $this->namespace($namespace);
+        $this->attributes($attributes);
     }
+
 
 
 
@@ -172,6 +173,7 @@ class RouteGroup implements RouteGroupInterface
 
 
 
+
     /**
      * @return string
     */
@@ -213,6 +215,7 @@ class RouteGroup implements RouteGroupInterface
 
 
 
+
     /**
      * @inheritDoc
     */
@@ -241,6 +244,7 @@ class RouteGroup implements RouteGroupInterface
 
 
 
+
     /**
      * @return string
     */
@@ -260,7 +264,7 @@ class RouteGroup implements RouteGroupInterface
 
 
     /**
-     * @inheritdoc
+     * @return array
     */
     public function getPrefixes(): array
     {
@@ -269,5 +273,18 @@ class RouteGroup implements RouteGroupInterface
             'namespace'   => $this->getNamespace(),
             'name'        => $this->getName()
         ];
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getAttributes(): array
+    {
+        return get_object_vars($this);
     }
 }

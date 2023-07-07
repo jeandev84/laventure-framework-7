@@ -4,6 +4,7 @@ namespace Laventure\Component\Routing\Group;
 
 use Closure;
 
+
 /**
  * @RouteGroupInterface
  *
@@ -17,7 +18,7 @@ interface RouteGroupInterface
 {
 
       /**
-       * Mapped routes
+       * Map routes
        *
        * @param Closure $routes
        *
@@ -31,8 +32,9 @@ interface RouteGroupInterface
 
 
 
-
       /**
+       * Reset group
+       *
        * @return void
       */
       public function rewind(): void;
@@ -40,8 +42,11 @@ interface RouteGroupInterface
 
 
 
+
       /**
+       * Return attributes
+       *
        * @return array
       */
-      public function getPrefixes(): array;
+      public function getAttributes(): array;
 }
