@@ -2,6 +2,8 @@
 namespace Laventure\Component\Routing\Route;
 
 
+use Closure;
+
 /**
  * @Route
  *
@@ -143,6 +145,9 @@ class Route implements RouteInterface, \ArrayAccess
         ],
         'middlewareStack' => []
     ];
+
+
+
 
 
     /**
@@ -313,7 +318,8 @@ class Route implements RouteInterface, \ArrayAccess
 
         if (is_array($action)) {
             [$controller, $action] = $this->resolveActionFromArray($action);
-            return compact('controller', 'action');
+            $this->options(compact('controller', 'action'));
+            return [$controller, $action];
         }
 
         return $action;
@@ -349,9 +355,11 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function middleware(string|array $middlewares): static
     {
+         $middlewareStack = $this->option('middlewareStack', []);
+
          foreach ((array)$middlewares as $name => $middleware) {
-              if (array_key_exists($name, $this->getMiddlewareStack())) {
-                  $middleware = $this->getMiddlewareStack()[$name];
+              if (array_key_exists($name, $middlewareStack)) {
+                  $middleware = $middlewareStack[$name];
               }
               $this->middlewares[] = $middleware;
          }
@@ -681,11 +689,12 @@ class Route implements RouteInterface, \ArrayAccess
 
     /**
      * @inheritDoc
-     */
+    */
     public function getAction(): mixed
     {
         return $this->action;
     }
+
 
 
 
@@ -753,7 +762,7 @@ class Route implements RouteInterface, \ArrayAccess
 
     /**
      * @return array
-     */
+    */
     public function getPrefixes(): array
     {
         return $this->option('prefixes');
@@ -761,33 +770,27 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
-
-
+    
 
     /**
-     * @return array
+     * @return string|null
     */
-    private function getMiddlewareStack(): array
+    public function getController(): ?string
     {
-         return $this->option('middlewareStack', []);
+         return $this->option('controller');
     }
 
 
-
-
-
+    
+    
     /**
-     * @return string|false
+     * @return string
     */
-    public function getController(): string|false
+    public function getActionName(): string
     {
-        if (! is_array($this->action)) {
-            return false;
-        }
-
-        return $this->action['controller'] ?? false;
+        return $this->option('action', '');
     }
-
+    
 
 
 
@@ -840,6 +843,19 @@ class Route implements RouteInterface, \ArrayAccess
     {
         return $this->url;
     }
+
+
+
+
+
+    /**
+     * @return bool
+    */
+    public function hasController(): bool
+    {
+        return ! empty($this->options['controller']);
+    }
+
 
 
 

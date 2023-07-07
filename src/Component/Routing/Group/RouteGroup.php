@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Routing\Route;
+namespace Laventure\Component\Routing\Group;
 
 use Closure;
 
@@ -26,6 +26,7 @@ class RouteGroup implements RouteGroupInterface
      * @var array
     */
     protected array $path = [];
+
 
 
 
@@ -214,7 +215,7 @@ class RouteGroup implements RouteGroupInterface
     /**
      * @inheritDoc
     */
-    public function map(Closure $routes, array $arguments = []): void
+    public function call(Closure $routes, array $arguments = []): void
     {
          call_user_func_array($routes, $arguments);
     }
@@ -258,7 +259,7 @@ class RouteGroup implements RouteGroupInterface
 
 
     /**
-     * @return array
+     * @inheritdoc
     */
     public function getPrefixes(): array
     {

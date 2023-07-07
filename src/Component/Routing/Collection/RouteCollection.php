@@ -1,6 +1,7 @@
 <?php
 namespace Laventure\Component\Routing\Collection;
 
+use Laventure\Component\Routing\Resource\Contract\Resource;
 use Laventure\Component\Routing\Route\Route;
 
 
@@ -43,7 +44,16 @@ class RouteCollection implements RouteCollectionInterface
        /**
         * @var Route[]
        */
-       protected array $namedRoutes = [];
+       protected array $names = [];
+
+
+
+
+
+       /**
+        * @var Resource[]
+       */
+       public array $resources = [];
 
 
 
@@ -76,7 +86,7 @@ class RouteCollection implements RouteCollectionInterface
            }
 
            if ($name = $route->getName()) {
-               $this->namedRoutes[$name] = $route;
+               $this->names[$name] = $route;
            }
 
            $this->routes[] = $route;
@@ -100,6 +110,24 @@ class RouteCollection implements RouteCollectionInterface
 
             return $this;
        }
+
+
+
+
+
+       /**
+        * @param Resource $resource
+        *
+        * @return $this
+       */
+       public function addResource(Resource $resource): static
+       {
+           $this->resources[$resource->getType()][$resource->getName()] = $resource;
+
+           return $this;
+       }
+
+
 
 
 
@@ -145,7 +173,7 @@ class RouteCollection implements RouteCollectionInterface
        */
        public function getRoutesByName(): array
        {
-            return $this->namedRoutes;
+            return $this->names;
        }
 
 
@@ -160,7 +188,7 @@ class RouteCollection implements RouteCollectionInterface
       */
       public function getRouteByName(string $name): ?Route
       {
-          return $this->namedRoutes[$name] ?? null;
+          return $this->names[$name] ?? null;
       }
 
 }

@@ -11,7 +11,7 @@ use Laventure\Component\Routing\Route\Route;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Routing\Route
+ * @package Laventure\Component\Routing\Collection
 */
 interface RouteCollectionInterface
 {

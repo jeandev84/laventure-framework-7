@@ -4,8 +4,12 @@ namespace Laventure\Component\Routing;
 
 use Closure;
 use Laventure\Component\Routing\Collection\RouteCollection;
+use Laventure\Component\Routing\Resource\ApiResource;
+use Laventure\Component\Routing\Resource\Contract\Resource;
+use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Routing\Route\Route;
-use Laventure\Component\Routing\Route\RouteGroup;
+use Laventure\Component\Routing\Group\RouteGroup;
+
 
 /**
  * @Router
@@ -81,8 +85,9 @@ class Router implements RouterInterface
          $this->collection = new RouteCollection();
          $this->group      = new RouteGroup();
          $this->domain     = $domain;
-         $this->middlewareStack($middlewares);
+         $this->middlewares($middlewares);
     }
+
 
 
 
@@ -158,12 +163,14 @@ class Router implements RouterInterface
      *
      * @return $this
     */
-    public function middlewareStack(array $middlewares): static
+    public function middlewares(array $middlewares): static
     {
          $this->middlewares = array_merge($this->middlewares, $middlewares);
 
          return $this;
     }
+
+
 
 
 
@@ -186,6 +193,8 @@ class Router implements RouterInterface
 
 
 
+
+
     /**
      * @param array $patterns
      *
@@ -197,6 +206,8 @@ class Router implements RouterInterface
 
         return $this;
     }
+
+
 
 
 
@@ -221,6 +232,49 @@ class Router implements RouterInterface
     public function getRoutes(): array
     {
          return $this->collection->getRoutes();
+    }
+
+
+
+
+    /**
+     * @return RouteGroup
+    */
+    public function getGroup(): RouteGroup
+    {
+        return $this->group;
+    }
+
+
+    /**
+     * @return array
+    */
+    public function getPatterns(): array
+    {
+        return $this->patterns;
+    }
+
+
+
+
+
+    /**
+     * @return string
+    */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 
 
@@ -395,11 +449,99 @@ class Router implements RouterInterface
     public function group(array $attributes, Closure $routes): static
     {
          $this->group->attributes($attributes);
-         $this->group->map($routes, [$this]);
+         $this->group->call($routes, [$this]);
          $this->group->rewind();
 
          return $this;
     }
+
+
+
+
+
+    /**
+     * @param Resource $resource
+     *
+     * @return $this
+    */
+    public function addResource(Resource $resource): static
+    {
+        $resource->map($this);
+
+        $this->collection->addResource($resource);
+
+        return $this;
+    }
+
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param string $controller
+     *
+     * @return $this
+     */
+    public function resource(string $name, string $controller): static
+    {
+        return $this->addResource(new WebResource($name, $controller));
+    }
+
+
+
+
+    /**
+     * @param array $resources
+     *
+     * @return $this
+     */
+    public function resources(array $resources): static
+    {
+        foreach ($resources as $name => $controller) {
+            $this->resource($name, $controller);
+        }
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param string $controller
+     *
+     * @return $this
+     */
+    public function apiResource(string $name, string $controller): static
+    {
+        return $this->addResource(new ApiResource($name, $controller));
+    }
+
+
+
+
+
+
+    /**
+     * @param array $resources
+     *
+     * @return $this
+    */
+    public function apiResources(array $resources): static
+    {
+        foreach ($resources as $name => $controller) {
+            $this->apiResource($name, $controller);
+        }
+
+        return $this;
+    }
+
 
 
 

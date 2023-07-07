@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Routing\Route;
+namespace Laventure\Component\Routing\Group;
 
 
 use Closure;
@@ -25,7 +25,7 @@ interface RouteGroupInterface
        *
        * @return void
       */
-      public function map(Closure $routes, array $arguments = []): void;
+      public function call(Closure $routes, array $arguments = []): void;
 
 
 
@@ -36,4 +36,12 @@ interface RouteGroupInterface
        * @return void
       */
       public function rewind(): void;
+
+
+
+
+      /**
+       * @return array
+      */
+      public function getPrefixes(): array;
 }
