@@ -563,8 +563,7 @@ class Router implements RouterInterface
     */
     public function makeRoute(string|array $methods, string $path, mixed $action, string $name = null): Route
     {
-        $route = new Route($this->group->getPrefixes(), $this->middlewares);
-        $route->domain($this->domain);
+        $route = new Route($this->domain, $this->group->getPrefixes(), $this->middlewares);
         $route->methods($methods);
         $route->path($path);
         $route->action($action);

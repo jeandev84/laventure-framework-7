@@ -153,17 +153,18 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
-
-
     /**
+     * @param string $domain
+     *
      * @param array $prefixes
      *
      * @param array $middlewares
     */
-    public function __construct(array $prefixes = [], array $middlewares = [])
+    public function __construct(string $domain, array $prefixes = [], array $middlewares = [])
     {
+         $this->domain($domain);
          $this->prefixes($prefixes);
-         $this->middlewareStack($middlewares);
+         $this->middlewares($middlewares);
     }
 
 
@@ -192,7 +193,7 @@ class Route implements RouteInterface, \ArrayAccess
      *
      * @return $this
     */
-    public function middlewareStack(array $middlewareStack): static
+    public function middlewares(array $middlewareStack): static
     {
         return $this->options(compact('middlewareStack'));
     }
@@ -314,6 +315,22 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+    /**
+     * @param callable $action
+     *
+     * @return $this
+    */
+    public function callback(callable $action): static
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+
+
+
+
 
     /**
      * @param mixed $action
@@ -329,7 +346,6 @@ class Route implements RouteInterface, \ArrayAccess
         if (is_array($action)) {
             return $this->resolveActionFromArray($action);
         }
-
 
         return $action;
     }
@@ -877,10 +893,10 @@ class Route implements RouteInterface, \ArrayAccess
     */
     private function resolvePath(string $path): string
     {
-        $path = (! $path ? '/' : '/'. trim($path, '\\/'));
+        $path = (! $path ? '/' : '/'. trim($path, '/'));
 
         if ($prefix = $this->prefix('path', '')) {
-            $path   = sprintf('%s/%s', $prefix, ltrim($path, '/'));
+            $path = $prefix . '/'. ltrim($path, '/');
         }
 
         return $path;
@@ -916,7 +932,7 @@ class Route implements RouteInterface, \ArrayAccess
     private function resolveActionFromArray(array $action): array
     {
         if (empty($action[0])) {
-            throw new \InvalidArgumentException("Unavailable controller name.");
+            throw new \InvalidArgumentException("Controller name is required parameter.");
         }
 
         $controller = $action[0];
