@@ -18,6 +18,15 @@ interface RouterInterface
 
 
        /**
+        * @return string
+       */
+       public function getDomain(): string;
+
+
+
+
+
+       /**
         * @return array
        */
        public function getRoutes(): array;

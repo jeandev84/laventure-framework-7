@@ -259,7 +259,7 @@ class Router implements RouterInterface
 
 
     /**
-     * @return string
+     * @inheritdoc
     */
     public function getDomain(): string
     {

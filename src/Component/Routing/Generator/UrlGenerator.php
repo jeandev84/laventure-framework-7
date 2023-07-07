@@ -2,7 +2,8 @@
 namespace Laventure\Component\Routing\Generator;
 
 
-use Laventure\Component\Routing\Router;
+use Laventure\Component\Routing\RouterInterface;
+
 
 /**
  * @UrlGenerator
@@ -18,11 +19,11 @@ class UrlGenerator implements UrlGeneratorInterface
 
 
     /**
-     * @param Router $router
+     * @param RouterInterface $router
      *
      * @param array $queries
     */
-    public function __construct(protected Router $router, protected array $queries = [])
+    public function __construct(protected RouterInterface $router, protected array $queries = [])
     {
     }
 
@@ -49,10 +50,10 @@ class UrlGenerator implements UrlGeneratorInterface
     public function generateUri(string $name, array $parameters = [], array $queries = [], string $fragment = null): string
     {
         if (! $path = $this->router->generate($name, $parameters)) {
-            return sprintf('%s%s#%s', $name, $this->buildQueriesParams($queries), $fragment);
+            return '';
         }
 
-        return sprintf('%s%s#%s', $path, $this->buildQueriesParams($queries), $fragment);
+        return sprintf('%s%s', $path, $this->buildQueriesParams($queries, $fragment));
     }
 
 
@@ -62,13 +63,17 @@ class UrlGenerator implements UrlGeneratorInterface
     /**
      * @param array $queries
      *
+     * @param string|null $fragment
+     *
      * @return string
     */
-    private function buildQueriesParams(array $queries): string
+    private function buildQueriesParams(array $queries, string $fragment = null): string
     {
-        $queries = array_merge($this->queries, $queries);
+        $queries  = array_merge($this->queries, $queries);
+        $qs = ! empty($queries) ? '?' . http_build_query($queries) : '';
+        $fragment = $fragment ? "#$fragment" : '';
 
-        return http_build_query($queries);
+        return sprintf('%s%s', $qs, $fragment);
     }
 
 }
