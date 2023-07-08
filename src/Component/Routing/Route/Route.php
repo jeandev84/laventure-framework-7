@@ -21,18 +21,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var  string
     */
-    protected $domain;
-
-
-
-
-
-    /**
-     * Route methods
-     *
-     * @var array
-    */
-    protected $methods = [];
+    protected string $domain;
 
 
 
@@ -42,7 +31,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var string
     */
-    protected $path = '/';
+    protected string $path = '/';
 
 
 
@@ -52,7 +41,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var string
     */
-    protected $pattern = '/';
+    protected string $pattern = '/';
 
 
 
@@ -63,7 +52,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var mixed
     */
-    protected $action;
+    protected mixed $action;
 
 
 
@@ -73,18 +62,28 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var string
     */
-    protected $name;
+    protected string $name = '';
 
 
 
 
 
     /**
-     * Request url
+     * Route locale
      *
      * @var string
     */
-    protected $url;
+    protected string $locale = '';
+
+
+
+
+    /**
+     * Route methods
+     *
+     * @var array
+    */
+    protected array $methods = [];
 
 
 
@@ -95,7 +94,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var array
     */
-    protected $params = [];
+    protected array $params = [];
 
 
 
@@ -105,7 +104,7 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @var array
     */
-    protected $middlewares = [];
+    protected array $middlewares = [];
 
 
 
@@ -151,6 +150,7 @@ class Route implements RouteInterface,\ArrayAccess
 
 
 
+
     /**
      * @param string $domain
      *
@@ -181,6 +181,20 @@ class Route implements RouteInterface,\ArrayAccess
         return $this;
     }
 
+
+
+
+    /**
+     * @param string $locale
+     *
+     * @return $this
+    */
+    public function locale(string $locale): static
+    {
+         $this->locale = $locale;
+
+         return $this;
+    }
 
 
 
@@ -460,18 +474,14 @@ class Route implements RouteInterface,\ArrayAccess
     */
     public function where(string $name, string $pattern): static
     {
-        $pattern = str_replace('(', '(?:', $pattern);
-
-        $this->patterns[$name] = [
-            "#{{$name}}#"   => "(?P<$name>$pattern)",
-            "#{{$name}.?}#" => "?(?P<$name>$pattern)?"
-        ];
-
-        $searched = array_keys($this->patterns[$name]);
-        $replaces = array_values($this->patterns[$name]);
+        $pattern  = str_replace('(', '(?:', $pattern);
+        $patterns = ["#{{$name}}#" => "(?P<$name>$pattern)", "#{{$name}.?}#" => "?(?P<$name>$pattern)?"];
+        $searched = array_keys($patterns);
+        $replaces = array_values($patterns);
 
         $this->pattern(preg_replace($searched, $replaces, $this->pattern));
 
+        $this->patterns[$name] = $patterns;
 
         return $this;
     }
@@ -593,7 +603,7 @@ class Route implements RouteInterface,\ArrayAccess
     {
          $requestUrl = $this->url($requestPath);
          $path       = $this->url(parse_url($requestPath, PHP_URL_PATH));
-         $pattern    = $this->url($this->getPattern());
+         $pattern    = $this->url(sprintf('%s%s', $this->locale, $this->getPattern()));
 
          preg_match("#^$pattern$#i", $path, $matches);
 
@@ -910,9 +920,9 @@ class Route implements RouteInterface,\ArrayAccess
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getRequestUrl(): string
     {
-        return $this->url;
+        return $this->option('requestUrl', '');
     }
 
 
@@ -925,6 +935,8 @@ class Route implements RouteInterface,\ArrayAccess
     {
         return $this->option('middlewareStack', []);
     }
+
+
 
 
 

@@ -78,7 +78,7 @@ if (! $route = $router->match('GET', '/api/v1/cart')) {
 }
 
 
-$dispatcher = new \Laventure\Component\Routing\Dispatcher\RouteDispatcher();
+$dispatcher = new \Laventure\Component\Routing\Route\Dispatcher\RouteDispatcher();
 echo $dispatcher->dispatchRoute($route);
 
 $router->get('/hello/{id?}', \App\Controller\HelloController::class, 'hello')

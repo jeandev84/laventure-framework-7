@@ -517,7 +517,7 @@ class Router implements RouterInterface
      * @param string $controller
      *
      * @return $this
-     */
+    */
     public function resource(string $name, string $controller): static
     {
         return $this->addResource(new WebResource($name, $controller));
