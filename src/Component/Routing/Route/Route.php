@@ -893,13 +893,11 @@ class Route implements RouteInterface, \ArrayAccess
     */
     private function resolvePath(string $path): string
     {
-        $path = (! $path ? '/' : '/'. trim($path, '/'));
-
         if ($prefix = $this->prefix('path', '')) {
-            $path = $prefix . '/'. ltrim($path, '/');
+            $path = trim($prefix, '/') . '/'. ltrim($path, '/');
         }
 
-        return $path;
+        return sprintf('/%s', trim($path, '/'));
     }
 
 

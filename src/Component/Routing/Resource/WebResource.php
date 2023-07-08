@@ -21,30 +21,61 @@ class WebResource extends Resource
     /**
      * @inheritDoc
     */
-    public function map(Router $router): static
+    public function getType(): string
     {
-        $router->get($this->path(), $this->action('index'), $this->name('index'));
-        $router->get($this->path("/{id}"), $this->action('show'), $this->name('show'));
-        $router->get($this->path(), $this->action('create'), $this->name('create'));
-        $router->post($this->path(), $this->action('store'), $this->name('store'));
-        $router->get($this->path("/{id}/edit"), $this->action('edit'), $this->name('edit'));
-        $router->map('PUT|PATCH', $this->path("/{id}"), $this->action('update'), $this->name('update'));
-        $router->delete($this->path("/{id}"), $this->action('destroy'), $this->name('destroy'));
-
-        return $this;
+        return 'web';
     }
-
-
-
-
 
 
 
     /**
      * @inheritDoc
     */
-    public function getType(): string
+    protected function getRouteParams(): array
     {
-        return 'web';
+         return [
+            [
+                'methods'  => 'GET',
+                'path'     => '',
+                'action'   => 'index',
+                'patterns' => []
+            ],
+            [
+                'methods'  => 'GET',
+                'path'     => '/{id}',
+                'action'   => 'show',
+                'patterns' => ['id' => '\d+']
+            ],
+            [
+                'methods'  => 'GET',
+                'path'     => '',
+                'action'   => 'create',
+                'patterns' => []
+            ],
+            [
+                 'methods'  => 'POST',
+                 'path'     => '',
+                 'action'   => 'store',
+                 'patterns' => []
+            ],
+            [
+                 'methods'  => 'GET',
+                 'path'     => '/{id}/edit',
+                 'action'   => 'edit',
+                 'patterns' => ['id' => '\d+']
+            ],
+            [
+                 'methods'  => 'PUT|PATCH',
+                 'path'     => '/{id}',
+                 'action'   => 'update',
+                 'patterns' => ['id' => '\d+']
+            ],
+            [
+                 'methods'  => 'DELETE',
+                 'path'     => '/{id}',
+                 'action'   => 'destroy',
+                 'patterns' => ['id' => '\d+']
+            ]
+         ];
     }
 }

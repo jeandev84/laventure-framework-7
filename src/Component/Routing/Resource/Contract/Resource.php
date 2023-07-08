@@ -20,7 +20,7 @@ abstract class Resource
 
     /**
      * @var string
-     */
+    */
     protected $name;
 
 
@@ -30,6 +30,20 @@ abstract class Resource
      * @var string
     */
     protected $controller;
+
+
+
+    /**
+     * @var array
+    */
+    protected array $routesParams = [];
+
+
+
+    /**
+     * @var Route[]
+    */
+    protected array $routes = [];
 
 
 
@@ -50,46 +64,24 @@ abstract class Resource
 
 
     /**
-     * @param string $suffix
+     * @param Router $router
      *
-     * @return string
+     * @return $this
     */
-    protected function path(string $suffix = ''): string
+    public function map(Router $router): static
     {
-        return "/{$this->name}$suffix";
-    }
-
-
-
-
-
-
-    /**
-     * @param string $action
-     *
-     * @return array|string
-    */
-    protected function action(string $action): array|string
-    {
-        if (class_exists($this->controller)) {
-            return [$this->controller, $action];
+        foreach ($this->getRouteParams() as $route) {
+            $this->routes[] = $router->map(
+                $route['methods'],
+                $this->path($route['path']),
+                $this->action($route['action']),
+                $this->name($route['action'])
+            )->wheres($route['patterns']);
         }
 
-        return "$this->controller@$action";
+        return $this;
     }
 
-
-
-
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function name(string $name): string
-    {
-        return "$this->name.$name";
-    }
 
 
 
@@ -97,7 +89,7 @@ abstract class Resource
 
     /**
      * @return string
-     */
+    */
     public function getController(): string
     {
         return $this->controller;
@@ -118,10 +110,46 @@ abstract class Resource
 
 
 
-
-    public function getTemplates(): array
+    /**
+     * @return Route[]
+    */
+    public function getRoutes(): array
     {
+        return $this->routes;
+    }
 
+
+
+
+
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    private function path(string $path = ''): string
+    {
+        return "/{$this->name}$path";
+    }
+
+
+
+
+
+
+    /**
+     * @param string $action
+     *
+     * @return array|string
+    */
+    private function action(string $action): array|string
+    {
+        if (class_exists($this->controller)) {
+            return [$this->controller, $action];
+        }
+
+        return "$this->controller@$action";
     }
 
 
@@ -129,11 +157,22 @@ abstract class Resource
 
 
     /**
-     * @param Router $router
-     *
-     * @return $this
+     * @param string $name
+     * @return string
+     */
+    private function name(string $name): string
+    {
+        return "$this->name.$name";
+    }
+
+
+
+
+
+    /**
+     * @return array
     */
-    abstract public function map(Router $router): static;
+    abstract protected function getRouteParams(): array;
 
 
 

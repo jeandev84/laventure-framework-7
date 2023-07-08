@@ -17,21 +17,6 @@ use Laventure\Component\Routing\Router;
 class ApiResource extends Resource
 {
 
-    /**
-     * @inheritDoc
-    */
-    public function map(Router $router): static
-    {
-        $router->get($this->path(), $this->action('index'), $this->name('index'));
-        $router->get($this->path("/{id}"), $this->action('show'), $this->name('show'));
-        $router->post($this->path(), $this->action('store'), $this->name('store'));
-        $router->map('PUT|PATCH', $this->path("/{id}"), $this->action('update'), $this->name('update'));
-        $router->delete($this->path("/{id}"), $this->action('destroy'), $this->name('destroy'));
-
-        return $this;
-    }
-
-
 
     /**
      * @inheritDoc
@@ -39,5 +24,47 @@ class ApiResource extends Resource
     public function getType(): string
     {
         return 'api';
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    protected function getRouteParams(): array
+    {
+        return [
+            [
+                'methods'  => 'GET',
+                'path'     => '',
+                'action'   => 'index',
+                'patterns' => []
+            ],
+            [
+                'methods'  => 'GET',
+                'path'     => '/{id}',
+                'action'   => 'show',
+                'patterns' => ['id' => '\d+']
+            ],
+            [
+                'methods'  => 'POST',
+                'path'     => '',
+                'action'   => 'store',
+                'patterns' => []
+            ],
+            [
+                'methods'  => 'PUT|PATCH',
+                'path'     => '/{id}',
+                'action'   => 'update',
+                'patterns' => ['id' => '\d+']
+            ],
+            [
+                'methods'  => 'DELETE',
+                'path'     => '/{id}',
+                'action'   => 'destroy',
+                'patterns' => ['id' => '\d+']
+            ]
+        ];
     }
 }
