@@ -56,6 +56,15 @@ class Router implements RouterInterface
 
 
     /**
+     * @var Resource[]
+    */
+    public array $resources = [];
+
+
+
+
+
+    /**
      * Route patterns
      *
      * @var array
@@ -238,6 +247,17 @@ class Router implements RouterInterface
 
 
     /**
+     * @return Resource[]
+    */
+    public function getResources(): array
+    {
+        return $this->resources;
+    }
+
+
+
+
+    /**
      * @return RouteGroup
     */
     public function getGroup(): RouteGroup
@@ -348,7 +368,10 @@ class Router implements RouterInterface
     {
          $resource->map($this);
 
-         $this->collection->addResource($resource);
+         $resourceType = $resource->getType();
+         $resourceName = $resource->getName();
+
+         $this->resources[$resourceType][$resourceName] = $resource;
 
          return $this;
     }

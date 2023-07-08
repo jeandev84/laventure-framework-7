@@ -474,10 +474,7 @@ class Route implements RouteInterface,\ArrayAccess
     */
     public function where(string $name, string $pattern): static
     {
-        $pattern  = str_replace('(', '(?:', $pattern);
-        $patterns = ["#{{$name}}#" => "(?P<$name>$pattern)", "#{{$name}.?}#" => "?(?P<$name>$pattern)?"];
-        $searched = array_keys($patterns);
-        $replaces = array_values($patterns);
+        [$patterns, $searched, $replaces] = $this->makePatterns($name, $pattern);
 
         $this->pattern(preg_replace($searched, $replaces, $this->pattern));
 
@@ -1081,6 +1078,32 @@ class Route implements RouteInterface,\ArrayAccess
             return $named ? $middlewareStack[$middleware] : $middleware;
         }, $middlewares);
     }
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param string $pattern
+     *
+     * @return array
+    */
+    private function makePatterns(string $name, string $pattern): array
+    {
+        $pattern  = str_replace('(', '(?:', $pattern);
+
+        $patterns = [
+            "#{{$name}}#"   => "(?P<$name>$pattern)",
+            "#{{$name}.?}#" => "?(?P<$name>$pattern)?"
+        ];
+
+        $searched = array_keys($patterns);
+        $replaces = array_values($patterns);
+
+        return [$patterns, $searched, $replaces];
+    }
+
 
 
 

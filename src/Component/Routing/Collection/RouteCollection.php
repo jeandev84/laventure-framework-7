@@ -1,7 +1,6 @@
 <?php
 namespace Laventure\Component\Routing\Collection;
 
-use Laventure\Component\Routing\Resource\Contract\Resource;
 use Laventure\Component\Routing\Route\Route;
 
 
@@ -45,15 +44,6 @@ class RouteCollection implements RouteCollectionInterface
         * @var Route[]
        */
        protected array $namedRoutes = [];
-
-
-
-
-
-       /**
-        * @var Resource[]
-       */
-       public array $resources = [];
 
 
 
@@ -112,31 +102,6 @@ class RouteCollection implements RouteCollectionInterface
        }
 
 
-
-
-
-       /**
-        * @param Resource $resource
-        *
-        * @return $this
-       */
-       public function addResource(Resource $resource): static
-       {
-           $this->resources[$resource->getType()][$resource->getName()] = $resource;
-
-           return $this;
-       }
-
-
-
-
-       /**
-       * @return array
-       */
-       public function getResources(): array
-       {
-           return $this->resources;
-       }
 
 
 
