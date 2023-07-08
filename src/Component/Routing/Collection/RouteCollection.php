@@ -44,7 +44,7 @@ class RouteCollection implements RouteCollectionInterface
        /**
         * @var Route[]
        */
-       protected array $names = [];
+       protected array $namedRoutes = [];
 
 
 
@@ -86,7 +86,7 @@ class RouteCollection implements RouteCollectionInterface
            }
 
            if ($name = $route->getName()) {
-               $this->names[$name] = $route;
+               $this->namedRoutes[$name] = $route;
            }
 
            $this->routes[] = $route;
@@ -129,6 +129,14 @@ class RouteCollection implements RouteCollectionInterface
 
 
 
+
+       /**
+       * @return array
+       */
+       public function getResources(): array
+       {
+           return $this->resources;
+       }
 
 
 
@@ -173,7 +181,7 @@ class RouteCollection implements RouteCollectionInterface
        */
        public function getRoutesByName(): array
        {
-            return $this->names;
+            return $this->namedRoutes;
        }
 
 
@@ -188,7 +196,7 @@ class RouteCollection implements RouteCollectionInterface
       */
       public function getRouteByName(string $name): ?Route
       {
-          return $this->names[$name] ?? null;
+          return $this->namedRoutes[$name] ?? null;
       }
 
 }

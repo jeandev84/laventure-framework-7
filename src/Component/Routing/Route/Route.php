@@ -147,9 +147,7 @@ class Route implements RouteInterface, \ArrayAccess
      *
      * @var array
     */
-    protected $options = [
-        'middlewareStack' => []
-    ];
+    protected $options = [];
 
 
 
@@ -164,7 +162,7 @@ class Route implements RouteInterface, \ArrayAccess
     {
          $this->domain($domain);
          $this->prefixes($prefixes);
-         $this->middlewares($middlewares);
+         $this->middlewareStack($middlewares);
     }
 
 
@@ -193,7 +191,7 @@ class Route implements RouteInterface, \ArrayAccess
      *
      * @return $this
     */
-    public function middlewares(array $middlewareStack): static
+    public function middlewareStack(array $middlewareStack): static
     {
         return $this->options(compact('middlewareStack'));
     }
@@ -208,7 +206,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @param $default
      *
      * @return mixed|null
-     */
+    */
     public function prefix(string $name, $default = null): mixed
     {
         return $this->prefixes[$name] ?? $default;
@@ -380,7 +378,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function middleware(string|array $middlewares): static
     {
-         $middlewareStack = $this->option('middlewareStack', []);
+         $middlewareStack = $this->getMiddlewareStack();
 
          foreach ((array)$middlewares as $name => $middleware) {
               if (array_key_exists($name, $middlewareStack)) {
@@ -393,6 +391,15 @@ class Route implements RouteInterface, \ArrayAccess
          return $this;
     }
 
+
+
+
+    public function only(string $name)
+    {
+         $this->middlewares = [];
+
+         return $this->middleware();
+    }
 
 
 
@@ -548,13 +555,19 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
-     * @param string $method
+     * @param string $requestMethod
      *
      * @return bool
     */
-    public function matchMethods(string $method): bool
+    public function matchMethods(string $requestMethod): bool
     {
-        return in_array($method, $this->methods);
+        if(! in_array($requestMethod, $this->methods)) {
+             return false;
+        }
+
+        $this->options(compact('requestMethod'));
+
+        return true;
     }
 
 
@@ -568,7 +581,7 @@ class Route implements RouteInterface, \ArrayAccess
      * @return bool
      *
     */
-    public function matchUri(string $uri): bool
+    public function matchPath(string $uri): bool
     {
          $path    = parse_url($uri, PHP_URL_PATH);
          $pattern = $this->getPattern();
@@ -581,7 +594,10 @@ class Route implements RouteInterface, \ArrayAccess
 
          $this->params  = $this->resolveParams($matches);
          $this->matches = $matches;
-         $this->url     = sprintf('%s%s', $this->domain, $uri);
+         $this->options([
+             'requestPath' => $uri,
+             'requestUrl' => sprintf('%s%s', $this->domain, $uri)
+         ]);
 
          return true;
     }
@@ -594,7 +610,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function match(string $method, string $path): bool
     {
-         return $this->matchMethods($method) && $this->matchUri($path);
+         return $this->matchMethods($method) && $this->matchPath($path);
     }
 
 
@@ -790,7 +806,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function getPrefixes(): array
     {
-        return $this->option('prefixes');
+        return $this->prefixes;
     }
 
 
@@ -807,12 +823,18 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     
-    
+
+
+
     /**
      * @return string
     */
     public function getActionName(): string
     {
+        if ($this->action instanceof Closure) {
+             return 'Closure';
+        }
+
         return $this->option('action', '');
     }
     
@@ -825,7 +847,7 @@ class Route implements RouteInterface, \ArrayAccess
     */
     public function getNamespace(): string
     {
-        if(! $namespace = $this->prefix('namespace', '')) {
+        if(! $namespace = $this->prefix('namespace')) {
             throw new \InvalidArgumentException("Unavailable controller namespace.");
         }
 
@@ -869,6 +891,16 @@ class Route implements RouteInterface, \ArrayAccess
         return $this->url;
     }
 
+
+
+
+    /**
+     * @return array
+    */
+    public function getMiddlewareStack(): array
+    {
+        return $this->option('middlewareStack', []);
+    }
 
 
 
