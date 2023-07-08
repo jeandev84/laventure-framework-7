@@ -59,7 +59,7 @@ class Route implements RouteInterface,\ArrayAccess
 
 
     /**
-     * Route handler.
+     * Route action.
      *
      * @var mixed
     */
@@ -156,13 +156,13 @@ class Route implements RouteInterface,\ArrayAccess
      *
      * @param array $prefixes
      *
-     * @param array $middlewares
+     * @param array $middlewareStack
     */
-    public function __construct(string $domain, array $prefixes = [], array $middlewares = [])
+    public function __construct(string $domain, array $prefixes = [], array $middlewareStack = [])
     {
          $this->domain($domain);
          $this->prefixes($prefixes);
-         $this->middlewareStack($middlewares);
+         $this->middlewareStack($middlewareStack);
     }
 
 
@@ -313,6 +313,8 @@ class Route implements RouteInterface,\ArrayAccess
 
 
 
+
+
     /**
      * @param callable $action
      *
@@ -328,6 +330,15 @@ class Route implements RouteInterface,\ArrayAccess
 
 
 
+    /**
+     * @param string|array $action
+     *
+     * @return $this
+    */
+    public function controller(string|array $action): static
+    {
+         return $this->action($action);
+    }
 
 
     /**
@@ -378,19 +389,12 @@ class Route implements RouteInterface,\ArrayAccess
     */
     public function middleware(string|array $middlewares): static
     {
-         $middlewareStack = $this->getMiddlewareStack();
+         $middlewares = $this->resolveMiddlewares((array)$middlewares);
 
-         foreach ((array)$middlewares as $name => $middleware) {
-              if (array_key_exists($name, $middlewareStack)) {
-                  $middleware = $middlewareStack[$name];
-              }
-              $this->middlewares[] = $middleware;
-         }
-
+         $this->middlewares = array_merge($this->middlewares, $middlewares);
 
          return $this;
     }
-
 
 
 
@@ -683,7 +687,7 @@ class Route implements RouteInterface,\ArrayAccess
 
 
     /**
-     * @return false|mixed
+     * @return mixed
     */
     public function callAction(): mixed
     {
@@ -868,7 +872,7 @@ class Route implements RouteInterface,\ArrayAccess
     public function getNamespace(): string
     {
         if(! $namespace = $this->prefix('namespace')) {
-            throw new \InvalidArgumentException("Unavailable controller namespace.");
+            throw new RouteParameterException("Unavailable controller namespace.", 409);
         }
 
         return trim($namespace, '\\');
@@ -922,6 +926,34 @@ class Route implements RouteInterface,\ArrayAccess
         return $this->option('middlewareStack', []);
     }
 
+
+
+
+    /**
+     * Determine if the given name exist in options
+     *
+     * @param string $name
+     *
+     * @return bool
+    */
+    public function hasOption(string $name): bool
+    {
+        return isset($this->options[$name]);
+    }
+
+
+
+
+
+    /**
+     * Determine if controller defined.
+     *
+     * @return bool
+    */
+    public function hasController(): bool
+    {
+         return $this->hasOption('controller');
+    }
 
 
 
@@ -1020,6 +1052,22 @@ class Route implements RouteInterface,\ArrayAccess
         return array_filter($matches, function ($key) {
             return ! is_numeric($key);
         }, ARRAY_FILTER_USE_KEY);
+    }
+
+
+
+    /**
+     * @param array $middlewares
+     *
+     * @return array
+    */
+    private function resolveMiddlewares(array $middlewares): array
+    {
+        return array_map(function ($middleware) {
+            $middlewareStack = $this->getMiddlewareStack();
+            $named = array_key_exists($middleware, $middlewareStack);
+            return $named ? $middlewareStack[$middleware] : $middleware;
+        }, $middlewares);
     }
 
 

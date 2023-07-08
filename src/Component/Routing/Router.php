@@ -73,22 +73,19 @@ class Router implements RouterInterface
      *
      * @var array
     */
-    protected array $middlewares = [];
+    protected array $middlewareStack = [];
 
 
 
 
     /**
      * @param string $domain
-     *
-     * @param array $middlewares
     */
-    public function __construct(string $domain, array $middlewares = [])
+    public function __construct(string $domain)
     {
          $this->collection = new RouteCollection();
          $this->group      = new RouteGroup();
          $this->domain     = $domain;
-         $this->middlewares($middlewares);
     }
 
 
@@ -168,9 +165,9 @@ class Router implements RouterInterface
      *
      * @return $this
     */
-    public function middlewares(array $middlewares): static
+    public function middlewareStack(array $middlewares): static
     {
-         $this->middlewares = array_merge($this->middlewares, $middlewares);
+         $this->middlewareStack = array_merge($this->middlewareStack, $middlewares);
 
          return $this;
     }
@@ -281,9 +278,9 @@ class Router implements RouterInterface
     /**
      * @return array
     */
-    public function getMiddlewares(): array
+    public function getMiddlewareStack(): array
     {
-        return $this->middlewares;
+        return $this->middlewareStack;
     }
 
 
@@ -600,7 +597,7 @@ class Router implements RouterInterface
     */
     public function makeRoute(string|array $methods, string $path, mixed $action, string $name = null): Route
     {
-        $route = new Route($this->domain, $this->group->getPrefixes(), $this->middlewares);
+        $route = new Route($this->domain, $this->group->getPrefixes(), $this->middlewareStack);
         $route->methods($methods);
         $route->path($path);
         $route->action($action);
