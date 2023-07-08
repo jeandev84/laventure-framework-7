@@ -35,36 +35,11 @@ class ApiResource extends Resource
     protected function getRouteParams(): array
     {
         return [
-            [
-                'methods'  => 'GET',
-                'path'     => '',
-                'action'   => 'index',
-                'patterns' => []
-            ],
-            [
-                'methods'  => 'GET',
-                'path'     => '/{id}',
-                'action'   => 'show',
-                'patterns' => ['id' => '\d+']
-            ],
-            [
-                'methods'  => 'POST',
-                'path'     => '',
-                'action'   => 'store',
-                'patterns' => []
-            ],
-            [
-                'methods'  => 'PUT|PATCH',
-                'path'     => '/{id}',
-                'action'   => 'update',
-                'patterns' => ['id' => '\d+']
-            ],
-            [
-                'methods'  => 'DELETE',
-                'path'     => '/{id}',
-                'action'   => 'destroy',
-                'patterns' => ['id' => '\d+']
-            ]
+            ['GET', '', 'index', []],
+            ['GET', '/{id}', 'show', ['id' => '\d+']],
+            ['POST', '', 'store', []],
+            ['PUT|PATCH', '/{id}', 'update', ['id' => '\d+']],
+            ['DELETE', '/{id}', 'destroy', ['id' => '\d+']]
         ];
     }
 }

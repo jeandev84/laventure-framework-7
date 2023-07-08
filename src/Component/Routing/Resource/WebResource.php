@@ -34,48 +34,13 @@ class WebResource extends Resource
     protected function getRouteParams(): array
     {
          return [
-            [
-                'methods'  => 'GET',
-                'path'     => '',
-                'action'   => 'index',
-                'patterns' => []
-            ],
-            [
-                'methods'  => 'GET',
-                'path'     => '/{id}',
-                'action'   => 'show',
-                'patterns' => ['id' => '\d+']
-            ],
-            [
-                'methods'  => 'GET',
-                'path'     => '',
-                'action'   => 'create',
-                'patterns' => []
-            ],
-            [
-                 'methods'  => 'POST',
-                 'path'     => '',
-                 'action'   => 'store',
-                 'patterns' => []
-            ],
-            [
-                 'methods'  => 'GET',
-                 'path'     => '/{id}/edit',
-                 'action'   => 'edit',
-                 'patterns' => ['id' => '\d+']
-            ],
-            [
-                 'methods'  => 'PUT|PATCH',
-                 'path'     => '/{id}',
-                 'action'   => 'update',
-                 'patterns' => ['id' => '\d+']
-            ],
-            [
-                 'methods'  => 'DELETE',
-                 'path'     => '/{id}',
-                 'action'   => 'destroy',
-                 'patterns' => ['id' => '\d+']
-            ]
+            ['GET', '', 'index', []],
+            ['GET', '/{id}', 'show', ['id' => '\d+']],
+            ['GET', '', 'create', []],
+            ['POST', '', 'store', []],
+            ['GET', '/{id}/edit', 'edit', ['id' => '\d+']],
+            ['PUT|PATCH', '/{id}', 'update', ['id' => '\d+']],
+            ['DELETE', '/{id}', 'destroy', ['id' => '\d+']]
          ];
     }
 }

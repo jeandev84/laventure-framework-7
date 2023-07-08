@@ -71,12 +71,11 @@ abstract class Resource
     public function map(Router $router): static
     {
         foreach ($this->getRouteParams() as $route) {
-            $this->routes[] = $router->map(
-                $route['methods'],
-                $this->path($route['path']),
-                $this->action($route['action']),
-                $this->name($route['action'])
-            )->wheres($route['patterns']);
+
+            [$methods, $path, $action, $patterns] = $route;
+            $this->routes[] = $router->map($methods, $this->path($path), $this->action($action), $this->name($action))
+                                     ->wheres($patterns);
+
         }
 
         return $this;
