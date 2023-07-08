@@ -394,12 +394,20 @@ class Route implements RouteInterface,\ArrayAccess
 
 
 
-    public function only(string $name)
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+    */
+    public function only(string $name): static
     {
          $this->middlewares = [];
 
-         return $this->middleware();
+         return $this->middleware($name);
     }
+
+
 
 
 
@@ -917,17 +925,6 @@ class Route implements RouteInterface,\ArrayAccess
 
 
 
-    /**
-     * @return bool
-    */
-    public function hasController(): bool
-    {
-        return ! empty($this->options['controller']);
-    }
-
-
-
-
 
 
     /**
@@ -943,6 +940,7 @@ class Route implements RouteInterface,\ArrayAccess
 
         return sprintf('/%s', trim($path, '/'));
     }
+
 
 
 
@@ -978,7 +976,7 @@ class Route implements RouteInterface,\ArrayAccess
         }
 
         $controller = $action[0];
-        $action     = $action[1] ?? '__invoke';
+        $action     = (string)($action[1] ?? '__invoke');
 
         $this->options(compact('controller', 'action'));
 
@@ -997,12 +995,16 @@ class Route implements RouteInterface,\ArrayAccess
     private function resolveActionFromString(string $action): string|array
     {
         if (stripos($action, '@') !== false) {
-            [$controller, $method] = explode('@', $action, 2);
-            $controller = sprintf('%s\\%s', $this->getNamespace(), $controller);
-            return [$controller, $method];
+            $action     = explode('@', $action, 2);
+            $controller = sprintf('%s\\%s', $this->getNamespace(), $action[0]);
+            return [$controller, $action[1]];
         }
 
-        return [$action];
+        if (class_exists($action)) {
+            return [$action];
+        }
+
+        return $action;
     }
 
 
