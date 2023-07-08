@@ -88,7 +88,7 @@ class Dotenv
     */
     private function getParams(string $filename): array
     {
-        if(! $path = realpath($this->locateEnvironments($filename))){
+        if(! $path = realpath($this->locateFile($filename))){
             return [];
         }
 
@@ -129,10 +129,11 @@ class Dotenv
      * @param string $filename
      * @return string
     */
-    private function locateEnvironments(string $filename): string
+    private function locateFile(string $filename): string
     {
         return $this->root . DIRECTORY_SEPARATOR . trim($filename, DIRECTORY_SEPARATOR);
     }
+
 
 
 
