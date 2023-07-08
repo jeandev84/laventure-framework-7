@@ -171,7 +171,10 @@ abstract class Resource
     /**
      * @return array
     */
-    abstract protected function getRouteParams(): array;
+    protected function getRouteParams(): array
+    {
+         return [];
+    }
 
 
 
