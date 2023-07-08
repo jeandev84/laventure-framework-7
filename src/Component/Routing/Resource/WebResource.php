@@ -3,6 +3,7 @@ namespace Laventure\Component\Routing\Resource;
 
 
 use Laventure\Component\Routing\Resource\Contract\Resource;
+use Laventure\Component\Routing\Resource\Types\ResourceType;
 use Laventure\Component\Routing\Router;
 
 
@@ -23,7 +24,7 @@ class WebResource extends Resource
     */
     public function getType(): string
     {
-        return 'web';
+        return ResourceType::WEB;
     }
 
 

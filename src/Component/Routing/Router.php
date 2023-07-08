@@ -6,6 +6,7 @@ use Closure;
 use Laventure\Component\Routing\Collection\RouteCollection;
 use Laventure\Component\Routing\Resource\ApiResource;
 use Laventure\Component\Routing\Resource\Contract\Resource;
+use Laventure\Component\Routing\Resource\Types\ResourceType;
 use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Routing\Route\Route;
 use Laventure\Component\Routing\Group\RouteGroup;
@@ -58,7 +59,7 @@ class Router implements RouterInterface
     /**
      * @var Resource[]
     */
-    public array $resources = [];
+    public $resources = [];
 
 
 
@@ -554,7 +555,7 @@ class Router implements RouterInterface
      * @param array $resources
      *
      * @return $this
-     */
+    */
     public function resources(array $resources): static
     {
         foreach ($resources as $name => $controller) {
@@ -571,13 +572,44 @@ class Router implements RouterInterface
     /**
      * @param string $name
      *
+     * @return bool
+    */
+    public function hasResource(string $name): bool
+    {
+        return isset($this->resources[ResourceType::WEB][$name]);
+    }
+
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @return WebResource|null
+    */
+    public function getResource(string $name): ?WebResource
+    {
+        return $this->resources[ResourceType::WEB][$name] ?? null;
+    }
+
+
+
+
+
+
+
+    /**
+     * @param string $name
+     *
      * @param string $controller
      *
      * @return $this
      */
     public function apiResource(string $name, string $controller): static
     {
-        return $this->addResource(new ApiResource($name, $controller));
+         return $this->addResource(new ApiResource($name, $controller));
     }
 
 
@@ -597,6 +629,35 @@ class Router implements RouterInterface
         }
 
         return $this;
+    }
+
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+    */
+    public function hasApiResource(string $name): bool
+    {
+        return isset($this->resources[ResourceType::API][$name]);
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @return ApiResource|null
+    */
+    public function getApiResource(string $name): ?ApiResource
+    {
+         return $this->resources[ResourceType::API][$name] ?? null;
     }
 
 

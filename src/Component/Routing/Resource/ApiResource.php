@@ -3,7 +3,8 @@ namespace Laventure\Component\Routing\Resource;
 
 
 use Laventure\Component\Routing\Resource\Contract\Resource;
-use Laventure\Component\Routing\Router;
+use Laventure\Component\Routing\Resource\Types\ResourceType;
+
 
 /**
  * @ApiResource
@@ -23,7 +24,7 @@ class ApiResource extends Resource
     */
     public function getType(): string
     {
-        return 'api';
+        return ResourceType::API;
     }
 
 
