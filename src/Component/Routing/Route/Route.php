@@ -13,7 +13,7 @@ use Closure;
  *
  * @package Laventure\Component\Routing\Route
 */
-class Route implements RouteInterface, \ArrayAccess
+class Route implements RouteInterface,\ArrayAccess
 {
 
     /**
@@ -223,7 +223,7 @@ class Route implements RouteInterface, \ArrayAccess
      */
     public function domain(string $domain): static
     {
-        $this->domain = rtrim($domain, '\\/');
+        $this->domain = rtrim($domain, '/');
 
         return $this;
     }
@@ -490,12 +490,11 @@ class Route implements RouteInterface, \ArrayAccess
     /**
      * @param string $name
      * @return $this
-     */
+    */
     public function number(string $name): self
     {
         return $this->where($name, '\d+');
     }
-
 
 
 
@@ -540,6 +539,7 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
      * @param string $name
      * @return $this
@@ -555,19 +555,17 @@ class Route implements RouteInterface, \ArrayAccess
 
 
     /**
-     * @param string $requestMethod
-     *
-     * @return bool
+     * @inheritdoc
     */
-    public function matchMethods(string $requestMethod): bool
+    public function matchMethod(string $requestMethod): bool
     {
-        if(! in_array($requestMethod, $this->methods)) {
-             return false;
-        }
+       if(! in_array($requestMethod, $this->methods)) {
+           return (function() {
+               throw new RouteException("Route allowed methods : {$this->getMethod(',')}");
+           })();
+       }
 
-        $this->options(compact('requestMethod'));
-
-        return true;
+       return true;
     }
 
 
@@ -575,16 +573,15 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
-     * @param string $uri
-     *
-     * @return bool
-     *
+     * @inheritdoc
     */
-    public function matchPath(string $uri): bool
+    public function matchPath(string $requestPath): bool
     {
-         $path    = parse_url($uri, PHP_URL_PATH);
-         $pattern = $this->getPattern();
+         $requestUrl = $this->url($requestPath);
+         $path       = $this->url(parse_url($requestPath, PHP_URL_PATH));
+         $pattern    = $this->url($this->getPattern());
 
          preg_match("#^$pattern$#i", $path, $matches);
 
@@ -594,10 +591,7 @@ class Route implements RouteInterface, \ArrayAccess
 
          $this->params  = $this->resolveParams($matches);
          $this->matches = $matches;
-         $this->options([
-             'requestPath' => $uri,
-             'requestUrl' => sprintf('%s%s', $this->domain, $uri)
-         ]);
+         $this->options(compact('requestPath', 'requestUrl'));
 
          return true;
     }
@@ -605,13 +599,15 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
+
     /**
-     * @inheritDoc
+     * Determine if route match current request
     */
     public function match(string $method, string $path): bool
     {
-         return $this->matchMethods($method) && $this->matchPath($path);
+        return $this->matchPath($path) && $this->matchMethod($method);
     }
+
 
 
 
@@ -626,7 +622,7 @@ class Route implements RouteInterface, \ArrayAccess
 
          foreach ($parameters as $name => $value) {
               if (! empty($this->patterns[$name])) {
-                  $path = preg_replace(array_keys($this->patterns[$name]), [$value], $path);
+                  $path = preg_replace(array_keys($this->patterns[$name]), [$value, $value], $path);
               }
          }
 
@@ -642,11 +638,25 @@ class Route implements RouteInterface, \ArrayAccess
      *
      * @return string
     */
-    public function url(array $parameters = []): string
+    public function generateUrl(array $parameters = []): string
     {
-        return sprintf('%s%s', $this->domain, $this->generateUri($parameters));
+        return $this->url($this->generateUri($parameters));
     }
 
+
+
+
+
+
+    /**
+     * @param string $path
+     *
+     * @return string
+    */
+    public function url(string $path): string
+    {
+        return sprintf('%s%s', $this->domain, $path);
+    }
 
 
 
@@ -703,13 +713,14 @@ class Route implements RouteInterface, \ArrayAccess
 
 
 
-
     /**
+     * @param string $separator
+     *
      * @return string
     */
-    public function getMethod(): string
+    public function getMethod(string $separator = '|'): string
     {
-        return join('|', $this->methods);
+        return join($separator, $this->methods);
     }
 
 
@@ -774,6 +785,7 @@ class Route implements RouteInterface, \ArrayAccess
     {
         return $this->params;
     }
+
 
 
 

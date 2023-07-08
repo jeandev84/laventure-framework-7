@@ -111,18 +111,30 @@ interface RouteInterface
 
 
 
+    /**
+     * Determine if route match method
+     *
+     * @param string $requestMethod
+     *
+     * @return bool
+     */
+    public function matchMethod(string $requestMethod): bool;
+
+
+
+
+
+
+
 
     /**
-     * Determine if the current request matches route
+     * Determine if route match path
      *
-     *
-     * @param string $method (cUrlRequest method)
-     *
-     * @param string $path (cUrlRequest path)
+     * @param string $requestPath
      *
      * @return bool
     */
-    public function match(string $method, string $path): bool;
+    public function matchPath(string $requestPath): bool;
 
 
 

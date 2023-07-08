@@ -9,6 +9,7 @@ use Laventure\Component\Routing\Resource\Contract\Resource;
 use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Routing\Route\Route;
 use Laventure\Component\Routing\Group\RouteGroup;
+use Laventure\Component\Routing\Route\RouteException;
 
 
 /**
@@ -59,7 +60,9 @@ class Router implements RouterInterface
      *
      * @var array
     */
-    protected array $patterns = [];
+    protected array $patterns = [
+        'id' => '\d+'
+    ];
 
 
 
@@ -282,7 +285,6 @@ class Router implements RouterInterface
     {
         return $this->middlewares;
     }
-
 
 
 
