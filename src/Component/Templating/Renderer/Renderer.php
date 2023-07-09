@@ -92,7 +92,7 @@ class Renderer implements RendererInterface
      */
      public function setTags(array $tags): static
      {
-         $this->tags = $tags;
+         $this->tags = array_merge($this->tags, $tags);
 
          return $this;
      }
@@ -157,7 +157,7 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-          $template = $this->createLayout($this->createTemplate($path, $data));
+          $template = $this->createLayoutFromTemplate($this->createTemplate($path, $data));
 
           return $this->cacheTemplate($path, $template);
       }
@@ -193,7 +193,7 @@ class Renderer implements RendererInterface
        *
        * @return Template
      */
-      public function createLayout(Template $template): Template
+      public function createLayoutFromTemplate(Template $template): Template
       {
            if (! $this->layoutPath) {
               return $template;
@@ -220,7 +220,7 @@ class Renderer implements RendererInterface
       */
       public function cacheTemplate(string $key, Template $template): string
       {
-          if (! $this->useCache()) {
+          if (! $this->cacheable()) {
                return $template;
           }
 
@@ -252,7 +252,7 @@ class Renderer implements RendererInterface
       /**
        * @return bool
       */
-      public function useCache(): bool
+      public function cacheable(): bool
       {
           return $this->cache instanceof TemplateCacheInterface;
       }

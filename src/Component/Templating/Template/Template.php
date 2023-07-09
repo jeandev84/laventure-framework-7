@@ -90,13 +90,16 @@ class Template implements TemplateInterface
     }
 
 
-
     /**
      * @param array $tags
+     *
+     * @return Template
     */
-    public function setTags(array $tags): void
+    public function setTags(array $tags): static
     {
-         $this->tags = $tags;
+         $this->tags = array_merge($this->tags, $tags);
+
+         return $this;
     }
 
 
