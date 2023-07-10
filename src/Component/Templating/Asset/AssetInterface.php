@@ -30,9 +30,9 @@ interface AssetInterface
       /**
        * Returns styles
        *
-       * @return mixed
+       * @return array
       */
-      public function getStyles();
+      public function getStyles(): array;
 
 
 
@@ -40,9 +40,9 @@ interface AssetInterface
 
 
       /**
-       * @return mixed
+       * @return string
       */
-      public function renderStyles();
+      public function renderStyles(): string;
 
 
 
@@ -50,9 +50,9 @@ interface AssetInterface
       /**
        * Return scripts
        *
-       * @return mixed
+       * @return array
       */
-      public function getScripts();
+      public function getScripts(): array;
 
 
 
@@ -60,7 +60,7 @@ interface AssetInterface
 
 
      /**
-      * @return mixed
+      * @return string
      */
-     public function renderScripts();
+     public function renderScripts(): string;
 }

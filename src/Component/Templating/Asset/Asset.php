@@ -99,7 +99,7 @@ class Asset implements AssetInterface
     /**
      * @inheritDoc
     */
-    public function getStyles()
+    public function getStyles(): array
     {
         return $this->styles;
     }
@@ -112,7 +112,7 @@ class Asset implements AssetInterface
     /**
      * @inheritDoc
     */
-    public function renderStyles()
+    public function renderStyles(): string
     {
          return join(PHP_EOL, $this->styles);
     }
@@ -124,7 +124,7 @@ class Asset implements AssetInterface
     /**
      * @inheritDoc
     */
-    public function getScripts()
+    public function getScripts(): array
     {
         return $this->scripts;
     }
@@ -136,7 +136,7 @@ class Asset implements AssetInterface
     /**
      * @inheritDoc
     */
-    public function renderScripts()
+    public function renderScripts(): string
     {
         return join(PHP_EOL, $this->scripts);
     }
