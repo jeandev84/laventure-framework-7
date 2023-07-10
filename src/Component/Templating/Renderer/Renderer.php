@@ -176,7 +176,7 @@ class Renderer implements RendererInterface
       */
       public function createTemplate(string $path, array $parameters = []): Template
       {
-          $parameters = array_merge($this->data, $parameters);
+          $parameters = array_merge($parameters, $this->data);
           $template   = new Template($this->locatePath($path), $parameters);
           $template->setTags($this->tags);
 
@@ -199,10 +199,7 @@ class Renderer implements RendererInterface
               return $template;
            }
 
-           $layout = $this->createTemplate($this->layoutPath, $template->getParameters());
-           $layout->setTags(['{{ content }}' => $template->__toString()]);
-
-           return $layout;
+           return $this->createTemplate($this->layoutPath, ['content' => $template->__toString()]);
       }
 
 

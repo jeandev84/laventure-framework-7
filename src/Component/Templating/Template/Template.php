@@ -31,7 +31,17 @@ class Template implements TemplateInterface
     /**
      * @var array
     */
-    protected array $tags = [];
+    protected array $tags = [
+        '{%'        =>  "<?php ",
+        '%}'        =>  ";?>",
+        '{{'        =>  "<?=",
+        '}}'        =>  "?>",
+        '@if'       =>  "<?php if",
+        '@endif'    =>  "<?php endif; ?>",
+        '@loop'     =>  "<?php foreach",
+        '):'        =>  "): ?>",
+        '@endloop'  =>  "<?php endforeach; ?>"
+    ];
 
 
 
@@ -84,10 +94,31 @@ class Template implements TemplateInterface
     */
     public function setParameters(array $parameters): static
     {
-        $this->parameters = $parameters;
+        $this->parameters = array_merge($this->parameters, $parameters);
 
         return $this;
     }
+
+
+
+
+
+    /**
+     * @param string $name
+     *
+     * @param $value
+     *
+     * @return $this
+    */
+    public function setParameter(string $name, $value): static
+    {
+         $this->parameters[$name] = $value;
+
+         return $this;
+    }
+
+
+
 
 
     /**
