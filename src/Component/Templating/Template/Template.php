@@ -155,7 +155,6 @@ class Template implements TemplateInterface
         $extends = $extends->__toString();
 
         foreach ($this->getBlocks() as $name => $content) {
-
             $extends = preg_replace("/{% ?block ?($name) ?%}{% ?endblock ?%}/is", $content, $extends);
         }
 
