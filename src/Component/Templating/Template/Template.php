@@ -45,13 +45,6 @@ class Template implements TemplateInterface
 
 
 
-    /**
-     * @var array
-    */
-    protected array $blocks = [];
-
-
-
 
     /**
      * @param string $path
@@ -148,15 +141,24 @@ class Template implements TemplateInterface
     }
 
 
-
-
     /**
-     * @param Template $extends
+     * @param string $path
+     *
+     * @param array $parameters
      *
      * @return $this
     */
-    public function extends(Template $extends): static
+    public function extends(string $path, array $parameters = []): static
     {
+        $extends = new static($path, $parameters);
+
+        $extends = $extends->__toString();
+
+        foreach ($this->getBlocks() as $name => $content) {
+
+            $extends = preg_replace("/{% ?block ?($name) ?%}{% ?endblock ?%}/is", $content, $extends);
+        }
+
         $this->extends = $extends;
 
         return $this;
@@ -171,7 +173,7 @@ class Template implements TemplateInterface
     */
     public function getBlocks(): array
     {
-        $content = $this->getContent();
+        $content = $this->__toString();
 
         $pattern = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
 
@@ -181,39 +183,15 @@ class Template implements TemplateInterface
             return [];
         }
 
+        $blocks = [];
+
         foreach ($matches as $params) {
-            $this->blocks[$params[1]] = $params[2];
+            $blocks[$params[1]] = $params[2];
         }
 
-        return $this->blocks;
+        return $blocks;
     }
 
-
-
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-    */
-    public function hasBlock(string $name): bool
-    {
-        return isset($this->blocks[$name]);
-    }
-
-
-
-
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-    */
-    public function emptyBlock(string $name): bool
-    {
-        return empty($this->blocks[$name]);
-    }
 
 
 
@@ -224,14 +202,11 @@ class Template implements TemplateInterface
     */
     public function __toString(): string
     {
-        if (! $this->exists()) {
-            $this->abortIf("template path: $this->path does not exist.");
+        if ($this->extends) {
+            return $this->extends;
         }
 
-        extract($this->parameters, EXTR_SKIP);
-        ob_start();
-        require_once realpath($this->path);
-        return ob_get_clean();
+        return $this->getContent();
     }
 
 
