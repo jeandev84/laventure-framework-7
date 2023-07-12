@@ -35,9 +35,17 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @var TemplateCacheInterface
+       * @var TemplateCacheInterface|null
       */
-      protected TemplateCacheInterface $cache;
+      protected ?TemplateCacheInterface $cache = null;
+
+
+
+      /**
+       * @var array
+      */
+      protected array $tags = [];
+
 
 
 
@@ -51,39 +59,20 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @var array
+       * @param string $resourcePath
       */
-      protected array $blocks = [];
-
-
-
-      /**
-       * @var array
-      */
-      protected array $includePaths = [];
-
-
-
-
-      /**
-        * @param string $resourcePath
-        *
-        * @param TemplateCacheInterface $cache
-      */
-      public function __construct(string $resourcePath, TemplateCacheInterface $cache)
+      public function __construct(string $resourcePath)
       {
             $this->resourcePath($resourcePath);
-            $this->cache($cache);
       }
 
 
 
 
-
       /**
-        * @param TemplateCacheInterface $cache
-        *
-        * @return $this
+       * @param TemplateCacheInterface $cache
+       *
+       * @return $this
       */
       public function cache(TemplateCacheInterface $cache): static
       {
@@ -96,6 +85,22 @@ class Renderer implements RendererInterface
 
 
 
+     /**
+      * @param array $tags
+      *
+      * @return $this
+     */
+     public function setTags(array $tags): static
+     {
+         $this->tags = array_merge($this->tags, $tags);
+
+         return $this;
+     }
+
+
+
+
+
       /**
        * @param array $data
        *
@@ -103,7 +108,7 @@ class Renderer implements RendererInterface
       */
       public function setGlobals(array $data): static
       {
-          $this->data = array_merge($this->data, $data);
+          $this->data = $data;
 
           return $this;
       }
@@ -138,7 +143,7 @@ class Renderer implements RendererInterface
       */
       public function layoutPath(string $layoutPath): static
       {
-           $this->layoutPath = $this->locatePath($layoutPath);
+           $this->layoutPath = $layoutPath;
 
            return $this;
       }
@@ -152,8 +157,12 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-           return '';
+          $template = $this->createLayoutFromTemplate($this->createTemplate($path, $data));
+
+          return $this->cacheTemplate($path, $template);
       }
+
+
 
 
 
@@ -167,25 +176,55 @@ class Renderer implements RendererInterface
       */
       public function createTemplate(string $path, array $parameters = []): Template
       {
-          return new Template($this->locatePath($path), array_merge($this->data, $parameters));
+          $parameters = array_merge($parameters, $this->data);
+          $template   = new Template($this->locatePath($path), $parameters);
+          $template->setTags($this->tags);
+
+          return $template;
       }
+
+
 
 
 
 
       /**
-       * @param string $path
+       * @param Template $template
        *
-       * @return $this
-      */
-      public function include(string $path): static
+       * @return Template
+     */
+      public function createLayoutFromTemplate(Template $template): Template
       {
-           $this->includePaths[] = $path;
+           if (! $this->layoutPath) {
+              return $template;
+           }
 
-           return $this;
+           return $this->createTemplate($this->layoutPath, ['content' => $template->__toString()]);
       }
 
 
+
+
+
+
+
+      /**
+       * @param string $key
+       *
+       * @param Template $template
+       *
+       * @return string
+      */
+      public function cacheTemplate(string $key, Template $template): string
+      {
+          if (! $this->useCache()) {
+               return $template;
+          }
+
+          $this->cache->cacheTemplate($key, $template);
+
+          return $this->cache->getTemplate($key);
+      }
 
 
 
@@ -202,6 +241,19 @@ class Renderer implements RendererInterface
       {
            return $this->resourcePath . DIRECTORY_SEPARATOR. rtrim($path, DIRECTORY_SEPARATOR);
       }
+
+
+
+
+
+      /**
+       * @return bool
+      */
+      public function useCache(): bool
+      {
+          return $this->cache instanceof TemplateCacheInterface;
+      }
+
 
 
 

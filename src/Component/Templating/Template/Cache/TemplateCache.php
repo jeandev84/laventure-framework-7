@@ -31,69 +31,23 @@ class TemplateCache implements TemplateCacheInterface
     */
     public function __construct(string $cacheDir)
     {
-        $this->cacheDir = rtrim($cacheDir, DIRECTORY_SEPARATOR);
+        $this->cacheDir($cacheDir);
     }
 
 
 
+
     /**
-     * @inheritDoc
+     * @param string $cacheDir
      *
-     * @throws TemplateException
+     * @return $this
     */
-    public function cacheTemplate(string $key, TemplateInterface $template): int|bool
+    public function cacheDir(string $cacheDir): static
     {
-        try {
+        $this->cacheDir = rtrim($cacheDir, DIRECTORY_SEPARATOR);
 
-            $path = $this->cachePath($key);
-
-            $dirname = dirname($path);
-
-            if (! is_dir($dirname)) {
-                mkdir($dirname, 0777, true);
-            }
-
-            if (! touch($path)) {
-                return false;
-            }
-
-            return file_put_contents($path, $template);
-
-        } catch (Exception $e) {
-
-             throw new TemplateException($e->getMessage(), 500);
-        }
+        return $this;
     }
-
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function exists(string $key): bool
-    {
-        return file_exists($this->cachePath($key));
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getTemplate(string $key): string
-    {
-         if (! $this->exists($key)) {
-              throw new TemplateException("Could not found template cache : $key");
-         }
-
-         return file_get_contents($this->cachePath($key));
-    }
-
 
 
 
@@ -107,5 +61,16 @@ class TemplateCache implements TemplateCacheInterface
     public function cachePath(string $key): string
     {
          return join(DIRECTORY_SEPARATOR, [$this->cacheDir, md5($key) .'.php']);
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function cacheTemplate(string $key, TemplateInterface $template): string
+    {
+         dd($key, $template->getPath());
     }
 }

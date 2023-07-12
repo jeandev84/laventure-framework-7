@@ -12,25 +12,11 @@ use Laventure\Component\Templating\Template\TemplateInterface;
  *
  * @package Laventure\Component\Templating\Template\Layout
 */
-interface LayoutInterface
+interface LayoutInterface extends TemplateInterface
 {
-
-    /**
-     * @return string
-    */
-    public function getPath(): string;
-
-
 
     /**
      * @return TemplateInterface
     */
     public function getTemplate(): TemplateInterface;
-
-
-
-    /**
-     * @return string
-    */
-    public function __toString(): string;
 }

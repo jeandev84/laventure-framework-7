@@ -1,0 +1,22 @@
+<?php
+namespace Laventure\Component\Templating\Compiler;
+
+use Laventure\Component\Templating\Template\Template;
+
+
+/**
+ * @TemplateCompilerInterface
+ *
+ * @author Jean-Claude <jeanyao@ymail.com>
+ *
+ * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
+ *
+ * @package Laventure\Component\Templating\Compiler
+*/
+class TemplateCompiler
+{
+     public function __construct(protected Template $template)
+     {
+     }
+     
+}

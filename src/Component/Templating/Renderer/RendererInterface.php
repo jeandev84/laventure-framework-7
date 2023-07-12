@@ -18,7 +18,7 @@ interface RendererInterface
      *
      * @param array $data
      *
-     * @return mixed
+     * @return string
     */
-    public function render(string $path, array $data = []): mixed;
+    public function render(string $path, array $data = []): string;
 }

@@ -152,8 +152,10 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-           return '';
+          return $this->cache->cacheTemplate($path, $this->createTemplate($path, $data));
       }
+
+
 
 
 
@@ -169,6 +171,45 @@ class Renderer implements RendererInterface
       {
           return new Template($this->locatePath($path), array_merge($this->data, $parameters));
       }
+
+
+
+
+      /**
+       * @param string $path
+       *
+       * @return $this
+      */
+      public function extends(string $path): static
+      {
+          if (! file_exists($path)) {
+
+          }
+
+          #$this->extendPath    = $path;
+          #$this->layout        = file_get_contents($path);
+
+          return $this;
+      }
+
+
+
+
+
+      /**
+       * @param string $name
+       *
+       * @param string $content
+       *
+       * @return $this
+      */
+      public function block(string $name, string $content): static
+      {
+           $this->blocks[$name] = $content;
+
+           return $this;
+      }
+
 
 
 

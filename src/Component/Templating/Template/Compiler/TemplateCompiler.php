@@ -1,41 +1,90 @@
 <?php
 namespace Laventure\Component\Templating\Compiler;
 
-use Laventure\Component\Templating\Template\Template;
+use Laventure\Component\Templating\Template\TemplateInterface;
 
-class TemplateCompiler
+/**
+ * @TemplateCompiler
+ *
+ * @author Jean-Claude <jeanyao@ymail.com>
+ *
+ * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
+ *
+ * @package Laventure\Component\Templating\Compiler
+*/
+class TemplateCompiler implements TemplateCompilerInterface
 {
-     public function __construct(protected Template $template)
-     {
-     }
+
+    /**
+     * @var string
+    */
+    protected string $extends = '';
 
 
-     public function compilePHP($code)
-     {
 
-     }
-
-
-     public function compileEcho($code)
-     {
-
-     }
+    /**
+     * @var array
+    */
+    protected array $blocks = [];
 
 
-     public function compileEscapedEcho($code)
-     {
-
-     }
 
 
-     public function compileBlock($code)
-     {
+    /**
+     * @inheritDoc
+    */
+    public function compileTemplate(TemplateInterface $template): TemplateInterface
+    {
 
-     }
+    }
 
 
-     public function compileYield($code)
-     {
 
-     }
+
+    /**
+     * @param $template
+     *
+     * @return array
+    */
+    private function compileBlocks($template): array
+    {
+        $pattern = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
+
+        preg_match_all($pattern, $template, $matches, PREG_SET_ORDER);
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        foreach ($matches as $params) {
+            $this->blocks[$params[1]] = $params[2];
+        }
+
+        return $this->blocks;
+    }
+
+
+
+
+    /**
+     * @param $template
+     *
+     * @return array
+    */
+    private function getBlocks($template): array
+    {
+        $pattern = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
+
+        preg_match_all($pattern, $template, $matches, PREG_SET_ORDER);
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        foreach ($matches as $params) {
+            $this->blocks[$params[1]] = $params[2];
+        }
+
+        return $this->blocks;
+    }
 }

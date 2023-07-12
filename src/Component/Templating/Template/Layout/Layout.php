@@ -1,9 +1,9 @@
 <?php
 namespace Laventure\Component\Templating\Template\Layout;
 
+
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
-
 
 /**
  * @Layout
@@ -14,24 +14,14 @@ use Laventure\Component\Templating\Template\TemplateInterface;
  *
  * @package Laventure\Component\Templating\Template\Layout
 */
-class Layout implements LayoutInterface
+class Layout extends Template implements LayoutInterface
 {
-
-
-    /**
-     * @var Template;
-    */
-    protected Template $layout;
-
 
 
     /**
      * @var Template
     */
     protected Template $template;
-
-
-
 
 
     /**
@@ -41,39 +31,9 @@ class Layout implements LayoutInterface
     */
     public function __construct(string $path, Template $template)
     {
-         $this->layout   = new Template($path);
-         $this->template = $template;
+        parent::__construct($path, $template->getParameters());
+        $this->template = $template;
     }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getPath(): string
-    {
-         return $this->layout->getPath();
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function __toString(): string
-    {
-        if (! $this->layout->exists()) {
-            return $this->template;
-        }
-
-        $this->layout->setTags(['{{ content }}' => $this->template]);
-
-        return $this->layout;
-    }
-
 
 
 
@@ -85,5 +45,23 @@ class Layout implements LayoutInterface
     public function getTemplate(): TemplateInterface
     {
         return $this->template;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function __toString(): string
+    {
+        if (! $this->exists()) {
+            return $this->template;
+        }
+
+        $content = parent::__toString();
+
+        return str_replace("{{ content }}", $this->template->__toString(), $content);
     }
 }
