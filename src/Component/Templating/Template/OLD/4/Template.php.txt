@@ -31,7 +31,6 @@ class Template implements TemplateInterface
 
 
 
-
     /**
      * @param string $path
      *
@@ -77,7 +76,6 @@ class Template implements TemplateInterface
 
 
 
-
     /**
      * @inheritDoc
     */
@@ -97,7 +95,6 @@ class Template implements TemplateInterface
     {
         return $this->path;
     }
-
 
 
 
@@ -132,8 +129,6 @@ class Template implements TemplateInterface
 
 
 
-
-
     /**
      * @param string $message
      *
@@ -146,5 +141,55 @@ class Template implements TemplateInterface
          return (function () use ($message, $code) {
                throw new TemplateException($message, $code);
          })();
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getBocks($content): array
+    {
+        $pattern = '/@block(.*?):(.*?)@endblock/is';
+
+        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        $blocks = [];
+
+        foreach ($matches as $params) {
+            $name = str_replace(['(', "'", ')'], '', $params[1]);
+            $blocks[$name] = $params[2];
+        }
+
+        return $blocks;
+    }
+
+
+    /**
+     * @return array
+    */
+    public function getYields($content): array
+    {
+        $pattern = '/@yield(.*?)/is';
+
+        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        $blocks = [];
+
+        foreach ($matches as $params) {
+            $name = str_replace(['(', "'", ')'], '', $params[1]);
+            $blocks[$name] = $params[2];
+        }
+
+        return $blocks;
     }
 }

@@ -54,6 +54,18 @@ class Layout extends Template implements LayoutInterface
 
 
     /**
+     * @inheritDoc
+    */
+    public function __toString(): string
+    {
+        return $this->compile(parent::__toString());
+    }
+
+
+
+
+
+    /**
      * @param string $template
      *
      * @return string

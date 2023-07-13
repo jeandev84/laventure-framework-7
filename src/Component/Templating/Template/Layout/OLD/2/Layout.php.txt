@@ -54,15 +54,25 @@ class Layout extends Template implements LayoutInterface
 
 
     /**
+     * @inheritDoc
+    */
+    public function __toString(): string
+    {
+        return $this->compileTemplate(parent::__toString());
+    }
+
+
+
+
+
+    /**
      * @param string $template
      *
      * @return string
     */
-    private function compile(string $template): string
+    private function compileTemplate(string $template): string
     {
-        $template = $this->compileYields($template);
-
-        return $this->compileEchos($template);
+        return $this->compileYields($template);
     }
 
 
@@ -87,42 +97,6 @@ class Layout extends Template implements LayoutInterface
 
 
 
-    /**
-     * @param string $template
-     *
-     * @return string
-    */
-    private function compileEchos(string $template): string
-    {
-        foreach ($this->parameters as $name => $value) {
-
-            if (preg_match("~\{{\s*($name)\s*}}~is", $template, $matches)) {
-                  if (isset($this->parameters[$matches[1]])) {
-                      $template = preg_replace("~\{{\s*($name)\s*}}~is", "<?= $value ?>", $template);
-                  }
-            }
-
-            if (is_array($value) && preg_match("/@loop\s*(.*?)\s*as\s*(.*?):(.*)@endloop/is", $template, $matches)) {
-
-                  $key  = $matches[1];
-                  $data = $matches[2];
-
-                  # dd($matches);
-                  if (isset($this->parameters[$key])) {
-                      /*
-                      $template = preg_replace("/@loop\s*(.*?)\s*as\s*(.*?):/is", "<?php foreach(${$key} as ${$data}): ?>", $template);
-                      dd($template);
-                      */
-                  }
-            }
-
-        }
-
-        return $template;
-    }
-
-
-
 
     /**
      * @return array
@@ -140,9 +114,17 @@ class Layout extends Template implements LayoutInterface
         $blocks = [];
 
         foreach ($matches as $item) {
-            $blocks[$item[1]] = $item[2];
+
+            if (! array_key_exists($item[1], $blocks)) { $blocks[$item[1]] = ''; }
+
+            if (! str_contains($item[2], '@parent')) {
+                $blocks[$item[1]] = $item[2];
+            } else {
+                $blocks[$item[1]] = str_replace('@parent', $blocks[$item[1]], $item[2]);
+            }
         }
 
+        dd($blocks);
         return $blocks;
     }
 
