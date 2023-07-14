@@ -36,7 +36,7 @@ interface TemplateEngineInterface
 
 
       /**
-       * Compile template
+       * Compile php code
        *
        * @return string
       */

@@ -69,8 +69,27 @@ class TemplateCache implements TemplateCacheInterface
     /**
      * @inheritDoc
     */
-    public function cacheTemplate(string $key, TemplateInterface $template): string
+    public function cache(string $key, TemplateInterface|string $template): string
     {
-         dd($key, $template->getPath());
+        $path = $this->cachePath($key);
+
+        try {
+
+            $dirname = dirname($path);
+
+            if (! is_dir($dirname)) {
+                mkdir($dirname, 0777, true);
+            }
+
+            touch($path);
+
+            file_put_contents($path, $template);
+
+        } catch (Exception $e) {
+
+            throw new TemplateCacheException($e->getMessage(), 500);
+        }
+
+        return file_get_contents($path);
     }
 }

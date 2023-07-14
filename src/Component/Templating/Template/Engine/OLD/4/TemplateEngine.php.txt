@@ -27,7 +27,6 @@ class TemplateEngine implements TemplateEngineInterface
 
 
 
-
     /**
      * @inheritDoc
     */
@@ -55,11 +54,15 @@ class TemplateEngine implements TemplateEngineInterface
     */
     public function compile(): string
     {
-        $template = $this->getLayout();
-        $template = $this->compileIncludes($template);
-        $template = $this->compileYields($template);
+        $layout = $this->getLayout();
+        $blocks = $this->getBlocks();
 
-        return $this->compilePHP($template);
+        $template = $this->compileYields($layout, $blocks);
+        $template = $this->compileEchos($template);
+        $template = $this->compileLoop($template);
+        $template = $this->compileIf($template);
+
+        return $template;
     }
 
 
@@ -69,15 +72,15 @@ class TemplateEngine implements TemplateEngineInterface
     /**
      * @param $layout
      *
+     * @param array $blocks
+     *
      * @return string
     */
-    private function compileYields($layout): string
+    private function compileYields($layout, array $blocks): string
     {
-        $blocks = $this->getBlocks();
-
         // compile yields
         foreach ($blocks as $name => $content) {
-            $layout = preg_replace("/@yield-$name/i", $content, $layout);
+            $layout = preg_replace("/@yield-$name/is", $content, $layout);
         }
 
         return $layout;
@@ -93,30 +96,11 @@ class TemplateEngine implements TemplateEngineInterface
      *
      * @return string
     */
-    private function compilePHP($template): string
-    {
-        $template = $this->compileEchos($template);
-        $template = $this->compileLoop($template);
-        $template = $this->compileIf($template);
-
-        return $this->compileSwitch($template);
-    }
-
-
-
-
-
-
-    /**
-     * @param $template
-     *
-     * @return string
-    */
     private function compileEchos($template): string
     {
-        return preg_replace('/{{(\s*(.*)\s*).}}/i', '<?=$1 ?>', $template);
+        $template = preg_replace('/{{\s*(.*)\s*}}/', '<?= $1 ?>', $template);
+        return str_replace('.', '->', $template);
     }
-
 
 
 
@@ -129,39 +113,7 @@ class TemplateEngine implements TemplateEngineInterface
     private function compileLoop($template): string
     {
         $template = preg_replace('/@loop(.*):/', '<?php foreach$1: ?>', $template);
-        $template = preg_replace('/@endloop/', '<?php endforeach; ?>', $template);
-
-        return $this->compileFor($template);
-    }
-
-
-
-
-
-    /**
-     * @param $template
-     *
-     * @return string
-    */
-    private function compileFor($template): string
-    {
-        $template = preg_replace('/@for(.*):/', '<?php for$1: ?>', $template);
-        return preg_replace('/@endfor/', '<?php endfor; ?>', $template);
-    }
-
-
-
-
-
-    /**
-     * @param $template
-     *
-     * @return string
-    */
-    private function compileSwitch($template): string
-    {
-        $template = preg_replace('/@switch(.*):/', '<?php switch$1: ?>', $template);
-        return preg_replace('/@endswitch/', '<?php endswitch; ?>', $template);
+        return preg_replace('/@endloop/', '<?php endforeach; ?>', $template);
     }
 
 
@@ -184,17 +136,32 @@ class TemplateEngine implements TemplateEngineInterface
 
 
     /**
-     * @param $template
-     *
-     * @return string
+     * @return string[]
     */
-    private function compileIncludes($template): string
+    private function getPatterns(): array
     {
-        return preg_replace('/{%\s*include(.*)\s*%}/i', '<?php include$1 ?>', $template);
+        return [
+            '@loop((.*)\s*as\s*(.*)):' => '<?php foreach ($$1 as $$2)?>',
+            '{{\s*(.*)\s*}}' => '<?= $$1 ?>'
+        ];
     }
 
 
 
+
+
+    /**
+     * @param string|null $layout
+     *
+     * @return string
+    */
+    private function replacePatterns(?string $layout): string
+    {
+         $pattern     = join('|', array_keys($this->getPatterns()));
+         $replacement = join('|', array_values($this->getPatterns()));
+
+         return preg_replace('/'. $pattern . '/', $replacement, $layout);
+    }
 
 
 

@@ -17,10 +17,13 @@ interface TemplateCacheInterface
 {
 
       /**
+       * Returns cached template
+       *
        * @param string $key
-       * @param TemplateInterface $template
+       *
+       * @param TemplateInterface|string $template
        *
        * @return string
       */
-      public function cacheTemplate(string $key, TemplateInterface $template): string;
+      public function cache(string $key, TemplateInterface|string $template): string;
 }

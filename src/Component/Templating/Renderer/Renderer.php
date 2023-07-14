@@ -4,7 +4,10 @@ namespace Laventure\Component\Templating\Renderer;
 
 use Laventure\Component\Templating\Template\Cache\TemplateCache;
 use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
+use Laventure\Component\Templating\Template\Engine\TemplateEngine;
+use Laventure\Component\Templating\Template\Engine\TemplateEngineInterface;
 use Laventure\Component\Templating\Template\Layout\Layout;
+use Laventure\Component\Templating\Template\Layout\LayoutInterface;
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
 
@@ -31,7 +34,7 @@ class Renderer implements RendererInterface
       /**
        * @var string|null
       */
-      protected ?string $layoutPath = '';
+      protected ?string $layoutPath = null;
 
 
 
@@ -151,17 +154,51 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-           /*
            $template = $this->createTemplate($path, $data);
 
-           if ($this->layoutPath && $this->cacheable()) {
-               $template = new Layout($this->locatePath($this->layoutPath), $template);
-               return $this->cache->cacheTemplate($path, $template);
+           if ($this->cacheable()) {
+               return $this->cacheTemplate($path, $template);
            }
 
            return $template;
-           */
-           return '';
+      }
+
+
+
+
+
+
+      /**
+       * @param string $key
+       *
+       * @param TemplateInterface $template
+       *
+       * @return string
+      */
+      public function cacheTemplate(string $key, TemplateInterface $template): string
+      {
+           if (! $this->layoutPath) {
+                return $template;
+           }
+
+           $template = new Layout($this->locatePath($this->layoutPath), $template);
+
+           return $this->cache->cache($key, $this->compile($template));
+      }
+
+
+
+
+      /**
+       * @param LayoutInterface $layout
+       *
+       * @return string
+      */
+      public function compile(LayoutInterface $layout): string
+      {
+            $engine = new TemplateEngine($layout);
+
+            return $engine->compile();
       }
 
 
