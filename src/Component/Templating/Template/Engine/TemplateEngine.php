@@ -42,6 +42,10 @@ class TemplateEngine implements TemplateEngineInterface
     public function compile(TemplateInterface $template): string
     {
          $content = $this->includePaths($template);
+         $content = $this->compileBlocks($content);
+         $content = $this->compileYields($content);
+         $content = $this->compileEscapedEchos($content);
+         $content = $this->compileEchos($content);
 
          dd($content);
     }
@@ -71,42 +75,72 @@ class TemplateEngine implements TemplateEngineInterface
 
 
 
-    private function compileYields(TemplateInterface $template): string
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+    */
+    private function compileBlocks(string $content): string
     {
-        $blocks   = $this->getBlocks($template);
-        $extends  = new Template($this->extendsPath($template), $template->getParameters());
+        $pattern = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
 
-        dd($extends->getContent());
+        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
-        foreach ($blocks as $name => $content) {
-
+        foreach ($matches as $value) {
+             if (! array_key_exists($value[1], $this->blocks)) { $this->blocks[$value[1]] = ''; }
+             if (str_contains($value[2], '@parent') === false) {
+                 $this->blocks[$value[1]] = $value[2];
+             } else {
+                 $this->blocks[$value[1]] = str_replace('@parent', $this->blocks[$value[1]], $value[2]);
+             }
+             $content = str_replace($value[0], '', $content);
         }
 
-        dump($blocks);
-        dd($extends);
+        return $content;
+    }
+
+
+
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+    */
+    private function compileYields(string $content): string
+    {
+         foreach ($this->blocks as $name => $value) {
+             $content = preg_replace("/{% yield ?$name ?%}/", $value, $content);
+         }
+
+         return $content;
+    }
+
+
+
+    /**
+     * @param string $content
+     * @return string
+    */
+    private function compileEscapedEchos(string $content): string
+    {
+        return preg_replace('~\{{{\s*(.+?)\s*\}}}~is', '<?php echo htmlentities($1, ENT_QUOTES, \'UTF-8\') ?>', $content);
     }
 
 
 
 
     /**
-     * @param TemplateInterface $template
+     * @param string $content
      *
-     * @return array
+     * @return string
     */
-    private function getBlocks(TemplateInterface $template): array
+    private function compileEchos(string $content): string
     {
-        $pattern = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
-
-        preg_match_all($pattern, $template->getContent(), $matches, PREG_SET_ORDER);
-
-        $blocks = [];
-
-        foreach ($matches as $item) {
-             $blocks[$item[1]] = $item[2];
-        }
-
-        return $blocks;
+        return preg_replace('~\{{\s*(.+?)\s*\}}~is', '<?php echo $1 ?>', $content);
     }
 
 
@@ -120,47 +154,9 @@ class TemplateEngine implements TemplateEngineInterface
     */
     private function path(string $path)
     {
-        return $this->resourcePath . '/' . trim($path, '/');
+        $path = str_replace('/', DIRECTORY_SEPARATOR, trim($path, '/'));
+
+        return $this->resourcePath . DIRECTORY_SEPARATOR . $path;
     }
-
-
-
-    /**
-     * @param TemplateInterface $template
-     *
-     * @return string
-    */
-    private function extendsPath(TemplateInterface $template): string
-    {
-        /*
-        preg_match("/{%\sextends(.*)\s%}/i", $template->getContent(), $matches);
-
-        if (empty($matches[1])) {
-            return '';
-        }
-
-        return $this->path(trim(str_replace(["'", '"'], '', $matches[1])));
-        */
-
-
-        preg_match_all('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', $template->getContent(), $matches, PREG_SET_ORDER);
-
-        dd($matches);
-    }
-
-
-
-
-
-
-//    /**
-//     * @param string $path
-//     *
-//     * @return string|false
-//    */
-//    private function content(string $path): string|false
-//    {
-//        return file_get_contents($this->path($path));
-//    }
 
 }
