@@ -22,6 +22,7 @@ class Template implements TemplateInterface
 
 
 
+
     /**
      * @var array
     */
@@ -88,7 +89,6 @@ class Template implements TemplateInterface
 
 
 
-
     /**
      * @inheritDoc
     */
@@ -108,22 +108,6 @@ class Template implements TemplateInterface
     {
         return $this->parameters;
     }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getContent(): string
-    {
-        if (! $this->exists()) {
-             return '';
-        }
-
-        return file_get_contents(realpath($this->path));
-    }
-
 
 
 

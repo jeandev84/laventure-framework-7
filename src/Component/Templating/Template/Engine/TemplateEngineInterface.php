@@ -1,7 +1,6 @@
 <?php
 namespace Laventure\Component\Templating\Template\Engine;
 
-use Laventure\Component\Templating\Template\Layout\LayoutInterface;
 use Laventure\Component\Templating\Template\TemplateInterface;
 
 /**
@@ -16,11 +15,51 @@ use Laventure\Component\Templating\Template\TemplateInterface;
 interface TemplateEngineInterface
 {
 
+
+      /**
+       * @param string $resourcePath
+       *
+       * @return static
+      */
+      public function resourcePath(string $resourcePath): static;
+
+
+
+
+
+      /**
+       * Returns full path of template
+       *
+       * @param string $path
+       *
+       * @return string
+      */
+      public function locatePath(string $path): string;
+
+
+
+
+
+
       /**
        * Compile template
        *
        * @param TemplateInterface $template
-       * @return string
+       * @return TemplateInterface|string
       */
-      public function compile(TemplateInterface $template): string;
+      public function compile(TemplateInterface $template): TemplateInterface|string;
+
+
+
+
+
+
+     /**
+      * @param string $key
+      *
+      * @param TemplateInterface $template
+      *
+      * @return TemplateInterface
+     */
+     public function cache(string $key, TemplateInterface $template): TemplateInterface;
 }

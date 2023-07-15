@@ -2,10 +2,14 @@
 namespace Laventure\Component\Templating\Renderer;
 
 
+use Laventure\Component\Templating\Template\Cache\TemplateCacheable;
 use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
 use Laventure\Component\Templating\Template\Engine\TemplateEngine;
+use Laventure\Component\Templating\Template\Engine\TemplateEngineInterface;
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
+
+
 
 /**
  * @Renderer
@@ -21,24 +25,9 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @var string
+       * @var TemplateEngineInterface
       */
-      protected string $resourcePath;
-
-
-
-      /**
-       * @var TemplateEngine
-      */
-      protected TemplateEngine $engine;
-
-
-
-      /**
-       * @var TemplateCacheInterface|null
-      */
-      protected ?TemplateCacheInterface $cache = null;
-
+      protected TemplateEngineInterface $engine;
 
 
 
@@ -53,15 +42,14 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @param string $resourcePath
-       *
-       * @param TemplateInterface|null $cache
+       * @param TemplateEngine $engine
       */
-      public function __construct(string $resourcePath, TemplateInterface $cache = null)
+      public function __construct(TemplateEngineInterface $engine)
       {
-            $this->resourcePath($resourcePath);
-            $this->cache($cache);
+           $this->engine = $engine;
       }
+
+
 
 
 
@@ -72,24 +60,7 @@ class Renderer implements RendererInterface
       */
       public function resourcePath(string $resourcePath): static
       {
-          $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
-
-          $this->engine = new TemplateEngine($this->resourcePath);
-
-          return $this;
-      }
-
-
-
-
-      /**
-        * @param TemplateCacheInterface|null $cache
-        *
-        * @return $this
-      */
-      public function cache(?TemplateCacheInterface $cache): static
-      {
-          $this->cache = $cache;
+          $this->engine->resourcePath($resourcePath);
 
           return $this;
       }
@@ -98,14 +69,18 @@ class Renderer implements RendererInterface
 
 
 
-
       /**
-       * @return bool
+       * Returns full template path
+       *
+       * @param string $path
+       *
+       * @return string
       */
-      public function cacheable(): bool
+      public function locatePath(string $path): string
       {
-          return $this->cache instanceof TemplateCacheInterface;
+           return $this->engine->locatePath($path);
       }
+
 
 
 
@@ -133,13 +108,7 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-           $template = $this->createTemplate($path, $data);
-
-           if ($this->cacheable()) {
-               return $this->cache->cacheTemplate($path, $this->compile($template));
-           }
-
-           return $template;
+           return $this->engine->cache($path, $this->createTemplate($path, $data));
       }
 
 
@@ -157,46 +126,5 @@ class Renderer implements RendererInterface
       public function createTemplate(string $path, array $parameters = []): Template
       {
           return new Template($this->locatePath($path), array_merge($this->data, $parameters));
-      }
-
-
-
-
-      /**
-       * Returns full template path
-       *
-       * @param string $path
-       *
-       * @return string
-      */
-      public function locatePath(string $path): string
-      {
-           return $this->resourcePath . DIRECTORY_SEPARATOR. rtrim($path, DIRECTORY_SEPARATOR);
-      }
-
-
-
-
-
-      /**
-       * @return TemplateCacheInterface|null
-      */
-      public function getCache(): ?TemplateCacheInterface
-      {
-          return $this->cache;
-      }
-
-
-
-
-
-      /**
-       * @param TemplateInterface $template
-       *
-       * @return string
-      */
-      public function compile(TemplateInterface $template): string
-      {
-           return $this->engine->compile($template);
       }
 }

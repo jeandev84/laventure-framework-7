@@ -18,11 +18,11 @@ class TemplateCache implements TemplateCacheInterface
 {
 
 
+
     /**
      * @var string
     */
     protected string $cacheDir;
-
 
 
 
@@ -40,7 +40,7 @@ class TemplateCache implements TemplateCacheInterface
     /**
      * @param string $cacheDir
      *
-     * @return $this
+     * @return TemplateCache
     */
     public function cacheDir(string $cacheDir): static
     {
@@ -52,7 +52,6 @@ class TemplateCache implements TemplateCacheInterface
 
 
 
-
     /**
      * @param string $key
      *
@@ -60,7 +59,7 @@ class TemplateCache implements TemplateCacheInterface
     */
     public function cachePath(string $key): string
     {
-         return join(DIRECTORY_SEPARATOR, [$this->cacheDir, md5($key) .'.php']);
+        return join(DIRECTORY_SEPARATOR, [$this->cacheDir, md5($key) .'.php']);
     }
 
 
@@ -70,8 +69,9 @@ class TemplateCache implements TemplateCacheInterface
     /**
      * @inheritDoc
     */
-    public function cacheTemplate(string $key, TemplateInterface|string $template): string
+    public function cache(string $key, TemplateInterface|string $template): TemplateInterface|string
     {
+
         $path = $this->cachePath($key);
 
         try {
@@ -91,6 +91,6 @@ class TemplateCache implements TemplateCacheInterface
             throw new TemplateCacheException($e->getMessage(), 500);
         }
 
-        return file_get_contents($path);
+        return $this->cachePath($key);
     }
 }
