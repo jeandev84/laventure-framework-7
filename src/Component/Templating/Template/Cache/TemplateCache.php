@@ -2,8 +2,8 @@
 namespace Laventure\Component\Templating\Template\Cache;
 
 use Exception;
-use Laventure\Component\Templating\Template\TemplateException;
 use Laventure\Component\Templating\Template\TemplateInterface;
+
 
 /**
  * @TemplateCache
@@ -70,7 +70,7 @@ class TemplateCache implements TemplateCacheInterface
     /**
      * @inheritDoc
     */
-    public function cache(string $key, TemplateInterface|string $template): string
+    public function cacheTemplate(string $key, TemplateInterface|string $template): string
     {
         $path = $this->cachePath($key);
 

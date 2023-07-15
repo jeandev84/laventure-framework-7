@@ -20,6 +20,13 @@ class TemplateEngine implements TemplateEngineInterface
 
 
     /**
+     * @var string
+    */
+    protected string $resourcePath;
+
+
+
+    /**
      * @var array
     */
     protected array $blocks = [];
@@ -29,9 +36,11 @@ class TemplateEngine implements TemplateEngineInterface
     /**
      * @param string $resourcePath
     */
-    public function __construct(protected string $resourcePath)
+    public function __construct(string $resourcePath)
     {
+        $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
     }
+
 
 
 
@@ -53,12 +62,13 @@ class TemplateEngine implements TemplateEngineInterface
 
 
 
+
     /**
      * @param TemplateInterface $template
      *
      * @return string
     */
-    private function includePaths(TemplateInterface $template)
+    private function includePaths(TemplateInterface $template): string
     {
         $pattern = '/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i';
         $content = $template->getContent();
@@ -152,13 +162,10 @@ class TemplateEngine implements TemplateEngineInterface
     */
     private function compilePHP(string $content): string
     {
-          $pattern = '~\{%\s*(.+?)\s*\%}~is';
-          $content = preg_replace($pattern, '<?php $1 ?>', $content);
           $content = $this->compileLoop($content);
           $content = $this->compileIf($content);
           $content = $this->compileSwitch($content);
-
-          dd($content);
+          return preg_replace('~\{%\s*(.+?)\s*\%}~is', '<?php $1 ?>', $content);
     }
 
 
@@ -174,23 +181,8 @@ class TemplateEngine implements TemplateEngineInterface
     {
         $content = preg_replace('/@loop?(.*):/i', '<?php foreach$1: ?>', $content);
         $content = preg_replace('/@endloop/', '<?php endforeach; ?>', $content);
-
-        return $this->compileFor($content);
-    }
-
-
-
-
-
-    /**
-     * @param $template
-     *
-     * @return string
-     */
-    private function compileFor($template): string
-    {
-        $template = preg_replace('/@for?(.*):/i', '<?php for$1: ?>', $template);
-        return preg_replace('/@endfor/', '<?php endfor; ?>', $template);
+        $content = preg_replace('/@for?(.*):/i', '<?php for$1: ?>', $content);
+        return preg_replace('/@endfor/', '<?php endfor; ?>', $content);
     }
 
 
@@ -205,7 +197,6 @@ class TemplateEngine implements TemplateEngineInterface
     private function compileSwitch(string $content): string
     {
         $content = preg_replace('/@switch?(.*):/', '<?php switch$1: ?>', $content);
-
         return preg_replace('/@endswitch/', '<?php endswitch; ?>', $content);
     }
 
@@ -222,7 +213,6 @@ class TemplateEngine implements TemplateEngineInterface
     private function compileIf(string $content): string
     {
         $content = preg_replace('/@if(.*):/', '<?php if$1: ?>', $content);
-
         return preg_replace('/@endif/', '<?php endif; ?>', $content);
     }
 

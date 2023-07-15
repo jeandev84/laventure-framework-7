@@ -25,5 +25,5 @@ interface TemplateCacheInterface
        *
        * @return string
       */
-      public function cache(string $key, TemplateInterface|string $template): string;
+      public function cacheTemplate(string $key, TemplateInterface|string $template): string;
 }

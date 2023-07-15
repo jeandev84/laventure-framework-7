@@ -2,12 +2,8 @@
 namespace Laventure\Component\Templating\Renderer;
 
 
-use Laventure\Component\Templating\Template\Cache\TemplateCache;
 use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
 use Laventure\Component\Templating\Template\Engine\TemplateEngine;
-use Laventure\Component\Templating\Template\Engine\TemplateEngineInterface;
-use Laventure\Component\Templating\Template\Layout\Layout;
-use Laventure\Component\Templating\Template\Layout\LayoutInterface;
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
 
@@ -32,10 +28,9 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @var string|null
+       * @var TemplateEngine
       */
-      protected ?string $layoutPath = null;
-
+      protected TemplateEngine $engine;
 
 
 
@@ -55,6 +50,8 @@ class Renderer implements RendererInterface
       protected array $data = [];
 
 
+
+
       /**
        * @param string $resourcePath
        *
@@ -66,6 +63,21 @@ class Renderer implements RendererInterface
             $this->cache($cache);
       }
 
+
+
+      /**
+       * @param string $resourcePath
+       *
+       * @return $this
+      */
+      public function resourcePath(string $resourcePath): static
+      {
+          $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
+
+          $this->engine = new TemplateEngine($this->resourcePath);
+
+          return $this;
+      }
 
 
 
@@ -117,40 +129,6 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @param string $resourcePath
-       *
-       * @return $this
-      */
-      public function resourcePath(string $resourcePath): static
-      {
-          $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
-
-          return $this;
-      }
-
-
-
-
-
-
-
-      /**
-       * @param string $layoutPath
-       *
-       * @return $this
-      */
-      public function layoutPath(string $layoutPath): static
-      {
-           $this->layoutPath = $layoutPath;
-
-           return $this;
-      }
-
-
-
-
-
-      /**
        * @inheritDoc
       */
       public function render(string $path, array $data = []): string
@@ -158,29 +136,12 @@ class Renderer implements RendererInterface
            $template = $this->createTemplate($path, $data);
 
            if ($this->cacheable()) {
-               return $this->cacheTemplate($path, $template);
+               return $this->cache->cacheTemplate($path, $this->compile($template));
            }
 
            return $template;
       }
 
-
-
-
-
-
-
-      /**
-       * @param LayoutInterface $layout
-       *
-       * @return string
-      */
-      public function compile(LayoutInterface $layout): string
-      {
-            $engine = new TemplateEngine($layout);
-
-            return $engine->compile();
-      }
 
 
 
@@ -197,7 +158,6 @@ class Renderer implements RendererInterface
       {
           return new Template($this->locatePath($path), array_merge($this->data, $parameters));
       }
-
 
 
 
@@ -231,20 +191,12 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @param string $key
-       *
        * @param TemplateInterface $template
        *
        * @return string
-     */
-     private function cacheTemplate(string $key, TemplateInterface $template): string
-     {
-         if (! $this->layoutPath) {
-             return $template;
-         }
-
-         $template = new Layout($this->locatePath($this->layoutPath), $template);
-
-         return $this->cache->cache($key, $this->compile($template));
-     }
+      */
+      public function compile(TemplateInterface $template): string
+      {
+           return $this->engine->compile($template);
+      }
 }
