@@ -44,6 +44,15 @@ interface TemplateInterface
 
 
 
+    /**
+     * Returns only content without params
+     *
+     * @return string
+    */
+    public function getContent(): string;
+
+
+
 
     /**
      * Returns template content

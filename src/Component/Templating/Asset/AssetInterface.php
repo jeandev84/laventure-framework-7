@@ -13,8 +13,6 @@ namespace Laventure\Component\Templating\Asset;
 */
 interface AssetInterface
 {
-
-
       /**
        * @param string $path
        *
@@ -57,10 +55,17 @@ interface AssetInterface
 
 
 
+      /**
+       * @return string
+      */
+      public function renderScripts(): string;
 
 
-     /**
-      * @return string
-     */
-     public function renderScripts(): string;
+
+
+
+      /**
+       * @return string
+      */
+      public function getBaseUrl(): string;
 }

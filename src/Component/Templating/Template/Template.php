@@ -14,6 +14,7 @@ namespace Laventure\Component\Templating\Template;
 class Template implements TemplateInterface
 {
 
+
     /**
      * @var string
     */
@@ -28,32 +29,6 @@ class Template implements TemplateInterface
 
 
 
-    /**
-     * @var array
-    */
-    protected array $tags = [
-        '{%'        =>  "<?php ",
-        '%}'        =>  ";?>",
-        '{{'        =>  "<?=",
-        '}}'        =>  "?>",
-        '@if'       =>  "<?php if",
-        '@endif'    =>  "<?php endif; ?>",
-        '@loop'     =>  "<?php foreach",
-        '):'        =>  "): ?>",
-        '@endloop'  =>  "<?php endforeach; ?>"
-    ];
-
-
-
-
-    /**
-     * @var array
-    */
-    protected array $patterns = [];
-
-
-
-
 
     /**
      * @param string $path
@@ -65,8 +40,6 @@ class Template implements TemplateInterface
          $this->setPath($path);
          $this->setParameters($parameters);
     }
-
-
 
 
 
@@ -87,6 +60,7 @@ class Template implements TemplateInterface
 
 
 
+
     /**
      * @param array $parameters
      *
@@ -97,51 +71,6 @@ class Template implements TemplateInterface
         $this->parameters = array_merge($this->parameters, $parameters);
 
         return $this;
-    }
-
-
-
-
-
-    /**
-     * @param string $name
-     *
-     * @param $value
-     *
-     * @return $this
-    */
-    public function setParameter(string $name, $value): static
-    {
-         $this->parameters[$name] = $value;
-
-         return $this;
-    }
-
-
-
-
-
-    /**
-     * @param array $tags
-     *
-     * @return Template
-    */
-    public function setTags(array $tags): static
-    {
-         $this->tags = array_merge($this->tags, $tags);
-
-         return $this;
-    }
-
-
-
-
-    /**
-     * @return array
-    */
-    public function getTags(): array
-    {
-        return $this->tags;
     }
 
 
@@ -165,10 +94,8 @@ class Template implements TemplateInterface
     */
     public function getPath(): string
     {
-        return realpath($this->path);
+        return $this->path;
     }
-
-
 
 
 
@@ -185,6 +112,21 @@ class Template implements TemplateInterface
 
 
 
+    /**
+     * @inheritDoc
+    */
+    public function getContent(): string
+    {
+        if (! $this->exists()) {
+             return '';
+        }
+
+        return file_get_contents(realpath($this->path));
+    }
+
+
+
+
 
 
     /**
@@ -193,32 +135,13 @@ class Template implements TemplateInterface
     public function __toString(): string
     {
         if (! $this->exists()) {
-            $this->abortIf("template : $this->path does not exist.");
+            $this->abortIf("template path: $this->path does not exist.");
         }
 
         extract($this->parameters, EXTR_SKIP);
         ob_start();
-        require_once $this->getPath();
-        $content = ob_get_clean();
-
-        return $this->replaceTags($content);
-    }
-
-
-
-
-
-    /**
-     * @param string $content
-     *
-     * @return string
-    */
-    public function replaceTags(string $content): string
-    {
-        $keys   = array_keys($this->tags);
-        $values = array_values($this->tags);
-
-        return str_replace($keys, $values, $content);
+        require_once realpath($this->path);
+        return ob_get_clean();
     }
 
 

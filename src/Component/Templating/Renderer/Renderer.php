@@ -2,8 +2,8 @@
 namespace Laventure\Component\Templating\Renderer;
 
 
-use Laventure\Component\Templating\Template\Cache\TemplateCache;
 use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
+use Laventure\Component\Templating\Template\Engine\TemplateEngine;
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
 
@@ -28,9 +28,9 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @var string|null
+       * @var TemplateEngine
       */
-      protected ?string $layoutPath = '';
+      protected TemplateEngine $engine;
 
 
 
@@ -38,13 +38,6 @@ class Renderer implements RendererInterface
        * @var TemplateCacheInterface|null
       */
       protected ?TemplateCacheInterface $cache = null;
-
-
-
-      /**
-       * @var array
-      */
-      protected array $tags = [];
 
 
 
@@ -58,63 +51,17 @@ class Renderer implements RendererInterface
 
 
 
+
       /**
        * @param string $resourcePath
+       *
+       * @param TemplateInterface|null $cache
       */
-      public function __construct(string $resourcePath)
+      public function __construct(string $resourcePath, TemplateInterface $cache = null)
       {
             $this->resourcePath($resourcePath);
+            $this->cache($cache);
       }
-
-
-
-
-      /**
-       * @param TemplateCacheInterface $cache
-       *
-       * @return $this
-      */
-      public function cache(TemplateCacheInterface $cache): static
-      {
-          $this->cache = $cache;
-
-          return $this;
-      }
-
-
-
-
-
-     /**
-      * @param array $tags
-      *
-      * @return $this
-     */
-     public function setTags(array $tags): static
-     {
-         $this->tags = array_merge($this->tags, $tags);
-
-         return $this;
-     }
-
-
-
-
-
-      /**
-       * @param array $data
-       *
-       * @return $this
-      */
-      public function setGlobals(array $data): static
-      {
-          $this->data = $data;
-
-          return $this;
-      }
-
-
-
 
 
 
@@ -127,6 +74,23 @@ class Renderer implements RendererInterface
       {
           $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
 
+          $this->engine = new TemplateEngine($this->resourcePath);
+
+          return $this;
+      }
+
+
+
+
+      /**
+        * @param TemplateCacheInterface|null $cache
+        *
+        * @return $this
+      */
+      public function cache(?TemplateCacheInterface $cache): static
+      {
+          $this->cache = $cache;
+
           return $this;
       }
 
@@ -135,18 +99,30 @@ class Renderer implements RendererInterface
 
 
 
+      /**
+       * @return bool
+      */
+      public function cacheable(): bool
+      {
+          return $this->cache instanceof TemplateCacheInterface;
+      }
+
+
+
+
 
       /**
-       * @param string $layoutPath
+       * @param array $data
        *
        * @return $this
       */
-      public function layoutPath(string $layoutPath): static
+      public function setGlobals(array $data): static
       {
-           $this->layoutPath = $layoutPath;
+          $this->data = array_merge($this->data, $data);
 
-           return $this;
+          return $this;
       }
+
 
 
 
@@ -157,9 +133,13 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-          $template = $this->createLayoutFromTemplate($this->createTemplate($path, $data));
+           $template = $this->createTemplate($path, $data);
 
-          return $this->cacheTemplate($path, $template);
+           if ($this->cacheable()) {
+               return $this->cache->cacheTemplate($path, $this->compile($template));
+           }
+
+           return $template;
       }
 
 
@@ -176,56 +156,8 @@ class Renderer implements RendererInterface
       */
       public function createTemplate(string $path, array $parameters = []): Template
       {
-          $parameters = array_merge($parameters, $this->data);
-          $template   = new Template($this->locatePath($path), $parameters);
-          $template->setTags($this->tags);
-
-          return $template;
+          return new Template($this->locatePath($path), array_merge($this->data, $parameters));
       }
-
-
-
-
-
-
-      /**
-       * @param Template $template
-       *
-       * @return Template
-     */
-      public function createLayoutFromTemplate(Template $template): Template
-      {
-           if (! $this->layoutPath) {
-              return $template;
-           }
-
-           return $this->createTemplate($this->layoutPath, ['content' => $template->__toString()]);
-      }
-
-
-
-
-
-
-
-      /**
-       * @param string $key
-       *
-       * @param Template $template
-       *
-       * @return string
-      */
-      public function cacheTemplate(string $key, Template $template): string
-      {
-          if (! $this->cacheable()) {
-               return $template;
-          }
-
-          $this->cache->cacheTemplate($key, $template);
-
-          return $this->cache->getTemplate($key);
-      }
-
 
 
 
@@ -247,23 +179,24 @@ class Renderer implements RendererInterface
 
 
       /**
-       * @return bool
+       * @return TemplateCacheInterface|null
       */
-      public function cacheable(): bool
+      public function getCache(): ?TemplateCacheInterface
       {
-          return $this->cache instanceof TemplateCacheInterface;
+          return $this->cache;
       }
 
 
 
 
 
-
-     /**
-      * @return TemplateCacheInterface|null
-     */
-     public function getCache(): ?TemplateCacheInterface
-     {
-         return $this->cache;
-     }
+      /**
+       * @param TemplateInterface $template
+       *
+       * @return string
+      */
+      public function compile(TemplateInterface $template): string
+      {
+           return $this->engine->compile($template);
+      }
 }
