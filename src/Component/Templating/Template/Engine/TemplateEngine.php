@@ -120,7 +120,7 @@ class TemplateEngine implements TemplateEngineInterface
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $value) {
-            $content = str_replace($value[0], $this->includePaths(new Template($this->locatePath($value[2]))), $content);
+            $content = str_replace($value[0], $this->includePaths(new Template($this->locateTemplate($value[2]))), $content);
         }
 
         return preg_replace('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', '', $content);
@@ -270,7 +270,7 @@ class TemplateEngine implements TemplateEngineInterface
      *
      * @return string
     */
-    public function locatePath(string $path): string
+    public function locateTemplate(string $path): string
     {
         $path = str_replace('/', DIRECTORY_SEPARATOR, trim($path, '/'));
 

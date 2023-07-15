@@ -34,7 +34,7 @@ interface TemplateEngineInterface
        *
        * @return string
       */
-      public function locatePath(string $path): string;
+      public function locateTemplate(string $path): string;
 
 
 

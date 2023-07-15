@@ -108,7 +108,7 @@ class Renderer implements RendererInterface
       */
       public function locatePath(string $path): string
       {
-           return $this->engine->locatePath($path);
+           return $this->engine->locateTemplate($path);
       }
 
 

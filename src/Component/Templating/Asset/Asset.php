@@ -44,7 +44,7 @@ class Asset implements AssetInterface
     */
     public function __construct(string $url = '/')
     {
-         $this->setUrl($url);
+         $this->url($url);
     }
 
 
@@ -56,7 +56,7 @@ class Asset implements AssetInterface
      *
      * @return $this
     */
-    public function setUrl(string $url): static
+    public function url(string $url): static
     {
         $this->url = rtrim($url, '/');
 
@@ -201,7 +201,7 @@ class Asset implements AssetInterface
     /**
      * @inheritDoc
     */
-    public function getBaseUrl(): string
+    public function baseUrl(): string
     {
         return $this->url;
     }
