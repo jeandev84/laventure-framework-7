@@ -46,8 +46,7 @@ class TemplateEngine implements TemplateEngineInterface
          $content = $this->compileYields($content);
          $content = $this->compileEscapedEchos($content);
          $content = $this->compileEchos($content);
-
-         dd($content);
+         return $this->compilePHP($content);
     }
 
 
@@ -142,6 +141,91 @@ class TemplateEngine implements TemplateEngineInterface
     {
         return preg_replace('~\{{\s*(.+?)\s*\}}~is', '<?php echo $1 ?>', $content);
     }
+
+
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+    */
+    private function compilePHP(string $content): string
+    {
+          $pattern = '~\{%\s*(.+?)\s*\%}~is';
+          $content = preg_replace($pattern, '<?php $1 ?>', $content);
+          $content = $this->compileLoop($content);
+          $content = $this->compileIf($content);
+          $content = $this->compileSwitch($content);
+
+          dd($content);
+    }
+
+
+
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function compileLoop(string $content): string
+    {
+        $content = preg_replace('/@loop?(.*):/i', '<?php foreach$1: ?>', $content);
+        $content = preg_replace('/@endloop/', '<?php endforeach; ?>', $content);
+
+        return $this->compileFor($content);
+    }
+
+
+
+
+
+    /**
+     * @param $template
+     *
+     * @return string
+     */
+    private function compileFor($template): string
+    {
+        $template = preg_replace('/@for?(.*):/i', '<?php for$1: ?>', $template);
+        return preg_replace('/@endfor/', '<?php endfor; ?>', $template);
+    }
+
+
+
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function compileSwitch(string $content): string
+    {
+        $content = preg_replace('/@switch?(.*):/', '<?php switch$1: ?>', $content);
+
+        return preg_replace('/@endswitch/', '<?php endswitch; ?>', $content);
+    }
+
+
+
+
+
+
+    /**
+     * @param string $content
+     *
+     * @return string
+    */
+    private function compileIf(string $content): string
+    {
+        $content = preg_replace('/@if(.*):/', '<?php if$1: ?>', $content);
+
+        return preg_replace('/@endif/', '<?php endif; ?>', $content);
+    }
+
 
 
 
