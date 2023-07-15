@@ -3,7 +3,7 @@
 use Laventure\Component\Routing\Exception\NotFoundRouteException;
 use Laventure\Component\Routing\Router;
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/Psr4.php';
 
 
 $router = new Router('http://localhost');

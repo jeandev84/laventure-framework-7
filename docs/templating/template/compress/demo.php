@@ -5,7 +5,7 @@ use Laventure\Component\Templating\Template\Cache\TemplateCache;
 use Laventure\Component\Templating\Template\Engine\TemplateEngine;
 use Laventure\Component\Templating\Template\Template;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/Psr4.php';
 
 
 $cache    = new TemplateCache(__DIR__.'/../storage/cache/views');
