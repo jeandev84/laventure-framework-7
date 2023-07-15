@@ -16,11 +16,36 @@ use Laventure\Component\Templating\Template\TemplateInterface;
 interface TemplateEngineInterface
 {
 
+
+      public function getResourcePath(): ?string;
+
+
+      /**
+       * Returns layout object
+       *
+       * @return LayoutInterface
+      */
+      public function getLayout(): LayoutInterface;
+
+
+
+
+      /**
+       * Returns template object
+       *
+       * @return TemplateInterface
+      */
+      public function getTemplate(): TemplateInterface;
+
+
+
+
+
+
       /**
        * Compile template
        *
-       * @param TemplateInterface $template
        * @return string
       */
-      public function compile(TemplateInterface $template): string;
+      public function compile(): string;
 }

@@ -55,14 +55,15 @@ class Renderer implements RendererInterface
       protected array $data = [];
 
 
-
-
       /**
-        * @param string $resourcePath
+       * @param string $resourcePath
+       *
+       * @param TemplateInterface|null $cache
       */
-      public function __construct(string $resourcePath)
+      public function __construct(string $resourcePath, TemplateInterface $cache = null)
       {
             $this->resourcePath($resourcePath);
+            $this->cache($cache);
       }
 
 
@@ -70,11 +71,11 @@ class Renderer implements RendererInterface
 
 
       /**
-        * @param TemplateCacheInterface $cache
+        * @param TemplateCacheInterface|null $cache
         *
         * @return $this
       */
-      public function cache(TemplateCacheInterface $cache): static
+      public function cache(?TemplateCacheInterface $cache): static
       {
           $this->cache = $cache;
 
@@ -168,26 +169,6 @@ class Renderer implements RendererInterface
 
 
 
-      /**
-       * @param string $key
-       *
-       * @param TemplateInterface $template
-       *
-       * @return string
-      */
-      public function cacheTemplate(string $key, TemplateInterface $template): string
-      {
-           if (! $this->layoutPath) {
-                return $template;
-           }
-
-           $template = new Layout($this->locatePath($this->layoutPath), $template);
-
-           return $this->cache->cache($key, $this->compile($template));
-      }
-
-
-
 
       /**
        * @param LayoutInterface $layout
@@ -244,4 +225,26 @@ class Renderer implements RendererInterface
       {
           return $this->cache;
       }
+
+
+
+
+
+      /**
+       * @param string $key
+       *
+       * @param TemplateInterface $template
+       *
+       * @return string
+     */
+     private function cacheTemplate(string $key, TemplateInterface $template): string
+     {
+         if (! $this->layoutPath) {
+             return $template;
+         }
+
+         $template = new Layout($this->locatePath($this->layoutPath), $template);
+
+         return $this->cache->cache($key, $this->compile($template));
+     }
 }

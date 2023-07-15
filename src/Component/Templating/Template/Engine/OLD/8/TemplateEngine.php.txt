@@ -41,33 +41,9 @@ class TemplateEngine implements TemplateEngineInterface
     */
     public function compile(TemplateInterface $template): string
     {
-         $content = $this->includePaths($template);
-
-         dd($content);
+        $this->compileYields($template);
     }
 
-
-
-
-
-    /**
-     * @param TemplateInterface $template
-     *
-     * @return string
-    */
-    private function includePaths(TemplateInterface $template)
-    {
-        $pattern = '/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i';
-        $content = $template->getContent();
-
-        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
-
-        foreach ($matches as $value) {
-            $content = str_replace($value[0], $this->includePaths(new Template($this->path($value[2]))), $content);
-        }
-
-        return preg_replace('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', '', $content);
-    }
 
 
 
