@@ -2,12 +2,10 @@
 namespace Laventure\Component\Templating\Renderer;
 
 
-use Laventure\Component\Templating\Template\Cache\TemplateCacheable;
-use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
+use Laventure\Component\Templating\Template\Compressor\TemplateCompressor;
 use Laventure\Component\Templating\Template\Engine\TemplateEngine;
 use Laventure\Component\Templating\Template\Engine\TemplateEngineInterface;
 use Laventure\Component\Templating\Template\Template;
-use Laventure\Component\Templating\Template\TemplateInterface;
 
 
 
@@ -32,6 +30,20 @@ class Renderer implements RendererInterface
 
 
       /**
+       * @var TemplateCompressor
+      */
+      protected TemplateCompressor $compressor;
+
+
+
+      /**
+       * @var bool
+      */
+      protected bool $compressed = false;
+
+
+
+      /**
        * Globals parameters
        *
        * @var array
@@ -44,9 +56,27 @@ class Renderer implements RendererInterface
       /**
        * @param TemplateEngine $engine
       */
-      public function __construct(TemplateEngineInterface $engine)
+      public function __construct(TemplateEngineInterface $engine, bool $compressed = false)
       {
-           $this->engine = $engine;
+           $this->engine     = $engine;
+           $this->compressed = $compressed;
+           $this->compressor = new TemplateCompressor();
+      }
+
+
+
+
+
+      /**
+       * @param bool $compressed
+       *
+       * @return $this
+      */
+      public function compress(bool $compressed): static
+      {
+           $this->compressed = $compressed;
+
+           return $this;
       }
 
 
@@ -108,7 +138,13 @@ class Renderer implements RendererInterface
       */
       public function render(string $path, array $data = []): string
       {
-           return $this->engine->cache($path, $this->createTemplate($path, $data));
+           $template = $this->engine->cache($path, $this->createTemplate($path, $data));
+
+           if (! $this->compressed) {
+                return $template;
+           }
+
+           return $this->compressor->compress($template);
       }
 
 
