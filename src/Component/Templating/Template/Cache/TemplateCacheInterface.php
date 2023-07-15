@@ -20,10 +20,10 @@ interface TemplateCacheInterface
        *
        * @param string $key
        *
-       * @param TemplateInterface|string $template
+       * @param string $template
        *
        * @return string
       */
-      public function cache(string $key, TemplateInterface|string $template): string;
+      public function cache(string $key, string $template): string;
 
 }
