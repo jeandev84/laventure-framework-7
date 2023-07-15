@@ -13,59 +13,63 @@ namespace Laventure\Component\Templating\Asset;
 */
 interface AssetInterface
 {
-      /**
-       * @param string $path
-       *
-       * @return string
-      */
-      public function path(string $path): string;
+
+       /**
+        * @return string
+       */
+       public function baseUrl(): string;
+
+
+
+
+
+       /**
+        * @param string $path
+        *
+        * @return string
+       */
+       public function path(string $path): string;
 
 
 
 
 
 
-      /**
-       * Returns styles
-       *
-       * @return array
-      */
-      public function getStyles(): array;
+       /**
+        * Returns styles
+        *
+        * @return array
+       */
+       public function getStyles(): array;
 
 
 
 
 
 
-      /**
-       * @return string
-      */
-      public function renderStyles(): string;
-
-
-
-
-      /**
-       * Return scripts
-       *
-       * @return array
-      */
-      public function getScripts(): array;
-
-
-
-
-      /**
-       * @return string
-      */
-      public function renderScripts(): string;
+       /**
+        * @return string
+       */
+       public function renderStyles(): string;
 
 
 
 
 
-      /**
-       * @return string
-      */
-      public function getBaseUrl(): string;
+
+       /**
+        * Return scripts
+        *
+        * @return array
+       */
+       public function getScripts(): array;
+
+
+
+
+
+       /**
+        * @return string
+       */
+       public function renderScripts(): string;
 }
