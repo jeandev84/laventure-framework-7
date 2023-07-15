@@ -34,6 +34,7 @@ class TemplateEngine implements TemplateEngineInterface
 
 
 
+
     /**
      * @var array
     */
@@ -77,7 +78,7 @@ class TemplateEngine implements TemplateEngineInterface
     /**
      * @inheritDoc
     */
-    public function compile(TemplateInterface $template): TemplateInterface|string
+    public function compile(TemplateInterface $template): string
     {
          $content  = $this->includePaths($template);
          $content  = $this->compileBlocks($content);
@@ -94,7 +95,7 @@ class TemplateEngine implements TemplateEngineInterface
     /**
      * @inheritDoc
     */
-    public function cache(string $key, TemplateInterface $template): TemplateInterface
+    public function cache(string $key, TemplateInterface $template): string
     {
         $cachePath = $this->cache->cache($key, $this->compile($template));
 

@@ -16,13 +16,14 @@ interface TemplateCacheInterface
 {
 
       /**
-       * Returns cached path or template
+       * Returns cached path
        *
        * @param string $key
        *
        * @param TemplateInterface|string $template
        *
-       * @return TemplateInterface|string
+       * @return string
       */
-      public function cache(string $key, TemplateInterface|string $template): TemplateInterface|string;
+      public function cache(string $key, TemplateInterface|string $template): string;
+
 }

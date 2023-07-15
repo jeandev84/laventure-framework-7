@@ -1,6 +1,7 @@
 <?php
 namespace Laventure\Component\Templating\Template\Compressor;
 
+
 /**
  * @TemplateCompressor
  *
@@ -12,5 +13,9 @@ namespace Laventure\Component\Templating\Template\Compressor;
 */
 interface TemplateCompressorInterface
 {
-
+       /**
+        * @param string $template
+        * @return string
+       */
+       public function compress(string $template): string;
 }

@@ -69,7 +69,7 @@ class TemplateCache implements TemplateCacheInterface
     /**
      * @inheritDoc
     */
-    public function cache(string $key, TemplateInterface|string $template): TemplateInterface|string
+    public function cache(string $key, TemplateInterface|string $template): string
     {
 
         $path = $this->cachePath($key);

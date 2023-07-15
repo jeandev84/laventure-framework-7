@@ -10,7 +10,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $cache    = new TemplateCache(__DIR__.'/../storage/cache/views');
 $engine   = new TemplateEngine(__DIR__.'/../templates', $cache);
-$renderer = new Renderer($engine);
+$renderer = new Renderer($engine, true);
 
 $content = $renderer->render('index.html', [
     'title' => 'Вход',

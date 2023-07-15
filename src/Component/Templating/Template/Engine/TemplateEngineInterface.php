@@ -45,9 +45,10 @@ interface TemplateEngineInterface
        * Compile template
        *
        * @param TemplateInterface $template
-       * @return TemplateInterface|string
+       *
+       * @return string
       */
-      public function compile(TemplateInterface $template): TemplateInterface|string;
+      public function compile(TemplateInterface $template): string;
 
 
 
@@ -59,7 +60,7 @@ interface TemplateEngineInterface
       *
       * @param TemplateInterface $template
       *
-      * @return TemplateInterface
+      * @return string
      */
-     public function cache(string $key, TemplateInterface $template): TemplateInterface;
+     public function cache(string $key, TemplateInterface $template): string;
 }
