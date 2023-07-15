@@ -1,7 +1,6 @@
 <?php
 namespace Laventure\Component\Templating\Template\Cache;
 
-
 use Laventure\Component\Templating\Template\TemplateInterface;
 
 /**
@@ -17,13 +16,13 @@ interface TemplateCacheInterface
 {
 
       /**
-       * Returns cached template
+       * Returns cached path or template
        *
        * @param string $key
        *
        * @param TemplateInterface|string $template
        *
-       * @return string
+       * @return TemplateInterface|string
       */
-      public function cacheTemplate(string $key, TemplateInterface|string $template): string;
+      public function cache(string $key, TemplateInterface|string $template): TemplateInterface|string;
 }

@@ -1,7 +1,8 @@
 <?php
 namespace Laventure\Component\Templating\Template\Engine;
 
-use Laventure\Component\Templating\Template\Layout\LayoutInterface;
+
+use Laventure\Component\Templating\Template\Cache\TemplateCacheInterface;
 use Laventure\Component\Templating\Template\Template;
 use Laventure\Component\Templating\Template\TemplateInterface;
 
@@ -27,18 +28,46 @@ class TemplateEngine implements TemplateEngineInterface
 
 
     /**
+     * @var TemplateCacheInterface
+    */
+    protected TemplateCacheInterface $cache;
+
+
+
+    /**
      * @var array
     */
     protected array $blocks = [];
 
 
 
+
     /**
      * @param string $resourcePath
+     *
+     * @param TemplateCacheInterface $cache
     */
-    public function __construct(string $resourcePath)
+    public function __construct(string $resourcePath, TemplateCacheInterface $cache)
+    {
+        $this->resourcePath($resourcePath);
+        $this->cache = $cache;
+    }
+
+
+
+
+
+
+    /**
+     * @param string $resourcePath
+     *
+     * @return $this
+    */
+    public function resourcePath(string $resourcePath): static
     {
         $this->resourcePath = rtrim($resourcePath, DIRECTORY_SEPARATOR);
+
+        return $this;
     }
 
 
@@ -48,14 +77,28 @@ class TemplateEngine implements TemplateEngineInterface
     /**
      * @inheritDoc
     */
-    public function compile(TemplateInterface $template): string
+    public function compile(TemplateInterface $template): TemplateInterface|string
     {
-         $content = $this->includePaths($template);
-         $content = $this->compileBlocks($content);
-         $content = $this->compileYields($content);
-         $content = $this->compileEscapedEchos($content);
-         $content = $this->compileEchos($content);
+         $content  = $this->includePaths($template);
+         $content  = $this->compileBlocks($content);
+         $content  = $this->compileYields($content);
+         $content  = $this->compileEscapedEchos($content);
+         $content  = $this->compileEchos($content);
          return $this->compilePHP($content);
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function cache(string $key, TemplateInterface $template): TemplateInterface
+    {
+        $cachePath = $this->cache->cache($key, $this->compile($template));
+
+        return new Template($cachePath, $template->getParameters());
     }
 
 
@@ -71,12 +114,12 @@ class TemplateEngine implements TemplateEngineInterface
     private function includePaths(TemplateInterface $template): string
     {
         $pattern = '/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i';
-        $content = $template->getContent();
+        $content = $this->content($template->getPath());
 
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $value) {
-            $content = str_replace($value[0], $this->includePaths(new Template($this->path($value[2]))), $content);
+            $content = str_replace($value[0], $this->includePaths(new Template($this->locatePath($value[2]))), $content);
         }
 
         return preg_replace('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', '', $content);
@@ -226,11 +269,29 @@ class TemplateEngine implements TemplateEngineInterface
      *
      * @return string
     */
-    private function path(string $path)
+    public function locatePath(string $path): string
     {
         $path = str_replace('/', DIRECTORY_SEPARATOR, trim($path, '/'));
 
         return $this->resourcePath . DIRECTORY_SEPARATOR . $path;
     }
 
+
+
+
+
+
+    /**
+     * @param string $path
+     *
+     * @return string
+    */
+    private function content(string $path): string
+    {
+         if (! file_exists($path)) {
+              return '';
+         }
+
+         return file_get_contents($path);
+    }
 }
