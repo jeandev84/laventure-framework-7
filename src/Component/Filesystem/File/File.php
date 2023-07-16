@@ -122,7 +122,7 @@ class File extends FileInfo
      /**
       * @return array
      */
-     public function loadOnlyArray(): array
+     public function loadArray(): array
      {
           $array = $this->load();
 

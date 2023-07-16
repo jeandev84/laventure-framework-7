@@ -33,6 +33,6 @@ $file = new \Laventure\Component\Filesystem\File\FileBase64(file_get_contents(__
 $filesystem->uploadBase64('public/uploads/test.png', $file);
 */
 
-$config = $filesystem->file('/config/database.php')->loadOnlyArray();
+$config = $filesystem->file('/config/database.php')->loadArray();
 
 print_r($config);
