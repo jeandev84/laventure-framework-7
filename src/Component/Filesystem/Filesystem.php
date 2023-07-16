@@ -6,10 +6,7 @@ use Laventure\Component\Filesystem\File\File;
 use Laventure\Component\Filesystem\File\FileBase64;
 use Laventure\Component\Filesystem\File\FileInfo;
 use Laventure\Component\Filesystem\File\Locator\FileLocator;
-use Laventure\Component\Filesystem\File\Reader\FileReader;
 use Laventure\Component\Filesystem\File\Stream;
-use Laventure\Component\Filesystem\File\Uploader\FileUploader;
-use Laventure\Component\Filesystem\File\Writer\FileWriter;
 
 
 
@@ -34,37 +31,11 @@ class Filesystem
 
 
       /**
-       * @var FileWriter
-      */
-      protected FileWriter $writer;
-
-
-
-
-      /**
-       * @var FileReader
-      */
-      protected FileReader $reader;
-
-
-
-      /**
-       * @var FileUploader
-      */
-      protected FileUploader $uploader;
-
-
-
-
-      /**
        * @param string $resource
       */
       public function __construct(string $resource = '')
       {
            $this->locator  = new FileLocator($resource);
-           $this->writer   = new FileWriter();
-           $this->reader   = new FileReader();
-           $this->uploader = new FileUploader();
       }
 
 
@@ -102,6 +73,20 @@ class Filesystem
 
 
 
+      /**
+       * @param $path
+       *
+       * @return mixed
+      */
+      public function load($path): mixed
+      {
+          return $this->file($path)->load();
+      }
+
+
+
+
+
      /**
       * @param string $path
       *
@@ -125,6 +110,7 @@ class Filesystem
       {
           return new File($this->locate($path));
       }
+
 
 
 
@@ -176,8 +162,10 @@ class Filesystem
       */
       public function copy(string $from, string $destination, $context = null): bool
       {
-          return $this->uploader->copy($this->locate($from), $this->locate($destination), $context);
+          return $this->file($from)->copyTo($this->locate($destination), $context);
       }
+
+
 
 
 
@@ -204,20 +192,15 @@ class Filesystem
        *
        * @param string $content
        *
-       * @param int $flags
-       *
-       * @param null $context
+       * @param bool $append
        *
        * @return false|int
       */
-      public function write($path, string $content, int $flags = 0, $context = null): false|int
+      public function write($path, string $content, bool $append = false): false|int
       {
-           if (! $this->exists($path)) {
-                $this->make($path);
-           }
-
-           return $this->writer->write($this->locate($path), $content, $flags, $context);
+           return $this->file($path)->write($content, $append);
       }
+
 
 
 
@@ -231,8 +214,9 @@ class Filesystem
       */
       public function read($path): string
       {
-          return $this->reader->read($this->locate($path));
+          return $this->file($path)->read();
       }
+
 
 
 
@@ -257,6 +241,24 @@ class Filesystem
 
 
 
+      /**
+       * @param string $path
+       *
+       * @return array|false
+      */
+      public function scan(string $path): bool|array
+      {
+           if (! $this->info($path)->isDir()) {
+                return false;
+           }
+
+           return scandir($this->locate($path));
+      }
+
+
+
+
+
 
       /**
        * @param string $path
@@ -265,9 +267,8 @@ class Filesystem
       */
       public function make(string $path): bool
       {
-          return $this->file($path)->touch();
+           return $this->file($path)->make();
       }
-
 
 
 
@@ -282,9 +283,8 @@ class Filesystem
       */
       public function upload(string $from, string $to): bool
       {
-           return $this->uploader->upload($this->locate($from), $this->locate($to));
+           return $this->file($from)->moveTo($this->locate($to));
       }
-
 
 
 

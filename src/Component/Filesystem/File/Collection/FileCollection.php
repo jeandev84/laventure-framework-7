@@ -25,6 +25,12 @@ class FileCollection
 
 
 
+      /**
+       * @var array
+      */
+      protected array $removed = [];
+
+
 
 
       /**
@@ -43,13 +49,23 @@ class FileCollection
        *
        * @return $this
       */
-      public function addFile(File $file): static
+      public function add(File $file): static
       {
           $this->files[] = $file;
 
           return $this;
       }
 
+
+
+
+      /**
+       * @return int
+      */
+      public function count(): int
+      {
+           return count($this->files);
+      }
 
 
 
@@ -62,9 +78,50 @@ class FileCollection
       public function addFiles(array $files): static
       {
           foreach ($files as $file) {
-              $this->addFile($file);
+              $this->add($file);
           }
 
           return $this;
+      }
+
+
+
+
+
+
+      /**
+       * @return File[]
+      */
+      public function getFiles(): array
+      {
+          return $this->files;
+      }
+
+
+
+
+
+      /**
+       * @return int
+      */
+      public function remove(): bool
+      {
+           foreach ($this->files as $file) {
+               $this->removed[$file->getPathname()] = $file->remove();
+           }
+
+           return count($this->removed);
+      }
+
+
+
+
+
+      /**
+       * @return array
+      */
+      public function getRemovedFiles(): array
+      {
+           return array_keys($this->removed);
       }
 }
