@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Filesystem\Locator;
+namespace Laventure\Component\Filesystem\File\Locator;
 
 
 /**
@@ -9,7 +9,7 @@ namespace Laventure\Component\Filesystem\Locator;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Filesystem\Locator
+ * @package Laventure\Component\Filesystem\File\Locator
  */
 interface FileLocatorInterface
 {
@@ -22,14 +22,4 @@ interface FileLocatorInterface
      * @return string
     */
     public function locate(string $path): string;
-
-
-
-
-    /**
-     * @param string $path
-     *
-     * @return bool
-    */
-    public function exists(string $path): bool;
 }

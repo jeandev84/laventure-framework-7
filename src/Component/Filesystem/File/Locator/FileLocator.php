@@ -1,10 +1,10 @@
 <?php
-namespace Laventure\Component\Filesystem\Locator;
+namespace Laventure\Component\Filesystem\File\Locator;
 
 
 /**
  * @inheritDoc
- */
+*/
 class FileLocator implements FileLocatorInterface
 {
 
@@ -19,11 +19,11 @@ class FileLocator implements FileLocatorInterface
     /**
      * FileLoader constructor.
      *
-     * @param string $root
+     * @param string $resource
     */
-    public function __construct(string $root)
+    public function __construct(string $resource)
     {
-        $this->resource($root);
+        $this->resource($resource);
     }
 
 
@@ -38,7 +38,7 @@ class FileLocator implements FileLocatorInterface
     {
         $resource = rtrim($resource, DIRECTORY_SEPARATOR);
 
-        $this->resource = realpath($resource);
+        $this->resource = $resource;
 
         return $this;
     }
@@ -50,23 +50,10 @@ class FileLocator implements FileLocatorInterface
 
     /**
      * @inheritDoc
-     */
+    */
     public function locate(string $path): string
     {
-        return join(DIRECTORY_SEPARATOR, [$this->resource, $this->normalizePath($path)]);
-    }
-
-
-
-
-    /**
-     * @param string $path
-     *
-     * @return bool
-    */
-    public function exists(string $path): bool
-    {
-        return file_exists($this->locate($path));
+        return join(DIRECTORY_SEPARATOR, [realpath($this->resource), $this->normalizePath($path)]);
     }
 
 

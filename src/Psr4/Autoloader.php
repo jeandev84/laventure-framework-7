@@ -1,6 +1,17 @@
 <?php
 
-class SplAutoloader
+/**
+ * @Autoloader
+ *
+ * @see https://www.php-fig.org/psr/psr-4/
+ *
+ * @see https://www.php-fig.org/psr/psr-4/examples/
+ *
+ * @author Jean-Claude <jeanyao@ymail.com>
+ *
+ * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
+*/
+class Autoloader
 {
 
 
@@ -138,7 +149,7 @@ class SplAutoloader
      */
      public function loadClass(string $class): bool
      {
-         $fragments = $this->getClassFragments($class);
+         $fragments = $this->getFragments($class);
 
          $prefix = array_shift($fragments);
 
@@ -146,14 +157,13 @@ class SplAutoloader
               return false;
          }
 
-         $path = join(DIRECTORY_SEPARATOR, [$this->prefixes[$prefix], $this->buildClassPath($fragments)]);
+         $path = $this->buildPath($prefix, $fragments);
 
          if (! file_exists($path)) {
              return false;
          }
 
          require_once $path;
-
          return true;
      }
 
@@ -191,24 +201,26 @@ class SplAutoloader
      * @param string $class
      * @return string[]
     */
-    private function getClassFragments(string $class): array
+    private function getFragments(string $class): array
     {
         return explode('\\', $class);
     }
 
 
-
-
-
     /**
+     * @param string $prefix
+     *
      * @param array $fragments
      *
      * @return string
     */
-    private function buildClassPath(array $fragments): string
+    private function buildPath(string $prefix, array $fragments): string
     {
-        return (join(DIRECTORY_SEPARATOR, $fragments) . '.php');
+        $classPath = join(DIRECTORY_SEPARATOR, $fragments) . '.php';
+
+        return join(DIRECTORY_SEPARATOR, [$this->prefixes[$prefix], $classPath]);
     }
+
 
 
 

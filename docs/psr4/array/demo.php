@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/src/SplAutoloader.php';
+require_once __DIR__ . '/src/Psr4/Autoloader.php';
 
-$autoloader = new SplAutoloader(__DIR__);
+$autoloader = new Autoloader(__DIR__);
 
 $autoloader->addNamespaces([
   'Laventure\\' => 'src/',

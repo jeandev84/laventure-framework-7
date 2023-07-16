@@ -1,9 +1,9 @@
 <?php
 namespace Laventure\Component\Filesystem\Loader;
 
-use Laventure\Component\Filesystem\Loader\Contract\FileLoaderInterface;
-use Laventure\Component\Filesystem\Locator\FileLocator;
-use Laventure\Component\Filesystem\Locator\FileLocatorInterface;
+use Laventure\Component\Filesystem\File\Loader\Contract\FileLoaderInterface;
+use Laventure\Component\Filesystem\File\Locator\FileLocatorInterface;
+
 
 
 /**
@@ -13,11 +13,12 @@ class FileLoader implements FileLoaderInterface
 {
 
     /**
-     * @param FileLocator $locator
+     * @param FileLocatorInterface $locator
     */
     public function __construct(protected FileLocatorInterface $locator)
     {
     }
+
 
 
 
@@ -26,10 +27,6 @@ class FileLoader implements FileLoaderInterface
     */
     public function load(string $path): mixed
     {
-        if (! $this->locator->exists($path)) {
-            return false;
-        }
-
         return require_once $this->locator->locate($path);
     }
 }

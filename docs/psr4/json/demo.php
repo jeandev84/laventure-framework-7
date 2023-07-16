@@ -1,20 +1,20 @@
 <?php
 
-require_once __DIR__ . '/src/SplAutoloader.php';
+require_once __DIR__ . '/src/Psr4/Autoloader.php';
 
 /*
-$autoloader = new SplAutoloader(__DIR__);
+$psr4 = new Autoloader(__DIR__);
 
-$autoloader->addNamespaces([
+$psr4->addNamespaces([
   'Laventure\\' => 'src/',
   'App\\' => 'app/'
 ]);
 
 
-$autoloader->register();
+$psr4->register();
 */
 
-SplAutoloader::load(__DIR__);
+Autoloader::load(__DIR__);
 
 $cache = new \Laventure\Component\Templating\Template\Cache\TemplateCache(__DIR__.'/storage/cache');
 $controller = new \App\Controller\HelloController();

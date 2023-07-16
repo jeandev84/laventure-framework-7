@@ -10,7 +10,7 @@ namespace Laventure\Component\Dotenv;
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
  * @package Laventure\Component\Dotenv
- */
+*/
 class Dotenv
 {
 

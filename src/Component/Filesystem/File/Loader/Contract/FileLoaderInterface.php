@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Filesystem\Loader\Contract;
+namespace Laventure\Component\Filesystem\File\Loader\Contract;
 
 
 /**
@@ -9,7 +9,7 @@ namespace Laventure\Component\Filesystem\Loader\Contract;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Filesystem\Loader\Contract
+ * @package Laventure\Component\Filesystem\File\Loader\Contract
 */
 interface FileLoaderInterface
 {
