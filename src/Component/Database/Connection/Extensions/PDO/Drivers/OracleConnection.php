@@ -29,8 +29,19 @@ class OracleConnection extends DriverConnection
     /**
      * @inheritDoc
     */
-    public function createDatabase(): mixed
+    public function createDatabase(): bool
     {
         // TODO: Implement createDatabase() method.
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function dropDatabase(): bool
+    {
+        // TODO: Implement dropDatabase() method.
     }
 }

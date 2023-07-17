@@ -23,9 +23,8 @@ interface ConnectionInterface
      * Returns connection name
      *
      * @return string
-     */
+    */
     public function getName(): string;
-
 
 
 
@@ -104,16 +103,6 @@ interface ConnectionInterface
     public function createQuery(): QueryInterface;
 
 
-
-
-
-
-    /**
-     * @param string $sql
-     *
-     * @return QueryInterface
-    */
-    public function query(string $sql): QueryInterface;
 
 
 
@@ -205,7 +194,7 @@ interface ConnectionInterface
      *
      * @return bool
     */
-    public function exec(string $sql): bool;
+    public function executeQuery(string $sql): bool;
 
 
 
@@ -238,12 +227,38 @@ interface ConnectionInterface
 
 
 
+
+    /**
+     * Returns databases
+     *
+     * @return array
+    */
+    public function getDatabases(): array;
+
+
+
+
+
+
     /**
      * Create database
      *
      * @return mixed
     */
     public function createDatabase(): mixed;
+
+
+
+
+
+
+    /**
+     * Drop database
+     *
+     * @return mixed
+    */
+    public function dropDatabase(): mixed;
+
 
 
 

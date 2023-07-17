@@ -21,7 +21,7 @@ class PgsqlConnection extends DriverConnection
     */
     public function getName(): string
     {
-         return 'pgsql';
+        return 'pgsql';
     }
 
 
@@ -32,16 +32,17 @@ class PgsqlConnection extends DriverConnection
     */
     public function createDatabase(): bool
     {
-        // TODO: Implement createDatabase() method.
+
     }
+
 
 
 
     /**
      * @inheritDoc
     */
-    public function getDatabases(): array
+    public function dropDatabase(): bool
     {
-        // TODO: Implement getDatabases() method.
+
     }
 }

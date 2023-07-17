@@ -1,7 +1,6 @@
 <?php
 namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
 
-
 use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
 
 
@@ -22,10 +21,8 @@ class MysqlConnection extends DriverConnection
     */
     public function getName(): string
     {
-        return 'mysql';
+         return 'mysql';
     }
-
-
 
 
 
@@ -34,6 +31,17 @@ class MysqlConnection extends DriverConnection
     */
     public function createDatabase(): bool
     {
-        // TODO: Implement createDatabase() method.
+
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function dropDatabase(): bool
+    {
+
     }
 }
