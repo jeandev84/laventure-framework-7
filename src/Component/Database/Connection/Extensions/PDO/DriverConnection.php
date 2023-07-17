@@ -36,19 +36,19 @@ abstract class DriverConnection implements ConnectionInterface
 
 
 
+
     /**
      * @implements
     */
     public function connect(ConfigurationInterface $config): void
     {
-        $this->connection = $this->makePdo($config);
+        $this->config     = $config;
+        $this->connection = $this->makePdo($this->config);
 
         if ($this->hasDatabase()) {
-            $config['dsn'] = $this->refreshPdoDsn($config);
-            $this->connection = $this->makePdo($config);
+            $this->config['dsn'] = $this->refreshPdoDsn($this->config);
+            $this->connection = $this->makePdo($this->config);
         }
-
-        $this->config = $config;
     }
 
 
@@ -240,6 +240,7 @@ abstract class DriverConnection implements ConnectionInterface
 
 
 
+
     /**
      * @return array
     */
@@ -249,6 +250,26 @@ abstract class DriverConnection implements ConnectionInterface
     }
 
 
+
+
+    /**
+     * @param ConfigurationInterface $config
+     *
+     * @return PdoConnection
+    */
+    private function makePdoConnection(ConfigurationInterface $config): PdoConnection
+    {
+        if (! $dsn = $config->get('dsn')) {
+            $dsn = $this->buildPdoDsn($config);
+        }
+
+        return new PdoConnection(
+            $dsn,
+            $config->getUsername(),
+            $config->getPassword(),
+            $config->get('options', [])
+        );
+    }
 
 
 
@@ -269,6 +290,7 @@ abstract class DriverConnection implements ConnectionInterface
             $config->getPassword(),
             $config->get('options', [])
         );
+
 
         return $connection->getPdo();
     }

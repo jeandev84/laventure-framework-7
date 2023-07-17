@@ -53,15 +53,23 @@ class PdoConnection implements PdoConnectionInterface
         */
         public function __construct(string $dsn, string $username = null, string $password = null, array $options = [])
         {
-            try {
+             try {
 
-                $this->pdo = new PDO($dsn, $username, $password, array_merge($this->options, $options));
+                 $this->pdo = new PDO($dsn, $username, $password, array_merge($this->options, $options));
 
-            } catch (Exception $e) {
+             } catch (Exception $e) {
 
-                throw new PDOException($e->getMessage(), $e->getCode());
-            }
+                 throw new PDOException($e->getMessage(), $e->getCode());
+             }
         }
+
+
+
+        public static function make(ConfigurationInterface $config)
+        {
+             $connection = new static($config->get('dsn'));
+        }
+
 
 
 
@@ -87,4 +95,47 @@ class PdoConnection implements PdoConnectionInterface
         {
              return in_array($name, PDO::getAvailableDrivers());
         }
+
+
+
+
+
+       /**
+        * @param ConfigurationInterface $config
+        *
+        * @return string
+       */
+       private function buildPdoDsn(ConfigurationInterface $config): string
+       {
+            $driver = $config->getDriverName();
+
+            if (! self::driverExists($driver)) {
+
+            }
+
+            if ($driver === 'sqlite') {
+                return sprintf('%s:database=%s', $driver, $config->getDatabase());
+            }
+
+            return sprintf('%s:%s', $driver, http_build_query([
+                'host'       => $config->getHostname(),
+                'port'       => $config->getPort(),
+                'charset'    => $config->getCharset()
+            ],'', ';'));
+      }
+
+
+
+
+
+
+      /**
+       * @param ConfigurationInterface $config
+       *
+       * @return string
+      */
+      private function refreshPdoDsn(ConfigurationInterface $config): string
+      {
+            return sprintf('%s;database=%s;', $this->buildPdoDsn($config), $config->getDatabase());
+      }
 }

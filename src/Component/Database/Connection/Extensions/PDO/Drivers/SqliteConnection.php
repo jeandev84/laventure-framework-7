@@ -4,7 +4,7 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
 use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
 
 /**
- * @PgsqlConnection
+ * @SqliteConnection
  *
  * @author Jean-Claude <jeanyao@ymail.com>
  *

@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Database\Manager\Exception;
+namespace Laventure\Component\Database;
 
 
 use Exception;
@@ -11,7 +11,7 @@ use Exception;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Manager\Exception
+ * @package Laventure\Component\Database
 */
 class DatabaseManagerException extends Exception
 {

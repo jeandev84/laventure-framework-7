@@ -16,13 +16,13 @@ use Laventure\Component\Database\Connection\Extensions\PDO\Drivers\SqliteConnect
  *
  * @package Laventure\Component\Database\Connection
 */
-class ConnectionRepository
+class ConnectionStack
 {
 
      /**
       * @return ConnectionInterface[]
      */
-     public static function getDefaults(): array
+     public static function defaults(): array
      {
           return [
               new MysqlConnection(),

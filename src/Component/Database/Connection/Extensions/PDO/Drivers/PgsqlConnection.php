@@ -30,7 +30,7 @@ class PgsqlConnection extends DriverConnection
     /**
      * @inheritDoc
     */
-    public function createDatabase()
+    public function createDatabase(): bool
     {
         // TODO: Implement createDatabase() method.
     }

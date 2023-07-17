@@ -32,18 +32,7 @@ class MysqlConnection extends DriverConnection
     /**
      * @inheritDoc
     */
-    public function getDatabases(): array
-    {
-        // TODO: Implement getDatabases() method.
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function createDatabase()
+    public function createDatabase(): bool
     {
         // TODO: Implement createDatabase() method.
     }

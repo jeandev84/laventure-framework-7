@@ -1,12 +1,11 @@
 <?php
-namespace Laventure\Component\Database\Manager;
+namespace Laventure\Component\Database;
 
 
 use Laventure\Component\Database\Connection\Configuration\Configuration;
 use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use Laventure\Component\Database\Connection\ConnectionInterface;
-use Laventure\Component\Database\Connection\ConnectionRepository;
-use Laventure\Component\Database\Manager\Exception\DatabaseManagerException;
+use Laventure\Component\Database\Connection\ConnectionStack;
 
 /**
  * @DatabaseManager
@@ -15,7 +14,7 @@ use Laventure\Component\Database\Manager\Exception\DatabaseManagerException;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Manager
+ * @package Laventure\Component\Database
 */
 class DatabaseManager
 {
@@ -74,12 +73,14 @@ class DatabaseManager
          * @param string $connection
          *
          * @param array $config
+         *
+         * @return void
         */
-        public function __construct(string $connection, array $config)
+        public function connect(string $connection, array $config): void
         {
              $this->setDefaultConnection($connection);
              $this->setConfigurations($config);
-             $this->setConnections(ConnectionRepository::getDefaults());
+             $this->setConnections(ConnectionStack::defaults());
         }
 
 
@@ -251,7 +252,13 @@ class DatabaseManager
                  $this->abortIf("unavailable connection named '$name'");
              }
 
-             return $this->make($name, $config);
+             $this->connections[$name]->connect($config);
+
+             if (! $this->connections[$name]->connected()) {
+                 $this->abortIf("no connection detected for '$name'.");
+             }
+
+             return $this->connected[$name] = $this->connections[$name];
         }
 
 
