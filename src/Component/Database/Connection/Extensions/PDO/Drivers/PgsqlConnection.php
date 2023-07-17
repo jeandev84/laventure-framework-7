@@ -2,8 +2,10 @@
 namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
 
 
+use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
+
 /**
- * @MysqlConnection
+ * @PgsqlConnection
  *
  * @author Jean-Claude <jeanyao@ymail.com>
  *
@@ -11,7 +13,35 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
  *
  * @package Laventure\Component\Database\Connection\Extensions\PDO\Drivers
 */
-class PgsqlConnection
+class PgsqlConnection extends DriverConnection
 {
 
+    /**
+     * @inheritDoc
+    */
+    public function getName(): string
+    {
+         return 'pgsql';
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function createDatabase()
+    {
+        // TODO: Implement createDatabase() method.
+    }
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getDatabases(): array
+    {
+        // TODO: Implement getDatabases() method.
+    }
 }

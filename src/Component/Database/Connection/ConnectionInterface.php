@@ -71,17 +71,6 @@ interface ConnectionInterface
 
 
 
-    /**
-     * Determine reconnected to database
-     *
-     * @return bool
-    */
-    public function reconnected(): bool;
-
-
-
-
-
 
     /**
      * Disconnect to the database
@@ -254,19 +243,7 @@ interface ConnectionInterface
      *
      * @return mixed
     */
-    public function createDatabase();
-
-
-
-
-
-
-    /**
-     * Returns all database
-     *
-     * @return array
-    */
-    public function getDatabases(): array;
+    public function createDatabase(): mixed;
 
 
 

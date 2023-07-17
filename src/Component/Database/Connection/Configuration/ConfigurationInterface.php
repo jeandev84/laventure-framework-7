@@ -152,7 +152,6 @@ interface ConfigurationInterface extends \ArrayAccess
 
 
 
-
         /**
          * @param array $params
          *

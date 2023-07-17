@@ -39,9 +39,12 @@ class PdoConfiguration extends Configuration
         $driver =  parent::getDriverName();
 
         if (! in_array($driver, PDO::getAvailableDrivers())) {
-             $this->abortIf();
+             $this->abortIf("unavailable driver '$driver'");
         }
+
+        return $driver;
     }
+
 
 
 
@@ -55,7 +58,7 @@ class PdoConfiguration extends Configuration
              return $this->get('dsn');
          }
 
-         return '';
+         return $this->buildDsnFromParams();
     }
 
 
@@ -104,9 +107,19 @@ class PdoConfiguration extends Configuration
 
 
 
-
+    /**
+     * @return string
+    */
     private function buildDsnFromParams(): string
     {
-         return '';
+         $driver = $this->getDriverName();
+
+         return sprintf('%s:%s', $driver, http_build_query([
+             'host'       => $this->getHostname(),
+             'port'       => $this->getPort(),
+             'username'   => $this->getUsername(),
+             'password'   => $this->getPassword(),
+             'charset'    => $this->getCharset()
+         ],'', ';'));
     }
 }

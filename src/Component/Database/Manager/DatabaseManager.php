@@ -5,6 +5,7 @@ namespace Laventure\Component\Database\Manager;
 use Laventure\Component\Database\Connection\Configuration\Configuration;
 use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Connection\ConnectionRepository;
 use Laventure\Component\Database\Manager\Exception\DatabaseManagerException;
 
 /**
@@ -77,7 +78,8 @@ class DatabaseManager
         public function __construct(string $connection, array $config)
         {
              $this->setDefaultConnection($connection);
-             $this->setConfigurationFromArray($config);
+             $this->setConfigurations($config);
+             $this->setConnections(ConnectionRepository::getDefaults());
         }
 
 
@@ -137,11 +139,13 @@ class DatabaseManager
 
 
         /**
+         * Set configuration from arrays
+         *
          * @param array $config
          *
          * @return $this
         */
-        public function setConfigurationFromArray(array $config): static
+        public function setConfigurations(array $config): static
         {
              foreach ($config as $params) {
                  $this->setConfiguration(new Configuration($params));

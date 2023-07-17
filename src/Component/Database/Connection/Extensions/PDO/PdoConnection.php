@@ -3,7 +3,7 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO;
 
 
 use Exception;
-use Laventure\Component\Database\Connection\Configuration\ConfigurationException;
+use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use PDO;
 use PDOException;
 
@@ -29,75 +29,62 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
-
        /**
-        * @var PdoConfiguration
+        * @var array
        */
-       protected PdoConfiguration $config;
+       protected array $options = [
+          PDO::ATTR_PERSISTENT          => true,
+          PDO::ATTR_EMULATE_PREPARES    => 0,
+          PDO::ATTR_DEFAULT_FETCH_MODE  => PDO::FETCH_OBJ,
+          PDO::ATTR_ERRMODE             => PDO::ERRMODE_EXCEPTION,
+        ];
+
+
+
+
+        /**
+         * @param string $dsn
+         *
+         * @param string|null $username
+         *
+         * @param string|null $password
+         *
+         * @param array $options
+        */
+        public function __construct(string $dsn, string $username = null, string $password = null, array $options = [])
+        {
+            try {
+
+                $this->pdo = new PDO($dsn, $username, $password, array_merge($this->options, $options));
+
+            } catch (Exception $e) {
+
+                throw new PDOException($e->getMessage(), $e->getCode());
+            }
+        }
 
 
 
 
 
-
-      /**
-       * @param array $credentials
-       *
-       * @return void
-      */
-      public function open(array $credentials): void
-      {
-          $config = new PdoConfiguration($credentials);
-
-          $this->pdo = $this->make($config->toArray());
-      }
+        /**
+         * @inheritDoc
+        */
+        public function getPdo(): PDO
+        {
+             return $this->pdo;
+        }
 
 
 
 
-
-
-
-     /**
-      * @param array $config
-      *
-      * @return PDO
-     */
-     public function make(array $config): PDO
-     {
-         try {
-
-             return new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
-
-         } catch (Exception $e) {
-
-             throw new PDOException($e->getMessage(), $e->getCode());
-         }
-     }
-
-
-
-
-
-
-
-     /**
-      * @inheritDoc
-     */
-     public function getPdo(): PDO
-     {
-         return $this->pdo;
-     }
-
-
-
-
-
-     /**
-      * @return void
-     */
-     public function close()
-     {
-         $this->pdo = null;
-     }
+        /**
+         * @param string $name
+         *
+         * @return bool
+        */
+        public static function driverExists(string $name): bool
+        {
+             return in_array($name, PDO::getAvailableDrivers());
+        }
 }
