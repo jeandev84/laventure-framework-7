@@ -4,6 +4,7 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
 use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
 
+
 /**
  * @MysqlConnection
  *
@@ -22,18 +23,6 @@ class MysqlConnection extends DriverConnection
     public function getName(): string
     {
         return 'mysql';
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function connect(ConfigurationInterface $config): void
-    {
-
     }
 
 

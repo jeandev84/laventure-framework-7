@@ -6,8 +6,18 @@ use Laventure\Component\Database\Connection\Configuration\ConfigurationException
 use PDO;
 
 
+/**
+ * @PdoConnection
+ *
+ * @author Jean-Claude <jeanyao@ymail.com>
+ *
+ * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
+ *
+ * @package Laventure\Component\Database\Connection\Extensions\PDO
+*/
 class PdoConfiguration extends Configuration
 {
+
     /**
      * @var array
     */
@@ -20,29 +30,18 @@ class PdoConfiguration extends Configuration
 
 
 
-    /**
-     * @param array $params
-    */
-    public function __construct(array $params)
-    {
-        parent::__construct($params);
-    }
-
-
-
-
-
 
     /**
-     * @return bool
-     *
-     * @throws ConfigurationException
+     * @return string
     */
-    public function driverExists(): bool
+    public function getDriverName(): string
     {
-         return in_array($this->getDriverName(), PDO::getAvailableDrivers());
-    }
+        $driver =  parent::getDriverName();
 
+        if (! in_array($driver, PDO::getAvailableDrivers())) {
+             $this->abortIf();
+        }
+    }
 
 
 
@@ -52,8 +51,25 @@ class PdoConfiguration extends Configuration
     */
     public function getDsn(): string
     {
+         if ($this->has('dsn')) {
+             return $this->get('dsn');
+         }
+
          return '';
     }
+
+
+
+
+
+    /**
+     * @return void
+    */
+    public function refreshDsn(): void
+    {
+         $this->merge(['dsn' => $this->getDsn()]);
+    }
+
 
 
 
@@ -67,5 +83,30 @@ class PdoConfiguration extends Configuration
          $this->merge(['options' => $this->options]);
 
          return $this->get('options');
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    public function toArray(): array
+    {
+        return [
+           'dsn'      => $this->getDsn(),
+           'username' => $this->getUsername(),
+           'password' => $this->getPassword(),
+           'options'  => $this->getOptions()
+        ];
+    }
+
+
+
+
+
+    private function buildDsnFromParams(): string
+    {
+         return '';
     }
 }

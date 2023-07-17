@@ -249,6 +249,16 @@ interface ConnectionInterface
 
 
 
+    /**
+     * Create database
+     *
+     * @return mixed
+    */
+    public function createDatabase();
+
+
+
+
 
 
     /**

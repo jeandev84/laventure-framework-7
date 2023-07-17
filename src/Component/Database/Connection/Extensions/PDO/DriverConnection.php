@@ -25,8 +25,9 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function connect(ConfigurationInterface $config): void
     {
-        $this->open(new PdoConfiguration($config->getParams()));
+         $this->open($config->getParams());
     }
+
 
 
 
@@ -44,13 +45,18 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
 
 
 
+
     /**
      * @inheritDoc
     */
     public function reconnect(): void
     {
-
+        $this->connect($this->config);
     }
+
+
+
+
 
 
 

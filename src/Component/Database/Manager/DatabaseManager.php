@@ -61,6 +61,13 @@ class DatabaseManager
 
 
 
+        /**
+         * @var array
+        */
+        protected $reconnected = [];
+
+
+
 
         /**
          * @param string $connection
@@ -102,7 +109,7 @@ class DatabaseManager
           *
           * @return string
         */
-        public function getConnection(string $name = null): string
+        public function getCurrentConnection(string $name = null): string
         {
              return $name ?: $this->connection;
         }
@@ -187,6 +194,25 @@ class DatabaseManager
 
 
 
+
+        /**
+         * Determine if exists connection by given name
+         *
+         * @param string $name
+         *
+         * @return bool
+        */
+        public function hasConnection(string $name): bool
+        {
+            return isset($this->connections[$name]);
+        }
+
+
+
+
+
+
+
         /**
          * @param array $connections
          *
@@ -194,12 +220,13 @@ class DatabaseManager
         */
         public function setConnections(array $connections): static
         {
-             foreach ($this->connections as $connection) {
+             foreach ($connections as $connection) {
                  $this->setConnection($connection);
              }
 
              return $this;
         }
+
 
 
 
@@ -213,18 +240,121 @@ class DatabaseManager
         */
         public function connection(string $name = null): ConnectionInterface
         {
-             $name   = $this->getConnection($name);
-
+             $name   = $this->getCurrentConnection($name);
              $config = $this->configuration($name);
 
+             if (! $this->hasConnection($name)) {
+                 $this->abortIf("unavailable connection named '$name'");
+             }
 
+             return $this->make($name, $config);
         }
 
 
 
 
 
-       /**
+
+        /**
+         * @param string $name
+         *
+         * @return bool
+        */
+        public function connected(string $name): bool
+        {
+             return isset($this->connected[$name]);
+        }
+
+
+
+
+
+        /**
+         * @param string|null $name
+         *
+         * @return bool
+        */
+        public function reconnect(string $name = null): bool
+        {
+              $name = $this->getCurrentConnection($name);
+
+              if ($this->connected($name)) {
+                  $this->connected[$name]->reconnect();
+                  $this->reconnected[$name] = $this->connected[$name]->reconnected();
+              }
+
+              return $this->reconnected[$name];
+        }
+
+
+
+
+
+
+        /**
+         * @param string|null $name
+         * @return bool
+        */
+        public function disconnect(string $name = null): bool
+        {
+            $name = $this->getCurrentConnection($name);
+
+            if ($this->connected($name)) {
+                $this->connected[$name]->disconnect();
+                $this->disconnected[$name] = $this->connected[$name]->disconnected();
+            }
+
+            return $this->disconnected[$name];
+        }
+
+
+
+
+
+        /**
+         * @param string|null $name
+         * @return bool
+        */
+        public function purge(string $name = null): bool
+        {
+              $name = $this->getCurrentConnection($name);
+
+              unset($this->connections[$name], $this->config[$name]);
+
+              return $this->disconnect($name);
+        }
+
+
+
+
+
+        /**
+         * @param string $name
+         *
+         * @param ConfigurationInterface $config
+         *
+         * @return ConnectionInterface
+        */
+        private function make(string $name, ConfigurationInterface $config): ConnectionInterface
+        {
+             $connection = $this->connections[$name];
+
+             $connection->connect($config);
+
+             if (! $connection->connected()) {
+                 $this->abortIf("no connection detected for '$name'.");
+             }
+
+             $this->connection = $name;
+
+             return $this->connected[$name] = $connection;
+        }
+
+
+
+
+
+        /**
          * @param string $message
          *
          * @return void
@@ -234,5 +364,5 @@ class DatabaseManager
            (function () use ($message) {
               throw new DatabaseManagerException($message);
            })();
-      }
+       }
 }

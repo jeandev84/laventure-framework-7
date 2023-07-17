@@ -2,7 +2,10 @@
 namespace Laventure\Component\Database\Connection\Extensions\PDO;
 
 
+use Exception;
+use Laventure\Component\Database\Connection\Configuration\ConfigurationException;
 use PDO;
+use PDOException;
 
 
 /**
@@ -26,36 +29,51 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
+       /**
+        * @var PdoConfiguration
+       */
+       protected PdoConfiguration $config;
+
+
+
+
+
+
       /**
-       * @var PdoConfiguration
+       * @param array $credentials
+       *
+       * @return void
       */
-      protected PdoConfiguration $config;
+      public function open(array $credentials): void
+      {
+          $config = new PdoConfiguration($credentials);
+
+          $this->pdo = $this->make($config->toArray());
+      }
+
+
 
 
 
 
 
      /**
-      * @param PdoConfiguration $config
+      * @param array $config
       *
-      * @return void
+      * @return PDO
      */
-     public function open(PdoConfiguration $config): void
+     public function make(array $config): PDO
      {
          try {
 
-             $this->pdo = new PDO($config->getDsn(), $config->getUsername(), $config->getPassword(), $config->getOptions());
+             return new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
 
-             $this->config = $config;
+         } catch (Exception $e) {
 
-
-         } catch (\PDOException $e) {
-
-             throw new \PDOException($e->getMessage(), $e->getCode());
+             throw new PDOException($e->getMessage(), $e->getCode());
          }
      }
-
-
 
 
 
@@ -81,18 +99,5 @@ class PdoConnection implements PdoConnectionInterface
      public function close()
      {
          $this->pdo = null;
-     }
-
-
-
-
-
-
-     /**
-      * @return PdoConfiguration
-     */
-     protected function getConfiguration(): PdoConfiguration
-     {
-         return $this->config;
      }
 }

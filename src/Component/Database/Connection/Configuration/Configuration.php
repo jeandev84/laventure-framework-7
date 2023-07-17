@@ -134,7 +134,7 @@ class Configuration implements ConfigurationInterface
         public function getDriverName(): string
         {
             if (! $this->has('driver')) {
-                 throw new ConfigurationException("driver name is required.");
+                 $this->abortIf('driver name is required param.');
             }
 
             return $this->get('driver');
@@ -319,5 +319,21 @@ class Configuration implements ConfigurationInterface
         public function offsetUnset(mixed $offset): void
         {
             $this->remove($offset);
+        }
+
+
+
+
+
+        /**
+         * @param string $message
+         *
+         * @return mixed
+        */
+        public function abortIf(string $message): mixed
+        {
+             return (function () use ($message) {
+                 throw new ConfigurationException($message);
+             })();
         }
 }
