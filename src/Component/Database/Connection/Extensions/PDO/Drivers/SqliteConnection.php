@@ -28,20 +28,6 @@ class SqliteConnection extends DriverConnection
 
 
     /**
-     * @param ConfigurationInterface $config
-     *
-     * @return void
-    */
-    public function connect(ConfigurationInterface $config): void
-    {
-        $config['dsn'] = sprintf('%s:database=%s', $config['driver'], $config['database']);
-
-        parent::connect($config);
-    }
-
-
-
-    /**
      * @inheritDoc
     */
     public function createDatabase(): bool
@@ -58,5 +44,24 @@ class SqliteConnection extends DriverConnection
     public function dropDatabase(): bool
     {
         // TODO: Implement dropDatabase() method.
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    protected function resolve(ConfigurationInterface $config): ConfigurationInterface
+    {
+        $config['dsn'] = $this->buildPdoDsn($this->getName(), [
+            'database' => $config->getDatabase()
+        ]);
+
+        $config->remove('username');
+        $config->remove('password');
+
+        return $config;
     }
 }
