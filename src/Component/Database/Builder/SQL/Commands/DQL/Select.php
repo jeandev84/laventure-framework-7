@@ -454,14 +454,14 @@ class Select extends SQlBuilder implements SelectBuilderInterface
     */
     private function buildSelectSQL(): string
     {
-         return trim(join(' ', [
-              $this->selectSQL(),
-              $this->joinSQL(),
-              $this->whereSQL(),
-              $this->groupBySQL(),
-              $this->havingSQL(),
-              $this->orderBySQL(),
-              $this->limitSQL()
-         ]));
+         return join(' ', array_filter([
+             $this->selectSQL(),
+             $this->joinSQL(),
+             $this->whereSQL(),
+             $this->groupBySQL(),
+             $this->havingSQL(),
+             $this->orderBySQL(),
+             $this->limitSQL()
+         ])) .';';
     }
 }

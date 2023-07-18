@@ -70,6 +70,19 @@ trait HasConditions
      */
      private function whereSQL(): string
      {
-          return '';
+          $wheres = [];
+
+          $key = key($this->wheres);
+
+          foreach ($this->wheres as $operator => $conditions) {
+
+              if ($key !== $operator) {
+                  $wheres[] = $operator;;
+              }
+
+              $wheres[] = implode(" $operator ", $conditions);
+          }
+
+          return sprintf('WHERE %s', join(' ', $wheres));
      }
 }
