@@ -21,7 +21,7 @@ class Manager extends DatabaseManager
        *
        * @return void
      */
-     public function addConnection(array $config): void
+     public function addConnections(array $config): void
      {
           $this->connect($config['connection'], $config['connections']);
      }

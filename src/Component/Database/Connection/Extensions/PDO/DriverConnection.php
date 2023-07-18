@@ -48,13 +48,19 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function setConnection(ConfigurationInterface $config): void
     {
-         $this->config = $this->resolveConfiguration($config);
+          if (! $this->driverExists($driver = $config->getDriverName())) {
+              $this->createDriverException("Unavailable PDO driver '$driver'");
+          }
 
-         $this->connectionBefore($this->config);
+          $this->config = $this->resolveConfiguration($config);
 
-         if (in_array($this->config['database'], $this->getDatabases())) {
+          $this->connectionBefore($this->config);
+
+          if (in_array($this->config['database'], $this->getDatabases())) {
               $this->connectionAfter($this->config);
-         }
+          }
+
+          dd($this->config);
     }
 
 
@@ -173,10 +179,6 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     protected function buildPdoDsn(string $driver, array $params): string
     {
-         if (! $this->driverExists($driver)) {
-             $this->createDriverException("Unavailable PDO driver '$driver'");
-         }
-
          return sprintf('%s:%s',  $driver, http_build_query($params,'', ';'));
     }
 

@@ -56,8 +56,9 @@ class MysqlConnection extends DriverConnection
 
         $this->exec("CREATE DATABASE IF NOT EXISTS {$database};");
 
-        return in_array($database, $this->getDatabases());
+        return $this->hasDatabase();
     }
+
 
 
 

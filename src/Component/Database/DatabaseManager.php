@@ -118,18 +118,16 @@ class DatabaseManager
         }
 
 
-
-
-
-
         /**
+         * @param string $name
+         *
          * @param ConfigurationInterface $config
          *
          * @return $this
         */
-        public function setConfiguration(ConfigurationInterface $config): static
+        public function setConfiguration(string $name, ConfigurationInterface $config): static
         {
-              $this->config[$config->getDriverName()] = $config;
+              $this->config[$name] = $config;
 
               return $this;
         }
@@ -148,8 +146,8 @@ class DatabaseManager
         */
         public function setConfigurations(array $config): static
         {
-             foreach ($config as $params) {
-                 $this->setConfiguration(new Configuration($params));
+             foreach ($config as $name => $params) {
+                 $this->setConfiguration($name, new Configuration($params));
              }
 
              return $this;
@@ -256,7 +254,7 @@ class DatabaseManager
              $this->connections[$name]->connect($config);
 
              if (! $this->connections[$name]->connected()) {
-                 $this->abortIf("no connection detected for '$name'.");
+                  $this->abortIf("no connection detected for '$name'.");
              }
 
              return $this->connected[$name] = $this->connections[$name];

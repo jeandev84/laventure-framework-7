@@ -196,7 +196,7 @@ class Query implements QueryInterface
     */
     public function exec(string $sql): bool
     {
-        if ($this->exec($sql)) {
+        if ($this->pdo->exec($sql)) {
             $this->logger->log(compact('sql'));
             return true;
         }

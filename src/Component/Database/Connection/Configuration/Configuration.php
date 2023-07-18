@@ -133,10 +133,6 @@ class Configuration implements ConfigurationInterface
         */
         public function getDriverName(): string
         {
-            if (! $this->has('driver')) {
-                 $this->abortIf('driver name is required param.');
-            }
-
             return $this->get('driver');
         }
 
