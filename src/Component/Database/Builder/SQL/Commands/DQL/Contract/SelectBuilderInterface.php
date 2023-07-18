@@ -3,6 +3,16 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract;
 
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
+
+/**
+ * @SelectBuilderInterface
+ *
+ * @author Jean-Claude <jeanyao@ymail.com>
+ *
+ * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
+ *
+ * @package Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract
+*/
 interface SelectBuilderInterface
 {
 
