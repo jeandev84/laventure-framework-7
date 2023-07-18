@@ -1,6 +1,8 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract;
 
+use Laventure\Component\Database\Connection\Query\QueryResultInterface;
+
 interface SelectBuilderInterface
 {
 
@@ -25,6 +27,7 @@ interface SelectBuilderInterface
 
 
 
+
     /**
      * @param string $table
      *
@@ -33,6 +36,8 @@ interface SelectBuilderInterface
      * @return $this
     */
     public function from(string $table, string $alias = ''): static;
+
+
 
 
 
@@ -58,6 +63,66 @@ interface SelectBuilderInterface
      * @param string|null $type
     */
     public function join(string $table, string $condition, string $type = null): static;
+
+
+
+
+
+    /**
+     * @param string $table
+     *
+     * @param string $condition
+     *
+     * @return $this
+    */
+    public function innerJoin(string $table, string $condition): static;
+
+
+
+
+
+
+
+    /**
+     * @param string $table
+     *
+     * @param string $condition
+     *
+     * @return $this
+    */
+    public function leftJoin(string $table, string $condition): static;
+
+
+
+
+
+
+
+    /**
+     * @param string $table
+     *
+     * @param string $condition
+     *
+     * @return $this
+    */
+    public function rightJoin(string $table, string $condition): static;
+
+
+
+
+
+
+
+    /**
+     * @param string $table
+     *
+     * @param string $condition
+     *
+     * @return $this
+    */
+    public function fullJoin(string $table, string $condition): static;
+
+
 
 
 
@@ -97,5 +162,45 @@ interface SelectBuilderInterface
 
 
 
-    public function fetch();
+    /**
+     * @param int $offset
+     *
+     * @return $this
+    */
+    public function setFirstResult(int $offset): static;
+
+
+
+
+
+    /**
+     * Set query hydrate
+     *
+     * @param QueryResultInterface $hydrate
+     *
+     * @return $this
+    */
+    public function hydrate(QueryResultInterface $hydrate): static;
+
+
+
+
+
+    /**
+     * Returns query
+     *
+     * @return QueryResultInterface
+    */
+    public function fetch(): QueryResultInterface;
+
+
+
+
+
+
+    /**
+     * Return
+     * @return Query
+    */
+    public function getQuery(): Query;
 }
