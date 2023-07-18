@@ -56,7 +56,7 @@ class SqliteConnection extends DriverConnection
     protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface
     {
         $config['dsn'] = $this->buildPdoDsn($this->getName(), [
-            'database' => $config->getDatabase()
+            'database' => $config->database()
         ]);
 
         return $config;

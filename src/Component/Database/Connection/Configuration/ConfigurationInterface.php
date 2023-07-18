@@ -20,7 +20,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getDriverName(): string;
+        public function driver(): string;
 
 
 
@@ -32,7 +32,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getHostname(): string;
+        public function host(): string;
 
 
 
@@ -44,7 +44,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string|null
         */
-        public function getUsername(): ?string;
+        public function username(): ?string;
 
 
 
@@ -56,7 +56,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string|null
         */
-        public function getPassword(): ?string;
+        public function password(): ?string;
 
 
 
@@ -68,7 +68,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getPort(): string;
+        public function port(): string;
 
 
 
@@ -81,7 +81,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getDatabase(): string;
+        public function database(): string;
 
 
 
@@ -94,7 +94,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getCharset(): string;
+        public function charset(): string;
 
 
 
@@ -107,7 +107,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getCollation(): string;
+        public function collation(): string;
 
 
 
@@ -119,7 +119,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getPrefix(): string;
+        public function prefix(): string;
 
 
 
@@ -133,7 +133,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getPrefixedTable(string $table): string;
+        public function prefixedTable(string $table): string;
 
 
 
@@ -145,7 +145,7 @@ interface ConfigurationInterface extends \ArrayAccess
          *
          * @return string
         */
-        public function getEngine(): string;
+        public function engine(): string;
 
 
 
@@ -158,6 +158,7 @@ interface ConfigurationInterface extends \ArrayAccess
          * @return $this
         */
         public function merge(array $params): static;
+
 
 
 

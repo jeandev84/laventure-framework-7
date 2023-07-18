@@ -48,7 +48,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function setConnection(ConfigurationInterface $config): void
     {
-          if (! $this->driverExists($driver = $config->getDriverName())) {
+          if (! $this->driverExists($driver = $config->driver())) {
               $this->createDriverException("Unavailable PDO driver '$driver'");
           }
 
@@ -98,7 +98,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function hasDatabase(): bool
     {
-       return in_array($this->config->getDatabase(), $this->getDatabases());
+       return in_array($this->config->database(), $this->getDatabases());
     }
 
 
@@ -124,7 +124,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     private function connectionBefore(ConfigurationInterface $config): void
     {
-        $this->open($config['dsn'], $config->getUsername(), $config->getPassword(), $config->get('options', []));
+        $this->open($config['dsn'], $config->username(), $config->password(), $config->get('options', []));
     }
 
 
@@ -138,9 +138,9 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
      */
     private function connectionAfter(ConfigurationInterface $config): void
     {
-        $config['dsn'] .= ';database='. $config->getDatabase();
+        $config['dsn'] .= ';database='. $config->database();
 
-        $this->open($config['dsn'], $config->getUsername(), $config->getPassword(), $config->get('options', []));
+        $this->open($config['dsn'], $config->username(), $config->password(), $config->get('options', []));
     }
 
 
@@ -162,7 +162,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function getDatabase(): string
     {
-        return $this->config->getDatabase();
+        return $this->config->database();
     }
 
 

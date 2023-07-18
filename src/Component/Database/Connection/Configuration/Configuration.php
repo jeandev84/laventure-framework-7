@@ -131,7 +131,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getDriverName(): string
+        public function driver(): string
         {
             return $this->get('driver');
         }
@@ -144,7 +144,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getUsername(): ?string
+        public function username(): ?string
         {
             return $this->get('username');
         }
@@ -158,7 +158,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getPassword(): ?string
+        public function password(): ?string
         {
             return $this->get('password');
         }
@@ -171,7 +171,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getCharset(): string
+        public function charset(): string
         {
             return $this->get('charset', 'utf8');
         }
@@ -184,7 +184,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getPrefix(): string
+        public function prefix(): string
         {
             return $this->get('prefix', '');
         }
@@ -196,9 +196,9 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritdoc
         */
-        public function getPrefixedTable(string $table): string
+        public function prefixedTable(string $table): string
         {
-            return join([$this->getPrefix(), $table]);
+            return sprintf('%s%s', $this->prefix(), $table);
         }
 
 
@@ -210,7 +210,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getEngine(): string
+        public function engine(): string
         {
             return $this->get('engine', '');
         }
@@ -224,7 +224,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getHostname(): string
+        public function host(): string
         {
             return $this->get('host', '');
         }
@@ -237,7 +237,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getPort(): string
+        public function port(): string
         {
             return $this->get('port', '');
         }
@@ -249,7 +249,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @inheritDoc
         */
-        public function getDatabase(): string
+        public function database(): string
         {
             return $this->get('database', '');
         }
@@ -261,7 +261,7 @@ class Configuration implements ConfigurationInterface
         /**
          * @return string
         */
-        public function getCollation(): string
+        public function collation(): string
         {
             return $this->get('collation', '');
         }

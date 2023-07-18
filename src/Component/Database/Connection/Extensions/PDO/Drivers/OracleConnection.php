@@ -53,9 +53,9 @@ class OracleConnection extends DriverConnection
     protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface
     {
         $config['dsn'] = $this->buildPdoDsn($this->getName(), [
-            'host'       => $config->getHostname(),
-            'port'       => $config->getPort(),
-            'charset'    => $config->getCharset()
+            'host'       => $config->host(),
+            'port'       => $config->port(),
+            'charset'    => $config->charset()
         ]);
 
         $config['options'] = [];
