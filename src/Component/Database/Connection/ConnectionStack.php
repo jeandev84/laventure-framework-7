@@ -20,6 +20,8 @@ class ConnectionStack
 {
 
      /**
+      * Returns defaults connections
+      *
       * @return ConnectionInterface[]
      */
      public static function defaults(): array

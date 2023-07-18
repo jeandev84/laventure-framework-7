@@ -1,11 +1,13 @@
 <?php
 namespace Laventure\Component\Database\Connection\Extensions\PDO;
 
+use Exception;
 use Laventure\Component\Database\Connection\Query\QueryException;
 use Laventure\Component\Database\Connection\Query\QueryInterface;
 use Laventure\Component\Database\Connection\Query\QueryLogger;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 use PDO;
+use PDOException;
 use PDOStatement;
 
 
@@ -40,6 +42,7 @@ class Query implements QueryInterface
      * @var QueryLogger
     */
     protected QueryLogger $logger;
+
 
 
 
@@ -148,14 +151,27 @@ class Query implements QueryInterface
 
     /**
      * @inheritDoc
-     *
-     * @throws QueryException
     */
-    public function execute(array $parameters = []): mixed
+    public function map(string $class): static
+    {
+         $this->statement->setFetchMode(PDO::FETCH_CLASS, $class);
+
+         return $this;
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function execute(array $parameters = []): bool
     {
         try {
 
-            if ($this->statement->execute($parameters)) {
+            if ($status = $this->statement->execute($parameters)) {
 
                 $this->logger->log([
                     'sql'            => $this->statement->queryString,
@@ -164,10 +180,11 @@ class Query implements QueryInterface
                 ]);
             }
 
-        } catch (\PDOException $e) {
-
-            throw new QueryException($e->getMessage(), $e->getCode());
+        } catch (PDOException $e) {
+            $this->abort($e);
         }
+
+        return $status;
     }
 
 
@@ -176,11 +193,34 @@ class Query implements QueryInterface
 
     /**
      * @inheritDoc
-     */
+    */
+    public function exec(string $sql): bool
+    {
+        if ($this->exec($sql)) {
+            $this->logger->log(compact('sql'));
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
     public function fetch(): QueryResultInterface
     {
-        return new QueryResult($this);
+        $this->execute();
+
+        return new QueryResult($this->statement);
     }
+
+
+
 
 
 
@@ -221,6 +261,22 @@ class Query implements QueryInterface
     */
     public function getQueryLog(): array
     {
-        // TODO: Implement getQueryLog() method.
+        return $this->logger->getQueries();
+    }
+
+
+
+
+
+    /**
+     * @param Exception $e
+     *
+     * @return mixed
+    */
+    public function abort(Exception $e): mixed
+    {
+        return (function () use ($e) {
+            throw new QueryException($e->getMessage(), $e->getCode());
+        })();
     }
 }

@@ -178,9 +178,9 @@ interface ConnectionInterface
      *
      * @param Closure $closure
      *
-     * @return mixed
+     * @return void
     */
-    public function transaction(Closure $closure): mixed;
+    public function transaction(Closure $closure): void;
 
 
 
@@ -207,7 +207,7 @@ interface ConnectionInterface
      *
      * @return bool
     */
-    public function executeQuery(string $sql): bool;
+    public function exec(string $sql): bool;
 
 
 
@@ -237,6 +237,16 @@ interface ConnectionInterface
     public function config(): ConfigurationInterface;
 
 
+
+
+
+
+    /**
+     * Returns database name
+     *
+     * @return string
+    */
+    public function getDatabase(): string;
 
 
 
@@ -287,6 +297,16 @@ interface ConnectionInterface
     public function hasDatabase(): bool;
 
 
+
+
+
+
+    /**
+     * Return database tables
+     *
+     * @return array
+    */
+    public function getTables(): array;
 
 
 

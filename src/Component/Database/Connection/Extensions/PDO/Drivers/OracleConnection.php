@@ -62,4 +62,25 @@ class OracleConnection extends DriverConnection
 
         return $config;
     }
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getDatabases(): array
+    {
+        return [];
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getTables(): array
+    {
+        return [];
+    }
 }

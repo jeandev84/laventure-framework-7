@@ -88,16 +88,6 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
 
 
 
-    /**
-     * @inheritDoc
-    */
-    public function getDatabases(): array
-    {
-        return [];
-    }
-
-
-
 
     /**
      * @inheritDoc
@@ -154,6 +144,27 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
 
 
     /**
+     * @return void
+    */
+    public function disconnect(): void
+    {
+         $this->close();
+    }
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getDatabase(): string
+    {
+        return $this->config->getDatabase();
+    }
+
+
+
+
+    /**
      * @param string $driver
      *
      * @param array $params
@@ -163,7 +174,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     protected function buildPdoDsn(string $driver, array $params): string
     {
          if (! $this->driverExists($driver)) {
-             $this->createDriverException("Unavailable driver '$driver'");
+             $this->createDriverException("Unavailable PDO driver '$driver'");
          }
 
          return sprintf('%s:%s',  $driver, http_build_query($params,'', ';'));
@@ -184,6 +195,10 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
               throw new DriverConnectionException($message);
          })();
     }
+
+
+
+
 
 
     /**

@@ -182,6 +182,7 @@ class DatabaseManager
 
 
 
+
         /**
          * @param ConnectionInterface $connection
          *
@@ -291,10 +292,10 @@ class DatabaseManager
 
               if ($this->connected($name)) {
                   $this->connected[$name]->reconnect();
-                  $this->reconnected[$name] = $this->connected[$name]->reconnected();
+                  $this->reconnected[$name] = true;
               }
 
-              return $this->reconnected[$name];
+              return isset($this->reconnected[$name]);
         }
 
 
@@ -355,8 +356,6 @@ class DatabaseManager
              if (! $connection->connected()) {
                  $this->abortIf("no connection detected for '$name'.");
              }
-
-             $this->connection = $name;
 
              return $this->connected[$name] = $connection;
         }

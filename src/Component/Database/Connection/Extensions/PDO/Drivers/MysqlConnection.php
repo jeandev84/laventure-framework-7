@@ -3,6 +3,7 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO\Drivers;
 
 use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
+use Laventure\Component\Database\Connection\Query\QueryInterface;
 
 
 /**
@@ -27,12 +28,35 @@ class MysqlConnection extends DriverConnection
 
 
 
+
+    /**
+     * @inheritDoc
+    */
+    protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface
+    {
+        $config['dsn'] = $this->buildPdoDsn($this->getName(), [
+            'host'       => $config->getHostname(),
+            'port'       => $config->getPort(),
+            'charset'    => $config->getCharset()
+        ]);
+
+        $config['options'] = [];
+
+        return $config;
+    }
+
+
+
     /**
      * @inheritDoc
     */
     public function createDatabase(): bool
     {
+        $database = $this->getDatabase();
 
+        $this->exec("CREATE DATABASE IF NOT EXISTS {$database};");
+
+        return in_array($database, $this->getDatabases());
     }
 
 
@@ -43,24 +67,39 @@ class MysqlConnection extends DriverConnection
     */
     public function dropDatabase(): bool
     {
+        $database = $this->getDatabase();
 
+        $this->exec("DROP DATABASE IF EXISTS {$database};");
+
+        return ! in_array($database, $this->getDatabases());
     }
+
+
+
 
 
 
     /**
      * @inheritDoc
     */
-    protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface
+    public function getDatabases(): array
     {
-          $config['dsn'] = $this->buildPdoDsn($this->getName(), [
-             'host'       => $config->getHostname(),
-             'port'       => $config->getPort(),
-             'charset'    => $config->getCharset()
-          ]);
+        return $this->statement("SHOW DATABASES;")
+                    ->fetch()
+                    ->columns();
+    }
 
-          $config['options'] = [];
 
-         return $config;
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getTables(): array
+    {
+        return $this->statement("SHOW FULL TABLES FROM {$this->getDatabase()};")
+                    ->fetch()
+                    ->columns();
     }
 }

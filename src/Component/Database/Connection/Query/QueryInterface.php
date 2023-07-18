@@ -94,6 +94,32 @@ interface QueryInterface
 
 
 
+        /**
+         * Execute query
+         *
+         * @param string $sql
+         *
+         * @return mixed
+        */
+        public function exec(string $sql): mixed;
+
+
+
+
+
+        /**
+         * Map class
+         *
+         * @param string $class
+         *
+         * @return mixed
+        */
+        public function map(string $class): static;
+
+
+
+
+
 
         /**
          * Fetch Result
@@ -101,6 +127,8 @@ interface QueryInterface
          * @return QueryResultInterface
         */
         public function fetch(): QueryResultInterface;
+
+
 
 
 

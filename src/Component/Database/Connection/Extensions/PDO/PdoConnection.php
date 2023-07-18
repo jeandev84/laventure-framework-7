@@ -30,6 +30,14 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
+    /**
+     * @var Query
+    */
+    protected $statement;
+
+
+
     /**
      * @var Query[]
     */
@@ -93,7 +101,7 @@ class PdoConnection implements PdoConnectionInterface
     /**
      * @return void
     */
-    public function disconnect(): void
+    public function close(): void
     {
         $this->pdo = null;
     }
@@ -156,13 +164,16 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
+
     /**
      * @return void
     */
     public function beginTransaction(): void
     {
-        $this->pdo->beginTransaction();
+        $this->getPdo()->beginTransaction();
     }
+
 
 
 
@@ -172,7 +183,7 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function hasActiveTransaction(): bool
     {
-        // TODO: Implement hasActiveTransaction() method.
+        return $this->getPdo()->inTransaction();
     }
 
 
@@ -183,7 +194,7 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function commit(): void
     {
-        $this->pdo->commit();
+        $this->getPdo()->commit();
     }
 
 
@@ -195,7 +206,7 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function rollback(): void
     {
-        $this->pdo->rollBack();
+        $this->getPdo()->rollBack();
     }
 
 
@@ -204,13 +215,13 @@ class PdoConnection implements PdoConnectionInterface
     /**
      * @param Closure $closure
      *
-     * @return mixed
+     * @return void
     */
-    public function transaction(Closure $closure): mixed
+    public function transaction(Closure $closure): void
     {
-        $this->beginTransaction();;
-
         try {
+
+            $this->beginTransaction();;
 
             $closure($this);
 
@@ -218,9 +229,14 @@ class PdoConnection implements PdoConnectionInterface
 
         } catch (PDOException $e) {
 
-            $this->rollBack();
+            if ($this->hasActiveTransaction()) {
+                $this->rollBack();
+            }
+
+            throw new PDOException($e->getMessage(), $e->getCode());
         }
     }
+
 
 
 
@@ -232,8 +248,10 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function lastInsertId($name = null): int
     {
-        return $this->pdo->lastInsertId($name);
+        return $this->getPdo()->lastInsertId($name);
     }
+
+
 
 
 
@@ -243,10 +261,11 @@ class PdoConnection implements PdoConnectionInterface
      *
      * @return bool
     */
-    public function executeQuery(string $sql): bool
+    public function exec(string $sql): bool
     {
-        return $this->pdo->exec($sql);
+        return $this->createQuery()->exec($sql);
     }
+
 
 
 
@@ -256,6 +275,10 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function getPdo(): PDO
     {
+        if (! $this->connected()) {
+            trigger_error("No connection detected in: ". __CLASS__);
+        }
+
         return $this->pdo;
     }
 
@@ -273,6 +296,7 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
     /**
      * @param string $name
      *
@@ -286,11 +310,15 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
+
     /**
      * @return array
     */
     public function getExecutedQueries(): array
     {
-        // TODO: Implement getExecutedQueries() method.
+        return array_filter($this->queries, function (QueryInterface $query) {
+              return ! empty($query->getQueryLog());
+        });
     }
 }
