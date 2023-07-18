@@ -312,10 +312,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface
     */
     public function fetch(): QueryResultInterface
     {
-        return $this->connection->statement(
-            $this->getSQL(),
-            $this->getParameters()
-        )->fetch();
+        return $this->statement()->fetch();
     }
 
 

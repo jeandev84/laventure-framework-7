@@ -70,6 +70,10 @@ trait HasConditions
      */
      private function whereSQL(): string
      {
+          if (! $this->wheres) {
+              return '';
+          }
+
           $wheres = [];
 
           $key = key($this->wheres);

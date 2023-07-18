@@ -2,6 +2,7 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Connection\Query\QueryInterface;
 
 
 /**
@@ -106,6 +107,19 @@ abstract class SQlBuilder
       {
            return $this->parameters;
       }
+
+
+
+
+
+      /**
+       * @return QueryInterface
+      */
+      protected function statement(): QueryInterface
+      {
+           return $this->connection->statement($this->getSQL(), $this->getParameters());
+      }
+
 
 
 

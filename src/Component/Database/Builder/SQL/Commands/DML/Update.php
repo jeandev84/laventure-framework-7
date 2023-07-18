@@ -43,10 +43,7 @@ class Update extends SQlBuilder implements UpdateBuilderInterface
     public function getSQL(): string
     {
         $sql[] = sprintf("UPDATE %s %s", $this->getTable(), $this->setSQL());
-
-        if ($this->wheres) {
-            $sql[] = $this->whereSQL();
-        }
+        $sql[] = $this->whereSQL();
 
         return join(' ', array_filter($sql)).';';
     }
@@ -60,7 +57,6 @@ class Update extends SQlBuilder implements UpdateBuilderInterface
     */
     public function execute(): bool
     {
-        return $this->connection->statement($this->getSQL(), $this->getParameters())
-                                ->execute();
+        return $this->statement()->execute();
     }
 }
