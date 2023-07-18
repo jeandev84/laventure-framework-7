@@ -2,6 +2,7 @@
 namespace Laventure\Component\Database\Connection;
 
 
+use Closure;
 use Laventure\Component\Database\Connection\Configuration\ConfigurationInterface;
 use Laventure\Component\Database\Connection\Query\QueryInterface;
 
@@ -168,6 +169,18 @@ interface ConnectionInterface
     */
     public function rollback(): void;
 
+
+
+
+
+    /**
+     * Transaction
+     *
+     * @param Closure $closure
+     *
+     * @return mixed
+    */
+    public function transaction(Closure $closure): mixed;
 
 
 

@@ -3,6 +3,7 @@ namespace Laventure\Component\Database\Connection\Extensions\PDO;
 
 
 
+use Closure;
 use Exception;
 use Laventure\Component\Database\Connection\Query\QueryInterface;
 use PDO;
@@ -195,6 +196,19 @@ class PdoConnection implements PdoConnectionInterface
     public function rollback(): void
     {
         $this->pdo->rollBack();
+    }
+
+
+
+
+    /**
+     * @param Closure $closure
+     *
+     * @return mixed
+    */
+    public function transaction(Closure $closure): mixed
+    {
+
     }
 
 
