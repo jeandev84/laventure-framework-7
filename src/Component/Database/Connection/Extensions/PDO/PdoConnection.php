@@ -208,7 +208,18 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function transaction(Closure $closure): mixed
     {
+        $this->beginTransaction();;
 
+        try {
+
+            $closure($this);
+
+            $this->commit();
+
+        } catch (PDOException $e) {
+
+            $this->rollBack();
+        }
     }
 
 
