@@ -387,7 +387,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface
     */
     private function joinSQL(): string
     {
-        return ($this->joins ? join($this->joins) : '');
+        return ($this->joins ? join(' ', $this->joins) : '');
     }
 
 
@@ -421,7 +421,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface
     */
     private function orderBySQL(): string
     {
-        return ($this->orderBy ? sprintf('ORDER BY %s', join(',', $this->orderBy)) : '');
+        return ($this->orderBy ? rtrim(sprintf('ORDER BY %s', join(',', $this->orderBy))) : '');
     }
 
 
@@ -454,7 +454,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface
     */
     private function buildSelectSQL(): string
     {
-         return join(' ', [
+         return trim(join(' ', [
               $this->selectSQL(),
               $this->joinSQL(),
               $this->whereSQL(),
@@ -462,6 +462,6 @@ class Select extends SQlBuilder implements SelectBuilderInterface
               $this->havingSQL(),
               $this->orderBySQL(),
               $this->limitSQL()
-         ]);
+         ]));
     }
 }
