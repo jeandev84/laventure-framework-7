@@ -53,20 +53,6 @@ class DatabaseManager
 
 
 
-        /**
-         * @var array
-        */
-        protected $disconnected = [];
-
-
-
-
-        /**
-         * @var array
-        */
-        protected $reconnected = [];
-
-
 
 
         /**
@@ -251,13 +237,7 @@ class DatabaseManager
                  $this->abortIf("unavailable connection named '$name'");
              }
 
-             $this->connections[$name]->connect($config);
-
-             if (! $this->connections[$name]->connected()) {
-                  $this->abortIf("no connection detected for '$name'.");
-             }
-
-             return $this->connected[$name] = $this->connections[$name];
+             return $this->make($name, $config);
         }
 
 
@@ -279,64 +259,6 @@ class DatabaseManager
 
 
 
-        /**
-         * @param string|null $name
-         *
-         * @return bool
-        */
-        public function reconnect(string $name = null): bool
-        {
-              $name = $this->getCurrentConnection($name);
-
-              if ($this->connected($name)) {
-                  $this->connected[$name]->reconnect();
-                  $this->reconnected[$name] = true;
-              }
-
-              return isset($this->reconnected[$name]);
-        }
-
-
-
-
-
-
-        /**
-         * @param string|null $name
-         * @return bool
-        */
-        public function disconnect(string $name = null): bool
-        {
-            $name = $this->getCurrentConnection($name);
-
-            if ($this->connected($name)) {
-                $this->connected[$name]->disconnect();
-                $this->disconnected[$name] = $this->connected[$name]->disconnected();
-            }
-
-            return $this->disconnected[$name];
-        }
-
-
-
-
-
-        /**
-         * @param string|null $name
-         * @return bool
-        */
-        public function purge(string $name = null): bool
-        {
-              $name = $this->getCurrentConnection($name);
-
-              unset($this->connections[$name], $this->config[$name]);
-
-              return $this->disconnect($name);
-        }
-
-
-
-
 
         /**
          * @param string $name
@@ -344,33 +266,32 @@ class DatabaseManager
          * @param ConfigurationInterface $config
          *
          * @return ConnectionInterface
-        */
-        private function make(string $name, ConfigurationInterface $config): ConnectionInterface
-        {
-             $connection = $this->connections[$name];
-
-             $connection->connect($config);
-
-             if (! $connection->connected()) {
-                 $this->abortIf("no connection detected for '$name'.");
-             }
-
-             return $this->connected[$name] = $connection;
-        }
-
-
-
-
-
-        /**
-         * @param string $message
-         *
-         * @return void
        */
-       private function abortIf(string $message): void
+       private function make(string $name, ConfigurationInterface $config): ConnectionInterface
        {
-           (function () use ($message) {
-              throw new DatabaseManagerException($message);
-           })();
+            $this->connections[$name]->connect($config);
+
+            if (! $this->connections[$name]->connected()) {
+               $this->abortIf("no connection detected for '$name'.");
+            }
+
+            return $this->connected[$name] = $this->connections[$name];
        }
+
+
+
+
+
+
+      /**
+       * @param string $message
+       *
+       * @return void
+      */
+      private function abortIf(string $message): void
+      {
+          (function () use ($message) {
+             throw new DatabaseManagerException($message);
+          })();
+     }
 }

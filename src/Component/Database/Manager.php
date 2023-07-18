@@ -23,6 +23,6 @@ class Manager extends DatabaseManager
      */
      public function addConnections(array $config): void
      {
-          $this->connect($config['connection'], $config['connections']);
+          $this->connect($config['connection'] ?? '', $config['connections'] ?? []);
      }
 }

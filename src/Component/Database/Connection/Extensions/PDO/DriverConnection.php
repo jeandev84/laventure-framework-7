@@ -59,8 +59,6 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
           if (in_array($this->config['database'], $this->getDatabases())) {
               $this->connectionAfter($this->config);
           }
-
-          dd($this->config);
     }
 
 
@@ -71,7 +69,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     /**
      * @inheritDoc
     */
-    public function getConnection(): PDO
+    public function getConnection(): ?PDO
     {
         return $this->pdo;
     }
