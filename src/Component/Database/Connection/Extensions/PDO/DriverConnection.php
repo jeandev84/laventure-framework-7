@@ -162,10 +162,28 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     protected function buildPdoDsn(string $driver, array $params): string
     {
+         if (! $this->driverExists($driver)) {
+             $this->createDriverException("Unavailable driver '$driver'");
+         }
+
          return sprintf('%s:%s',  $driver, http_build_query($params,'', ';'));
     }
 
 
+
+
+
+    /**
+     * @param string $message
+     *
+     * @return mixed
+    */
+    private function createDriverException(string $message): mixed
+    {
+         return (function () use ($message) {
+              throw new DriverConnectionException($message);
+         })();
+    }
 
 
     /**
