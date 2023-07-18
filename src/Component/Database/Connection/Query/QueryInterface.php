@@ -9,7 +9,7 @@ namespace Laventure\Component\Database\Connection\Query;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Connection\Statement
+ * @package Laventure\Component\Database\Connection\Query
 */
 interface QueryInterface
 {
@@ -94,6 +94,7 @@ interface QueryInterface
 
 
 
+
         /**
          * Fetch Result
          *
@@ -101,4 +102,43 @@ interface QueryInterface
         */
         public function fetch(): QueryResultInterface;
 
+
+
+
+
+        /**
+         * @return array
+        */
+        public function getBindParams(): array;
+
+
+
+
+
+        /**
+         * @return array
+        */
+        public function getBindValues(): array;
+
+
+
+
+
+
+        /**
+         * @return array
+        */
+        public function getBindColumns(): array;
+
+
+
+
+
+
+        /**
+         * Returns executed query params
+         *
+         * @return array
+        */
+        public function getQueryLog(): array;
 }

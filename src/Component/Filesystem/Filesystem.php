@@ -35,7 +35,7 @@ class Filesystem
       */
       public function __construct(string $resource = '')
       {
-           $this->locator  = new FileLocator($resource);
+           $this->locator = new FileLocator($resource);
       }
 
 

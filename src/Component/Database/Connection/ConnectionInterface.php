@@ -272,4 +272,12 @@ interface ConnectionInterface
      * @return bool
     */
     public function hasDatabase(): bool;
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getExecutedQueries(): array;
 }
