@@ -50,7 +50,7 @@ class OracleConnection extends DriverConnection
     /**
      * @inheritDoc
     */
-    protected function resolve(ConfigurationInterface $config): ConfigurationInterface
+    protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface
     {
         $config['dsn'] = $this->buildPdoDsn($this->getName(), [
             'host'       => $config->getHostname(),

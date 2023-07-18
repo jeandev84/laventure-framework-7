@@ -48,7 +48,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function setConnection(ConfigurationInterface $config): void
     {
-         $this->config = $this->resolve($config);
+         $this->config = $this->resolveConfiguration($config);
 
          $this->connectionBefore($this->config);
 
@@ -150,6 +150,9 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     }
 
 
+
+
+
     /**
      * @param string $driver
      *
@@ -170,5 +173,5 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
      *
      * @return ConfigurationInterface
     */
-    abstract protected function resolve(ConfigurationInterface $config): ConfigurationInterface;
+    abstract protected function resolveConfiguration(ConfigurationInterface $config): ConfigurationInterface;
 }
