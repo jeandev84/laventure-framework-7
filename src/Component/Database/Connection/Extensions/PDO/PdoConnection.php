@@ -29,6 +29,13 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+    /**
+     * @var Query[]
+    */
+    protected array $queries = [];
+
+
+
 
     /**
      * @var array
@@ -110,8 +117,10 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function createQuery(): QueryInterface
     {
-        return new Query($this->getPdo());
+        return $this->queries[] = new Query($this->getPdo());
     }
+
+
 
 
 
@@ -247,5 +256,16 @@ class PdoConnection implements PdoConnectionInterface
     public function driverExists(string $name): bool
     {
         return in_array($name, $this->getDrivers());
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getExecutedQueries(): array
+    {
+        // TODO: Implement getExecutedQueries() method.
     }
 }
