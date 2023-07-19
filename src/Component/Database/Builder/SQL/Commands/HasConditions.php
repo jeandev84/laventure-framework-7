@@ -2,11 +2,10 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 
-use Laventure\Component\Database\Connection\ConnectionInterface;
-use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
+use Laventure\Component\Database\Builder\SQL\Commands\Expr\Expr;
 
 /**
- * @SQlBuilder
+ * @HasConditions
  *
  * @author Jean-Claude <jeanyao@ymail.com>
  *
@@ -72,6 +71,18 @@ trait HasConditions
 
 
      /**
+      * @return Expr
+     */
+     public function expr(): Expr
+     {
+          return new Expr();
+     }
+
+
+
+
+
+     /**
       * @return string
      */
      private function whereSQL(): string
@@ -95,6 +106,8 @@ trait HasConditions
 
           return sprintf('WHERE %s', join(' ', $wheres));
      }
+
+
 
 
      /**
