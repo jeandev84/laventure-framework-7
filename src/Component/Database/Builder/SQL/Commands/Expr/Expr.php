@@ -2,8 +2,6 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
 
 
-use Comparison\Comparison;
-
 /**
  * @Expr
  *
@@ -11,7 +9,7 @@ use Comparison\Comparison;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Builder\SQL\Commands
+ * @package Laventure\Component\Database\Builder\SQL\Commands\Expr
 */
 class Expr
 {

@@ -10,7 +10,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands\Expr
 */
-class andX implements SQlExprInterface
+class andX
 {
 
      /**
@@ -38,6 +38,6 @@ class andX implements SQlExprInterface
      */
      public function __toString(): string
      {
-         return join("AND", $this->conditions);
+         return join(" AND ", $this->conditions);
      }
 }

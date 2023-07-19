@@ -11,7 +11,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands\Expr
 */
-class orX implements SQlExprInterface
+class orX
 {
 
     /**
@@ -40,6 +40,6 @@ class orX implements SQlExprInterface
     */
     public function __toString(): string
     {
-        return join("OR", $this->conditions);
+        return join(" OR ", $this->conditions);
     }
 }

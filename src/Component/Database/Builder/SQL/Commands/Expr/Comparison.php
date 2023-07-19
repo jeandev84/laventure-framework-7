@@ -1,8 +1,7 @@
 <?php
-namespace Comparison;
+namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
 
 
-use Laventure\Component\Database\Builder\SQL\Commands\Expr\SQlExprInterface;
 
 /**
  * @Comparison
@@ -13,7 +12,7 @@ use Laventure\Component\Database\Builder\SQL\Commands\Expr\SQlExprInterface;
  *
  * @package Comparison
 */
-class Comparison implements SQlExprInterface
+class Comparison
 {
 
 
