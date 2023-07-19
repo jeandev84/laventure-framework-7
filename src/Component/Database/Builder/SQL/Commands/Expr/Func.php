@@ -2,6 +2,8 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
 
 
+use Laventure\Component\Database\Builder\SQL\Commands\Expr\Contract\SQlExprInterface;
+
 /**
  * @Func
  *
@@ -11,7 +13,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands\Expr
 */
-class Func
+class Func implements SQlExprInterface
 {
 
 

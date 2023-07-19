@@ -1,6 +1,8 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
 
+use Laventure\Component\Database\Builder\SQL\Commands\Expr\Contract\SQlExprInterface;
+
 
 /**
  * @orX
@@ -11,7 +13,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands\Expr
 */
-class orX
+class orX implements SQlExprInterface
 {
 
     /**

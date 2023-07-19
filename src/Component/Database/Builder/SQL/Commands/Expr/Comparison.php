@@ -2,6 +2,8 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
 
 
+use Laventure\Component\Database\Builder\SQL\Commands\Expr\Contract\SQlExprInterface;
+
 
 /**
  * @Comparison
@@ -12,7 +14,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\Expr;
  *
  * @package Comparison
 */
-class Comparison
+class Comparison implements SQlExprInterface
 {
 
 
