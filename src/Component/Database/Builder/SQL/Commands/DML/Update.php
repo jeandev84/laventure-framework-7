@@ -18,10 +18,9 @@ class Update extends SQlBuilder implements UpdateBuilderInterface
     use HasConditions, IsSettable, HasAttributeResolvable;
 
 
+
     /**
-     * @param array $attributes
-     *
-     * @return $this
+     * @inheritdoc
     */
     public function attributes(array $attributes): static
     {

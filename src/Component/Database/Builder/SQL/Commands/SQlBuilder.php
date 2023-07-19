@@ -53,15 +53,6 @@ abstract class SQlBuilder
 
 
 
-      /**
-       * @return string
-      */
-      public function getTable(): string
-      {
-          return $this->table;
-      }
-
-
 
 
       /**
@@ -108,6 +99,16 @@ abstract class SQlBuilder
            return $this->parameters;
       }
 
+
+
+
+      /**
+       * @return string
+      */
+      protected function getTable(): string
+      {
+           return $this->table;
+      }
 
 
 

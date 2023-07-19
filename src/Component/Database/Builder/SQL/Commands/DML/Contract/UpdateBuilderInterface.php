@@ -15,6 +15,17 @@ interface UpdateBuilderInterface
 
 
      /**
+      * @param array $attributes
+      *
+      * @return $this
+     */
+     public function attributes(array $attributes): static;
+
+
+
+
+
+     /**
       * Execute update query
       *
       * @return mixed

@@ -52,7 +52,7 @@ $sql = $qb->distinct(true)
     ->setFirstResult(1)
     ->setMaxResults(10)
     ->setParameter('id', 1)
-    ->groupBy('c.id')
+    ->groupBy('c.id as cart')
     ->having('count(c.id) > 5')
 ;
 

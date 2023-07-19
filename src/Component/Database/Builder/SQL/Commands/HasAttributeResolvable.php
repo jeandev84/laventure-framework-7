@@ -16,6 +16,7 @@ use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
 trait HasAttributeResolvable
 {
 
+
       /**
        * @param ConnectionInterface $connection
        *
@@ -23,7 +24,7 @@ trait HasAttributeResolvable
        *
        * @return array
       */
-      private function resolveAttributes(ConnectionInterface $connection, array $attributes): array
+      protected function resolveAttributes(ConnectionInterface $connection, array $attributes): array
       {
             $resolved = [];
 
@@ -31,10 +32,23 @@ trait HasAttributeResolvable
                  if ($connection instanceof PdoConnection) {
                      $resolved[] = "$column = :$column";
                  } else {
-                     $resolved[] = "$column = '$value'";
+                     $resolved[] = "$column = ". $this->resolveAttributeValue($value);
                  }
             }
 
             return $resolved;
+      }
+
+
+
+
+      /**
+       * @param $value
+       *
+       * @return string
+      */
+      protected function resolveAttributeValue($value): string
+      {
+           return "'$value'";
       }
 }
