@@ -39,18 +39,18 @@ class QueryBuilder
 
 
 
-     /**
-      * Select records
-      *
-      * @param string|null $selects
-      *
-      * @param array $wheres
-      *
-      * @return Select
+    /**
+     * Select records
+     *
+     * @param string|null $selects
+     *
+     * @param bool $distinct
+     *
+     * @return Select
     */
-    public function select(string $selects = null, array $wheres = []): Select
+    public function select(string $selects = null, bool $distinct = false): Select
     {
-         return $this->builder->select($selects)->criteria($wheres);
+         return $this->builder->select($selects)->distinct($distinct);
     }
 
 
@@ -89,7 +89,9 @@ class QueryBuilder
     */
     public function update(array $attributes, array $wheres = []): bool
     {
-         return $this->builder->update($attributes, $wheres)->execute();
+         return $this->builder->update($attributes)
+                              ->criteria($wheres)
+                              ->execute();
     }
 
 
@@ -106,6 +108,8 @@ class QueryBuilder
     */
     public function delete(array $wheres = []): bool
     {
-         return $this->builder->delete($wheres)->execute();
+         return $this->builder->delete()
+                              ->criteria($wheres)
+                              ->execute();
     }
 }

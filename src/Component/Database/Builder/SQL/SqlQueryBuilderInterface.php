@@ -25,11 +25,9 @@ interface SqlQueryBuilderInterface
        *
        * @param string|null $selects
        *
-       * @param array $wheres
-       *
        * @return Select
      */
-     public function select(string $selects = null, array $wheres = []): Select;
+     public function select(string $selects = null): Select;
 
 
 
@@ -56,11 +54,10 @@ interface SqlQueryBuilderInterface
       *
       * @param array $attributes
       *
-      * @param array $wheres
-      *
       * @return Update
      */
-     public function update(array $attributes, array $wheres = []): Update;
+     public function update(array $attributes): Update;
+
 
 
 
@@ -68,11 +65,9 @@ interface SqlQueryBuilderInterface
 
 
      /**
-      * @param array $wheres
-      *
       * @return Delete
      */
-     public function delete(array $wheres = []): Delete;
+     public function delete(): Delete;
 
 
 

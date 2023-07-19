@@ -55,11 +55,10 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     /**
      * @inheritDoc
     */
-    public function select(string $selects = null, array $wheres = []): Select
+    public function select(string $selects = null): Select
     {
          $command = new Select($this->connection, $this->table);
          $command->addSelect($selects ?: "*");
-         $command->criteria($wheres);
          return $command;
     }
 
@@ -85,11 +84,9 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     /**
      * @inheritDoc
     */
-    public function update(array $attributes, array $wheres = []): Update
+    public function update(array $attributes): Update
     {
-         $command = new Update($this->connection, $this->table);
-         $command->criteria($wheres);
-         return $command;
+         return new Update($this->connection, $this->table);
     }
 
 
@@ -99,11 +96,9 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     /**
      * @inheritDoc
     */
-    public function delete(array $wheres = []): Delete
+    public function delete(): Delete
     {
-        $command = new Delete($this->connection, $this->table);
-        $command->criteria($wheres);
-        return $command;
+        return new Delete($this->connection, $this->table);
     }
 
 
