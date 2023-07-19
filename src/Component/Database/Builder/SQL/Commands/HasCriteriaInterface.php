@@ -1,10 +1,9 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
-use Laventure\Component\Database\Connection\ConnectionInterface;
 
 /**
- * @HasConditionResolvable
+ * @HasCriteriaInterface
  *
  * @author Jean-Claude <jeanyao@ymail.com>
  *
@@ -12,6 +11,14 @@ use Laventure\Component\Database\Connection\ConnectionInterface;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands
 */
-trait HasConditionResolvable
+interface HasCriteriaInterface
 {
+    /**
+     * Add conditions
+     *
+     * @param array $wheres
+     *
+     * @return $this
+    */
+    public function criteria(array $wheres): static;
 }

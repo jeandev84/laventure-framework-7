@@ -2,6 +2,7 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnectionInterface;
 use Laventure\Component\Database\Connection\Query\QueryInterface;
 
 
@@ -16,6 +17,7 @@ use Laventure\Component\Database\Connection\Query\QueryInterface;
 */
 abstract class SQlBuilder
 {
+
 
        /**
         * @var ConnectionInterface
@@ -113,13 +115,25 @@ abstract class SQlBuilder
 
 
 
+
       /**
-       * @return QueryInterface
+       * @return bool
       */
-      protected function statement(): QueryInterface
+      protected function hasPdoConnection(): bool
       {
-           return $this->connection->statement($this->getSQL(), $this->getParameters());
+          return $this->connection instanceof PdoConnectionInterface;
       }
+
+
+
+
+      /**
+        * @return QueryInterface
+       */
+       protected function statement(): QueryInterface
+       {
+           return $this->connection->statement($this->getSQL(), $this->getParameters());
+       }
 
 
 

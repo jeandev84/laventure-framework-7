@@ -4,6 +4,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DML;
 use Laventure\Component\Database\Builder\SQL\Commands\DML\Contract\UpdateBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
 use Laventure\Component\Database\Builder\SQL\Commands\HasAttributeResolvable;
+use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\IsSettable;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
 
@@ -11,7 +12,7 @@ use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
 /**
  * @inheritdoc
 */
-class Update extends SQlBuilder implements UpdateBuilderInterface
+class Update extends SQlBuilder implements UpdateBuilderInterface, HasCriteriaInterface
 {
 
 
@@ -26,10 +27,23 @@ class Update extends SQlBuilder implements UpdateBuilderInterface
     {
          $this->setParameters($attributes);
 
-         return $this->data($this->resolveAttributes($this->connection, $attributes));
+         return $this->data($this->resolveAttributes($attributes, $this->hasPdoConnection()));
     }
 
 
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function criteria(array $wheres): static
+    {
+        $this->addConditions($wheres, $this->hasPdoConnection());
+        $this->setParameters($wheres);
+
+        return $this;
+    }
 
 
 

@@ -5,14 +5,16 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\Query;
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\SelectBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
+use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
+
 
 
 /**
  * @inheritdoc
 */
-class Select extends SQlBuilder implements SelectBuilderInterface
+class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaInterface
 {
 
 
@@ -276,8 +278,6 @@ class Select extends SQlBuilder implements SelectBuilderInterface
 
 
 
-
-
     /**
      * @inheritDoc
     */
@@ -287,6 +287,21 @@ class Select extends SQlBuilder implements SelectBuilderInterface
 
         return $this;
     }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function criteria(array $wheres): static
+    {
+        $this->addConditions($wheres, $this->hasPdoConnection());
+        $this->setParameters($wheres);
+
+        return $this;
+    }
+
 
 
 

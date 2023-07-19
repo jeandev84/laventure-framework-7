@@ -1,8 +1,6 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
-use Laventure\Component\Database\Connection\ConnectionInterface;
-use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
 
 /**
  * @HasAttributeResolvable
@@ -18,18 +16,18 @@ trait HasAttributeResolvable
 
 
       /**
-       * @param ConnectionInterface $connection
-       *
        * @param array $attributes
+       *
+       * @param bool $pdo
        *
        * @return array
       */
-      protected function resolveAttributes(ConnectionInterface $connection, array $attributes): array
+      protected function resolveAttributes(array $attributes, bool $pdo = false): array
       {
             $resolved = [];
 
             foreach ($attributes as $column => $value) {
-                 if ($connection instanceof PdoConnection) {
+                 if ($pdo) {
                      $resolved[] = "$column = :$column";
                  } else {
                      $resolved[] = "$column = ". $this->resolveAttributeValue($value);

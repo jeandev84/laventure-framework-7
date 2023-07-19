@@ -2,6 +2,9 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 
+use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
+
 /**
  * @SQlBuilder
  *
@@ -18,6 +21,8 @@ trait HasConditions
       * @var array
      */
      protected array $wheres = [];
+
+
 
 
 
@@ -65,6 +70,7 @@ trait HasConditions
 
 
 
+
      /**
       * @return string
      */
@@ -88,5 +94,37 @@ trait HasConditions
           }
 
           return sprintf('WHERE %s', join(' ', $wheres));
+     }
+
+
+     /**
+      * @param array $wheres
+      *
+      * @param bool $pdo
+     */
+     private function addConditions(array $wheres, bool $pdo = false): void
+     {
+           foreach ($wheres as $column => $value) {
+                if ($pdo) {
+                    $this->where("$column = :$column");
+                } else {
+                    $this->where("$column = ". $this->resolveConditionValue($value));
+                }
+           }
+     }
+
+
+
+
+
+
+     /**
+      * @param $value
+      *
+      * @return string
+     */
+     protected function resolveConditionValue($value): string
+     {
+          return "'$value'";
      }
 }

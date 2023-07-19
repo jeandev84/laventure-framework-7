@@ -67,7 +67,7 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     */
     private function add(array $attributes): static
     {
-         $attributes      = $this->resolveAttributes($this->connection, $attributes);
+         $attributes      = $this->resolveAttributes($attributes);
          $this->columns   = array_keys($attributes);
          $this->values[]  = '('. join(', ', array_values($attributes)) . ')';
 
@@ -83,12 +83,12 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     /**
      * @inheritdoc
     */
-    protected function resolveAttributes(ConnectionInterface $connection, array $attributes): array
+    protected function resolveAttributes(array $attributes): array
     {
           $resolved = [];
 
           foreach ($attributes as $column => $value) {
-               if ($connection instanceof PdoConnection) {
+               if ($this->hasPdoConnection()) {
                     $resolved[$column] = ":{$column}_{$this->index}";
                     $this->setParameter("{$column}_{$this->index}", $value);
                } else {
