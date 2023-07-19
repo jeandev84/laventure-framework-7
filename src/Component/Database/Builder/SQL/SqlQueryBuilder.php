@@ -58,6 +58,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     public function select(string $selects = null, array $wheres = []): Select
     {
          $command = new Select($this->connection, $this->table);
+         $command->addSelect($selects ?: "*");
          $command->criteria($wheres);
          return $command;
     }
