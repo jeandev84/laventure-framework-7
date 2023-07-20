@@ -138,7 +138,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
      */
     private function connectionAfter(ConfigurationInterface $config): void
     {
-        $config['dsn'] .= ';database='. $config->database();
+        $config['dsn'] .= ";dbname={$config->database()};";
 
         $this->open($config['dsn'], $config->username(), $config->password(), $config->get('options', []));
     }

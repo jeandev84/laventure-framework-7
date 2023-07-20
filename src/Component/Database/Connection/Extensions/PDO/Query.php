@@ -181,6 +181,7 @@ class Query implements QueryInterface
             }
 
         } catch (PDOException $e) {
+            dd($e);
             $this->abort($e);
         }
 

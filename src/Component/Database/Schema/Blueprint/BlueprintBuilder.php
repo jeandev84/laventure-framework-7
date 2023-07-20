@@ -1,6 +1,7 @@
 <?php
 namespace Laventure\Component\Database\Schema\Blueprint;
 
+use Laventure\Component\Database\Schema\Blueprint\Column\AddColumn;
 use Laventure\Component\Database\Schema\Blueprint\Column\Column;
 use Laventure\Component\Database\Schema\Blueprint\Column\Contract\AlteredColumnInterface;
 use Laventure\Component\Database\Schema\Blueprint\Constraints\ConstraintInterface;
@@ -59,13 +60,17 @@ class BlueprintBuilder
 
 
       /**
-       * @param Column $column
+       * @param Column|AddColumn $column
        *
        * @return Column
       */
-      public function addColumn(Column $column): Column
+      public function addColumn(Column|AddColumn $column): Column
       {
-           $this->columns[$column->getName()] = $column;
+           if ($column instanceof AddColumn) {
+               $this->altered[$column->getName()] = $column;
+           } else {
+               $this->columns[$column->getName()] = $column;
+           }
 
            return $column;
       }
@@ -118,20 +123,6 @@ class BlueprintBuilder
       }
 
 
-      /**
-       * @param Column $column
-       *
-       * @return Column
-      */
-      public function alterColumn(Column $column): Column
-      {
-           $this->altered[$column->getName()] = $column;
-
-           return $column;
-      }
-
-
-
 
 
 
@@ -153,10 +144,10 @@ class BlueprintBuilder
       /**
        * @return string
       */
-      public function buildCreatedColumns(): string
+      public function buildNewColumns(): string
       {
            return join([
-               join(", \n", array_values($this->getColumns())),
+               join(", ", array_values($this->getColumns())),
                join(", ", array_values($this->constraints)),
                join(", ", array_values($this->indexes))
            ]);

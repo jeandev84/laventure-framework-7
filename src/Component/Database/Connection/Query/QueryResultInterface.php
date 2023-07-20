@@ -91,5 +91,5 @@ interface QueryResultInterface
      *
      * @return int
     */
-    public function count(): int;
+    public function numRows(): int;
 }

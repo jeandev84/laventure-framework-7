@@ -2,9 +2,9 @@
 namespace Laventure\Component\Database\Schema\Blueprint;
 
 use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Connection\Query\QueryInterface;
 use Laventure\Component\Database\Schema\Blueprint\Column\AddColumn;
 use Laventure\Component\Database\Schema\Blueprint\Column\Column;
-use Laventure\Component\Database\Schema\Blueprint\Column\Contract\ColumnInterface;
 use Laventure\Component\Database\Schema\Blueprint\Indexes\Index;
 use Laventure\Component\Database\Schema\Blueprint\Constraints\ForeignKey;
 use Laventure\Component\Database\Schema\Blueprint\Constraints\PrimaryKey;
@@ -54,6 +54,72 @@ abstract class Blueprint implements BlueprintInterface
              $this->builder     = new BlueprintBuilder();
         }
 
+
+
+
+        /**
+         * @return bool
+        */
+        public function hasTable(): bool
+        {
+            return in_array($this->getTable(), $this->connection->getTables());
+        }
+
+
+
+
+
+
+        /**
+         * @param string $name
+         *
+         * @param string $type
+         *
+         * @param string $constraints
+         *
+         * @return Column
+        */
+        public function addColumn(string $name, string $type, string $constraints = ''): Column
+        {
+             $column = new Column($name, $type, $constraints);
+
+             if ($this->hasTable() && ! $this->hasColumn($name)) {
+                 $column = new AddColumn($name, $type, $constraints);
+             }
+
+             return $this->builder->addColumn($column);
+        }
+
+
+
+
+
+
+
+        /**
+         * @param string $sql
+         *
+         * @return QueryInterface
+        */
+        protected function statement(string $sql): QueryInterface
+        {
+             return $this->connection->statement($sql);
+        }
+
+
+
+
+
+
+        /**
+         * @param string $sql
+         *
+         * @return bool|int
+        */
+        public function exec(string $sql): bool|int
+        {
+            return $this->connection->exec($sql);
+        }
 
 
 
@@ -225,8 +291,9 @@ abstract class Blueprint implements BlueprintInterface
         */
         public function getTable(): string
         {
-            return $this->table;
+             return $this->connection->config()->prefixedTable($this->table);
         }
+
 
 
 
@@ -238,30 +305,6 @@ abstract class Blueprint implements BlueprintInterface
         public function getConnection(): ConnectionInterface
         {
             return $this->connection;
-        }
-
-
-
-
-
-
-
-        /**
-         * @param string $name
-         *
-         * @param string $type
-         *
-         * @param string $constraints
-         *
-         * @return Column
-        */
-        public function addColumn(string $name, string $type, string $constraints = ''): Column
-        {
-             if (! in_array($name, $this->getTableColumns())) {
-                 return $this->builder->addColumn(new Column($name, $type, $constraints));
-             }
-
-             return $this->builder->alterColumn(new AddColumn($name, $type, $constraints));
         }
 
 
@@ -332,6 +375,15 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
+
+
+
+       /**
+        * @param string $name
+        *
+        * @return bool
+       */
+       abstract public function hasColumn(string $name): bool;
 
 
 

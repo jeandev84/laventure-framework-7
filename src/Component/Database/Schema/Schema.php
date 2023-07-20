@@ -112,24 +112,18 @@ class Schema implements SchemaInterface
 
 
 
-    /**
-     * @inheritDoc
-    */
-    public function describe(string $table): bool
-    {
 
+
+    /**
+     * @inheritdoc
+    */
+    public function exists(string $table): bool
+    {
+        return in_array($table, $this->getTables());
     }
 
 
 
-
-    /**
-     * @inheritDoc
-    */
-    public function columns(string $table): array
-    {
-
-    }
 
 
 

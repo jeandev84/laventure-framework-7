@@ -22,8 +22,6 @@ class Index implements Printable
 
 
 
-
-
     /**
      * @inheritDoc
     */

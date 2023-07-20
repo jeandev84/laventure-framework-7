@@ -134,10 +134,28 @@ interface SchemaInterface
 
 
 
+
+     /**
+      * Determine if schema exists
+      *
+      * @param string $table
+      *
+      * @return bool
+     */
+     public function exists(string $table): bool;
+
+
+
+
+
+
+
+
      /**
       * Return database tables
       *
       * @return array
      */
      public function getTables(): array;
+
 }
