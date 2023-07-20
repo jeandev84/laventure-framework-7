@@ -239,7 +239,7 @@ class Expr
      *
      * @return Func
      */
-    public function like(string $column, string $value)
+    public function like(string $column, string $value): Func
     {
         return new Func("$column LIKE $value");
     }
@@ -391,7 +391,7 @@ class Expr
     */
     public function length(string $column): Func
     {
-        return new Func($column);
+        return new Func("LEN($column)");
     }
 
 

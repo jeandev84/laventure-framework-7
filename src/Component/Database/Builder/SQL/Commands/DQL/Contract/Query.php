@@ -59,7 +59,4 @@ class Query
       {
           return $this->fetch->assoc();
       }
-
-
-
 }

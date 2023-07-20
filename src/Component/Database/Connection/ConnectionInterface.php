@@ -312,6 +312,8 @@ interface ConnectionInterface
 
 
 
+
+
     /**
      * @return array
     */
