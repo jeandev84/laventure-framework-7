@@ -2,8 +2,13 @@
 namespace Laventure\Component\Database\Schema\Blueprint;
 
 use Laventure\Component\Database\Connection\ConnectionInterface;
+use Laventure\Component\Database\Schema\Blueprint\Column\AddColumn;
 use Laventure\Component\Database\Schema\Blueprint\Column\Column;
-use Laventure\Component\Database\Schema\Blueprint\Column\ColumnCollection;
+use Laventure\Component\Database\Schema\Blueprint\Column\Contract\ColumnInterface;
+use Laventure\Component\Database\Schema\Blueprint\Indexes\Index;
+use Laventure\Component\Database\Schema\Blueprint\Constraints\ForeignKey;
+use Laventure\Component\Database\Schema\Blueprint\Constraints\PrimaryKey;
+use Laventure\Component\Database\Schema\Blueprint\Constraints\Unique;
 
 
 /**
@@ -30,17 +35,9 @@ abstract class Blueprint implements BlueprintInterface
 
 
         /**
-        * @var ColumnCollection
+        * @var BlueprintBuilder
         */
-        protected ColumnCollection $columns;
-
-
-
-
-        /**
-         * @var array
-        */
-        protected array $primaryKeys = [];
+        protected BlueprintBuilder $builder;
 
 
 
@@ -52,23 +49,10 @@ abstract class Blueprint implements BlueprintInterface
         */
         public function __construct(ConnectionInterface $connection, string $table)
         {
-             $this->connection = $connection;
-             $this->table      = $table;
-             $this->columns    = new ColumnCollection();
+             $this->connection  = $connection;
+             $this->table       = $table;
+             $this->builder     = new BlueprintBuilder();
         }
-
-
-
-
-
-        /**
-         * @return Column[]
-        */
-        public function getColumns(): array
-        {
-             return $this->columns->getColumns();
-        }
-
 
 
 
@@ -76,13 +60,99 @@ abstract class Blueprint implements BlueprintInterface
 
 
         /**
-         * Print table columns
+         * Add primary keys
+         *
+         * @param string|array $columns
+         *
+         * @return $this
         */
-        public function printTableColumns(): string
+        public function primary(string|array $columns): static
         {
-            return join(", \n", array_values($this->getColumns()));
+             $this->builder->addConstraint(new PrimaryKey($columns));
+
+             return $this;
         }
 
+
+
+
+
+
+        /**
+         * @param string|array $columns
+         *
+         * @return $this
+        */
+        public function unique(string|array $columns): static
+        {
+              $this->builder->addConstraint(new Unique($columns));
+
+              return $this;
+        }
+
+
+
+
+
+
+
+
+        /**
+         * Add indexes columns
+         *
+         * @param string|array $columns
+         *
+         * @return $this
+        */
+        public function index(string|array $columns): static
+        {
+             $this->builder->addIndex(new Index($columns));
+
+             return $this;
+        }
+
+
+
+
+
+        /**
+         * @param string $name
+         *
+         * @return ForeignKey
+        */
+        public function foreign(string $name): ForeignKey
+        {
+             return $this->builder->addForeignKey(new ForeignKey($name, $this->foreignKeyName($name)));
+        }
+
+
+
+
+
+        /**
+         * @return ForeignKey
+        */
+        public function foreignId(): ForeignKey
+        {
+             return $this->foreign('id');
+        }
+
+
+
+
+
+
+
+
+        /**
+         * @param string $name
+         *
+         * @return string
+        */
+        protected function foreignKeyName(string $name): string
+        {
+            return sprintf('fk_%s_%s', $this->table, $name);
+        }
 
 
 
@@ -98,8 +168,6 @@ abstract class Blueprint implements BlueprintInterface
         {
             return $this->increments('id');
         }
-
-
 
 
 
@@ -187,12 +255,14 @@ abstract class Blueprint implements BlueprintInterface
          *
          * @return Column
         */
-        protected function addColumn(string $name, string $type, string $constraints = ''): Column
+        public function addColumn(string $name, string $type, string $constraints = ''): Column
         {
-            return $this->columns->addColumn(new Column($name, $type, $constraints));
+             if (! in_array($name, $this->getTableColumns())) {
+                 return $this->builder->addColumn(new Column($name, $type, $constraints));
+             }
+
+             return $this->builder->alterColumn(new AddColumn($name, $type, $constraints));
         }
-
-
 
 
 
@@ -262,6 +332,13 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
+
+
+
+        /**
+         * @implements
+        */
+        abstract public function getTableColumns(): array;
 
 
 

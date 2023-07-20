@@ -1,5 +1,8 @@
 <?php
-namespace Laventure\Component\Database\Schema\Blueprint\Column;
+namespace Laventure\Component\Database\Schema\Blueprint\Column\Contract;
+
+
+use Laventure\Component\Database\Schema\Blueprint\Printable;
 
 
 /**
@@ -9,19 +12,10 @@ namespace Laventure\Component\Database\Schema\Blueprint\Column;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Schema\Blueprint\Column
+ * @package Laventure\Component\Database\Schema\Blueprint\Column\Contract
 */
-interface ColumnInterface
+interface ColumnInterface extends Printable
 {
-
-    /**
-     * Print table column
-     *
-     * @return string
-    */
-    public function __toString(): string;
-
-
 
 
     /**

@@ -2,8 +2,6 @@
 namespace Laventure\Component\Database\Schema\Blueprint;
 
 
-use Laventure\Component\Database\Schema\Blueprint\Column\ColumnInterface;
-
 /**
  * @BlueprintInterface
  *
@@ -28,12 +26,13 @@ interface BlueprintInterface
 
 
 
+
        /**
         * Returns table columns
         *
         * @return array
        */
-       public function getColumns(): array;
+       public function getTableColumns(): array;
 
 
 

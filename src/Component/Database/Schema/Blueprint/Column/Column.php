@@ -1,6 +1,9 @@
 <?php
 namespace Laventure\Component\Database\Schema\Blueprint\Column;
 
+use Laventure\Component\Database\Schema\Blueprint\Column\Contract\ColumnInterface;
+
+
 /**
  * @inheritdoc
 */
@@ -79,6 +82,8 @@ class Column implements ColumnInterface
 
 
 
+
+
     /**
      * @param string $name
      *
@@ -88,9 +93,9 @@ class Column implements ColumnInterface
     */
     public function __construct(string $name, string $type, string $constraints = '')
     {
-        $this->name = $name;
-        $this->type = $type;
-        $this->constraints = $constraints ?: 'NOT NULL';
+         $this->name = $name;
+         $this->type = $type;
+         $this->constraints = $constraints ?: 'NOT NULL';
     }
 
 
