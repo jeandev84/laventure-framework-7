@@ -11,7 +11,7 @@ use Laventure\Component\Database\Connection\Extensions\PDO\DriverConnection;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Connection\Extensions\PDO\Drivers
+ * @package Laventure\Component\Database\Connection\Extensions\PDO\Column
 */
 class OracleConnection extends DriverConnection
 {

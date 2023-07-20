@@ -86,11 +86,11 @@ class Column implements ColumnInterface
      *
      * @param string $constraints
     */
-    public function __construct(string $name, string $type, string $constraints = 'NOT NULL')
+    public function __construct(string $name, string $type, string $constraints = '')
     {
         $this->name = $name;
         $this->type = $type;
-        $this->constraints = $constraints;
+        $this->constraints = $constraints ?: 'NOT NULL';
     }
 
 
@@ -204,40 +204,6 @@ class Column implements ColumnInterface
 
         return $this;
     }
-
-
-
-
-
-    /**
-     * @param string $constraints
-     *
-     * @return $this
-    */
-    public function constraints(string $constraints): static
-    {
-        $this->constraints = $constraints;
-
-        return $this;
-    }
-
-
-
-
-    /**
-     * Complete constraint definition
-     *
-     * @param string $constraint
-     *
-     * @return $this
-    */
-    public function add(string $constraint): static
-    {
-        $this->constraints .= " $constraint";
-
-        return $this;
-    }
-
 
 
 

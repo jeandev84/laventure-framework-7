@@ -80,6 +80,7 @@ interface ColumnInterface
 
 
 
+
     /**
      * Determine if column is primary key
      *

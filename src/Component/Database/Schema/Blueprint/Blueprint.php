@@ -61,25 +61,6 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
-
-
-        /**
-         * Add column
-         *
-         * @param Column $column
-         *
-         * @return Column
-        */
-        public function add(Column $column): Column
-        {
-            return $this->columns->addColumn($column);
-        }
-
-
-
-
-
-
         /**
          * @return Column[]
         */
@@ -141,6 +122,21 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
+       /**
+        * Add Nullable timestamps
+       */
+       public function nullableTimestamps(): void
+       {
+          $this->datetime('created_at')->nullable();
+          $this->datetime('updated_at')->nullable();
+       }
+
+
+
+
+
+
+
 
         /**
          * @return Column
@@ -181,16 +177,19 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
+
         /**
          * @param string $name
          *
          * @param string $type
          *
+         * @param string $constraints
+         *
          * @return Column
         */
-        public function addColumn(string $name, string $type): Column
+        protected function addColumn(string $name, string $type, string $constraints = ''): Column
         {
-             return $this->add(new Column($name, $type));
+            return $this->columns->addColumn(new Column($name, $type, $constraints));
         }
 
 
@@ -217,6 +216,20 @@ abstract class Blueprint implements BlueprintInterface
 
 
         /**
+         * Adds remember_token as VARCHAR(100) NULL
+         *
+         * @return Column
+        */
+        public function rememberToken(): Column
+        {
+             return $this->string('remember_token', 100)->nullable();
+        }
+
+
+
+
+
+        /**
          * Add column type boolean
          *
          * @param string $name
@@ -235,7 +248,7 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
-    /**
+        /**
          * Add column text
          *
          * @param string $name
@@ -285,6 +298,8 @@ abstract class Blueprint implements BlueprintInterface
         * @inheritdoc
         */
         abstract public function dropTableIfExists(): bool;
+
+
 
 
 
@@ -341,6 +356,19 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
+
+        /**
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function bigIncrements(string $name): Column;
+
+
+
+
+
+
         /**
          * Add datetime column
          *
@@ -349,5 +377,287 @@ abstract class Blueprint implements BlueprintInterface
          * @return Column
         */
         abstract public function datetime(string $name): Column;
+
+
+
+
+
+
+
+        /**
+         * Add binary column
+         *
+         * @param string $name
+         * @return Column
+        */
+        abstract public function binary(string $name): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add date column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function date(string $name): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add decimal column
+         *
+         * @param string $name
+         *
+         * @param int $precision
+         *
+         * @param int $scale
+         *
+         * @return Column
+        */
+        abstract public function decimal(string $name, int $precision, int $scale): Column;
+
+
+
+
+
+
+
+
+        /**
+         * Add double column
+         *
+         * @param string $name
+         *
+         * @param int $precision
+         *
+         * @param int $scale
+         *
+         * @return Column
+        */
+        abstract public function double(string $name, int $precision, int $scale): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add eum column
+         *
+         * @param string $name
+         *
+         * @param array $values
+         *
+         * @return Column
+        */
+        abstract public function enum(string $name, array $values): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add float column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function float(string $name): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add json column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function json(string $name): Column;
+
+
+
+
+
+
+        /**
+         * Add long text
+         *
+         * @param string $name
+         * @return Column
+        */
+        abstract public function longText(string $name): Column;
+
+
+
+
+
+
+        /**
+         * Add medium integer
+         *
+         * @param string $name
+         * @return Column
+        */
+        abstract public function mediumInteger(string $name): Column;
+
+
+
+
+
+
+
+
+        /**
+         * Add medium text
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function mediumText(string $name): Column;
+
+
+
+
+
+
+
+
+
+        /**
+         * Add morphs column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function morphs(string $name): Column;
+
+
+
+
+
+
+
+
+        /**
+         * Add tiny column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function tinyInteger(string $name): Column;
+
+
+
+
+
+
+        /**
+         * @param string $name
+         *
+         * @param $value
+         *
+         * @return Column
+        */
+        abstract public function char(string $name, $value): Column;
+
+
+
+
+
+
+
+        /**
+         * Add time column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function time(string $name): Column;
+
+
+
+
+
+
+        /**
+         * Set column default value
+         *
+         * @param $value
+        */
+        abstract public function default($value);
+
+
+
+
+
+
+        /**
+         * Designate that the column allows NULL values
+         *
+         * @return mixed
+        */
+        abstract public function nullable(): mixed;
+
+
+
+
+
+
+
+
+        /**
+         * Add TIMESTAMP column
+         *
+         * @param string $name
+         *
+         * @return Column
+        */
+        abstract public function timestamp(string $name): Column;
+
+
+
+
+
+
+
+        /**
+         * Set INTEGER to UNSIGNED
+         *
+         * @return void
+        */
+        abstract public function unsigned(): void;
 
 }
