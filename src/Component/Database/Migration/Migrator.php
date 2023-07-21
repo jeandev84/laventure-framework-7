@@ -163,17 +163,20 @@ class Migrator implements MigratorInterface
          $this->install();
 
          if ($migrations = $this->getMigrationsToApply()) {
+
              foreach ($migrations as $migration) {
-                 $migrationName = $migration->getName();
-                 $this->log("Started migration $migrationName ...");
+
+                 $version = $migration->getName();
+                 $this->log("Started migration $version ...");
+
                  $migration->up();
 
                  $this->queryBuilder->insert([
-                     'version'     => $migrationName,
+                     'version'     => $version,
                      'executed_at' => date('Y-m-d H:i:s')
                  ]);
 
-                 $this->log("Applied migration $migrationName.");
+                 $this->log("Applied migration $version.");
              }
          }
 
