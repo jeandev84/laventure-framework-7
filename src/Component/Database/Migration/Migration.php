@@ -51,24 +51,6 @@ abstract class Migration implements MigrationInterface
 
 
 
-
-    /**
-     * @param string $path
-     *
-     * @return $this
-    */
-    public function path(string $path): static
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-
-
-
-
-
     /**
      * Returns name or version of migration
      *
@@ -77,22 +59,6 @@ abstract class Migration implements MigrationInterface
     public function getName(): string
     {
           return $this->name ?? $this->reflection()->getShortName();
-    }
-
-
-
-
-
-
-
-    /**
-     * Returns migration path
-     *
-     * @return string
-    */
-    public function getPath(): string
-    {
-        return $this->path ?? $this->reflection()->getFileName();
     }
 
 
