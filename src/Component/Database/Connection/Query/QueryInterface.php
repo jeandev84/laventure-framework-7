@@ -133,36 +133,6 @@ interface QueryInterface
 
 
 
-
-        /**
-         * @return array
-        */
-        public function getBindParams(): array;
-
-
-
-
-
-        /**
-         * @return array
-        */
-        public function getBindValues(): array;
-
-
-
-
-
-
-        /**
-         * @return array
-        */
-        public function getBindColumns(): array;
-
-
-
-
-
-
         /**
          * Returns executed query params
          *

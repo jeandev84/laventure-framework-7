@@ -2,6 +2,8 @@
 namespace Laventure\Component\Database;
 
 
+use Laventure\Component\Database\ORM\Entity\Manager\EntityManagerInterface;
+
 /**
  * @Manager
  *
@@ -14,6 +16,16 @@ namespace Laventure\Component\Database;
 class Manager extends DatabaseManager
 {
 
+
+      /**
+       * @var EntityManagerInterface
+      */
+      protected EntityManagerInterface $entityManager;
+
+
+
+
+
       /**
        * Add connections
        *
@@ -25,4 +37,38 @@ class Manager extends DatabaseManager
      {
           $this->connect($config['connection'] ?? '', $config['connections'] ?? []);
      }
+
+
+
+
+
+
+    /**
+     * Set entity manager
+     *
+     * @param EntityManagerInterface $entityManager
+     *
+     * @return $this
+    */
+    public function setEntityManager(EntityManagerInterface $entityManager): static
+    {
+        $this->entityManager = $entityManager;
+
+        return $this;
+    }
+
+
+
+
+
+
+    /**
+     * Returns entity manager
+     *
+     * @return EntityManagerInterface
+    */
+    public function getEntityManager(): EntityManagerInterface
+    {
+        return $this->entityManager;
+    }
 }

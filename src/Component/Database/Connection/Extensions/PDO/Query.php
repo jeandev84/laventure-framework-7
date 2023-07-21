@@ -232,39 +232,6 @@ class Query implements QueryInterface
 
 
 
-
-    /**
-     * @inheritDoc
-     */
-    public function getBindParams(): array
-    {
-        return $this->bindings['params'] ?? [];
-    }
-
-
-
-    /**
-     * @inheritDoc
-     */
-    public function getBindValues(): array
-    {
-        return $this->bindings['values'] ?? [];
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getBindColumns(): array
-    {
-        return $this->bindings['columns'] ?? [];
-    }
-
-
-
-
     /**
      * @inheritDoc
     */
