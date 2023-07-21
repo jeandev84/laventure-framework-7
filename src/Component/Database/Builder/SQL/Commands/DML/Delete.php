@@ -2,20 +2,14 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DML;
 
 use Laventure\Component\Database\Builder\SQL\Commands\DML\Contract\DeleteBuilderInterface;
-use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
-use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
-use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
+use Laventure\Component\Database\Builder\SQL\Commands\SQLBuilderConditions;
 
 
 /**
  * @inheritdoc
 */
-class Delete extends SQlBuilder implements DeleteBuilderInterface, HasCriteriaInterface
+class Delete extends SQLBuilderConditions implements DeleteBuilderInterface
 {
-
-    use HasConditions;
-
-
 
     /**
      * @inheritDoc
@@ -26,20 +20,6 @@ class Delete extends SQlBuilder implements DeleteBuilderInterface, HasCriteriaIn
         $sql[] = $this->whereSQL();
 
         return join(' ', array_filter($sql)) . ";";
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function criteria(array $wheres): static
-    {
-        $this->addConditions($wheres, $this->hasPdoConnection());
-        $this->setParameters($wheres);
-
-        return $this;
     }
 
 

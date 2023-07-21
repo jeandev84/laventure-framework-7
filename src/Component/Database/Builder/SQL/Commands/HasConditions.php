@@ -86,7 +86,7 @@ trait HasConditions
      /**
       * @return string
      */
-     private function whereSQL(): string
+     protected function whereSQL(): string
      {
           if (! $this->wheres) {
               return '';
@@ -111,34 +111,22 @@ trait HasConditions
 
 
 
-     /**
-      * @param array $wheres
-      *
-      * @param bool $pdo
-     */
-     private function addConditions(array $wheres, bool $pdo = false): void
-     {
-           foreach ($wheres as $column => $value) {
-                if ($pdo) {
-                    $this->where("$column = :$column");
-                } else {
-                    $this->where("$column = ". $this->resolveConditionValue($value));
-                }
-           }
-     }
-
-
-
 
 
 
      /**
-      * @param $value
+      * Add where
       *
-      * @return string
+      * @param array $conditions
+      *
+      * @return $this
      */
-     protected function resolveConditionValue($value): string
+     public function addConditions(array $conditions): static
      {
-          return "'$value'";
+          foreach ($conditions as $condition) {
+              $this->where($condition);
+          }
+
+          return $this;
      }
 }

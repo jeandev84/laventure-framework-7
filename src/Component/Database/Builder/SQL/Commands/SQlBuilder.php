@@ -42,13 +42,6 @@ abstract class SQlBuilder
 
 
 
-       /**
-        * @var SQlParameterResolver
-       */
-       protected SQlParameterResolver $resolver;
-
-
-
 
        /**
         * @param ConnectionInterface $connection
@@ -57,7 +50,6 @@ abstract class SQlBuilder
       */
       public function __construct(ConnectionInterface $connection, string $table)
       {
-            $this->resolver   = new SQlParameterResolver($connection);
             $this->connection = $connection;
             $this->table      = $table;
       }
@@ -127,12 +119,76 @@ abstract class SQlBuilder
 
 
       /**
+       * @param array $attributes
+       *
+       * @return array
+      */
+      protected function resolveAttributes(array $attributes): array
+      {
+           $resolved = [];
+
+           foreach ($attributes as $column => $value) {
+              if ($this->hasPdoConnection()) {
+                 $resolved[] = "$column = :$column";
+              } else {
+                 $resolved[] = "$column = '$value'";
+              }
+           }
+
+           return $resolved;
+      }
+
+
+
+
+
+      /**
+       * @return ConnectionInterface
+      */
+      protected function getConnection(): ConnectionInterface
+      {
+           return $this->connection;
+      }
+
+
+
+
+
+
+      /**
        * @return bool
       */
       protected function hasPdoConnection(): bool
       {
-          return $this->connection instanceof PdoConnectionInterface;
+           return $this->connection instanceof PdoConnectionInterface;
       }
+
+
+
+
+
+
+      /**
+       * @param array $parameters
+       *
+       * @return array
+      */
+      protected function resolveBindingParameters(array $parameters): array
+      {
+          $resolved = [];
+
+          foreach ($parameters as $column => $value) {
+              if ($this->hasPdoConnection()) {
+                  $resolved[] = "$column = :$column";
+              } else {
+                  $resolved[] = "$column = '$value'";
+              }
+          }
+
+          return $resolved;
+      }
+
+
 
 
 

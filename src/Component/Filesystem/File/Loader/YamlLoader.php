@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Filesystem\Loader;
+namespace Laventure\Component\Filesystem\File\Loader;
 
 /**
  * @inheritdoc

@@ -7,17 +7,16 @@ use Laventure\Component\Database\Builder\SQL\Commands\HasAttributes;
 use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\IsSettable;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
+use Laventure\Component\Database\Builder\SQL\Commands\SQLBuilderConditions;
 
 
 /**
  * @inheritdoc
 */
-class Update extends SQlBuilder implements UpdateBuilderInterface, HasCriteriaInterface
+class Update extends SQLBuilderConditions implements UpdateBuilderInterface
 {
 
-
-    use HasConditions, IsSettable, HasAttributes;
-
+    use HasConditions, IsSettable;
 
 
     /**
@@ -27,25 +26,8 @@ class Update extends SQlBuilder implements UpdateBuilderInterface, HasCriteriaIn
     {
          $this->setParameters($attributes);
 
-         return $this->data($this->resolveAttributes($attributes, $this->hasPdoConnection()));
+         return $this->data($this->resolveAttributes($attributes));
     }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function criteria(array $wheres): static
-    {
-        $this->addConditions($wheres, $this->hasPdoConnection());
-        $this->setParameters($wheres);
-
-        return $this;
-    }
-
-
 
 
 

@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Database\ORM\Mapper;
+namespace Laventure\Component\Database\ORM\Entity\Mapper;
 
 use Laventure\Component\Database\ORM\Entity\Mapper\Contract\DataMapperInterface;
 

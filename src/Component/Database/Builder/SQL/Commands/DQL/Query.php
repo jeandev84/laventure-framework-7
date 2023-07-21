@@ -1,6 +1,7 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 
+use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\QueryHydrateInterface;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
 
@@ -13,7 +14,7 @@ use Laventure\Component\Database\Connection\Query\QueryResultInterface;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands\DQL
 */
-class Query
+class Query implements QueryHydrateInterface
 {
 
       /**
@@ -42,12 +43,14 @@ class Query
 
 
       /**
-       * @return mixed
+       * @inheritdoc
       */
       public function getOneOrNullResult(): mixed
       {
           return $this->fetch->one();
       }
+
+
 
 
 

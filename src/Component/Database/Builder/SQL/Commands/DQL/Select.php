@@ -2,10 +2,10 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 
 
+use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\QueryHydrateInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\SelectBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
-use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
-use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
+use Laventure\Component\Database\Builder\SQL\Commands\SQLBuilderConditions;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
 
@@ -13,7 +13,7 @@ use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 /**
  * @inheritdoc
 */
-class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaInterface
+class Select extends SQLBuilderConditions implements SelectBuilderInterface
 {
 
 
@@ -23,14 +23,14 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     /**
      * @var string[]
     */
-    protected $selected = [];
+    protected array $selected = [];
 
 
 
     /**
      * @var int
      */
-    protected $offset = 0;
+    protected int $offset = 0;
 
 
 
@@ -38,21 +38,21 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     /**s
      * @var int
      */
-    protected $limit = 0;
+    protected int $limit = 0;
 
 
 
     /**
      * @var bool
     */
-    protected $distinct = false;
+    protected bool $distinct = false;
 
 
 
     /**
      * @var array
     */
-    protected $from = [];
+    protected array $from = [];
 
 
 
@@ -60,21 +60,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     /**
      * @var string[]
     */
-    protected $orderBy = [];
-
-
-
-    /**
-     * @var string
-    */
-    protected $joins = [];
-
-
-
-    /**
-     * @var array
-    */
-    protected $groupBy = [];
+    protected array $orderBy = [];
 
 
 
@@ -82,14 +68,30 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     /**
      * @var string[]
     */
-    protected $having = [];
+    protected array $joins = [];
 
 
 
     /**
-     * @var QueryResultInterface
+     * @var array
     */
-    protected $hydrate;
+    protected array $groupBy = [];
+
+
+
+
+    /**
+     * @var string[]
+    */
+    protected array $having = [];
+
+
+
+
+    /**
+     * @var QueryResultInterface|null
+    */
+    protected ?QueryResultInterface $hydrate = null;
 
 
 
@@ -290,23 +292,6 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
 
 
 
-
-    /**
-     * @inheritDoc
-    */
-    public function criteria(array $wheres): static
-    {
-        $this->addConditions($wheres, $this->hasPdoConnection());
-        $this->setParameters($wheres);
-
-        return $this;
-    }
-
-
-
-
-
-
     /**
      * @inheritDoc
     */
@@ -337,7 +322,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     /**
      * @inheritDoc
     */
-    public function getQuery(): Query
+    public function getQuery(): QueryHydrateInterface
     {
         return new Query($this->hydrate ?: $this->fetch());
     }
@@ -367,6 +352,7 @@ class Select extends SQlBuilder implements SelectBuilderInterface, HasCriteriaIn
     {
         return ($this->from ? join(', ', $this->from) : parent::getTable());
     }
+
 
 
 

@@ -208,9 +208,9 @@ interface SelectBuilderInterface
 
 
 
+
     /**
-     * Return
-     * @return Query
+     * @return QueryHydrateInterface
     */
-    public function getQuery(): Query;
+    public function getQuery(): QueryHydrateInterface;
 }

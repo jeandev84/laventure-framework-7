@@ -94,16 +94,19 @@ class Query implements QueryInterface
 
 
 
+    protected $params = [];
+
     /**
      * @inheritDoc
      */
     public function bindParams(array $params): static
     {
         foreach ($params as $key => $value) {
-            $this->statement->bindParam($key, $value);
+            #$this->statement->bindParam($key, $value);
         }
 
-        $this->bindings['params'][] = $params;
+        $this->params = $params;
+        #$this->bindings['params'][] = $params;
 
         return $this;
     }
@@ -171,7 +174,7 @@ class Query implements QueryInterface
     {
         try {
 
-            if ($status = $this->statement->execute($parameters)) {
+            if ($status = $this->statement->execute($parameters ?: $this->params)) {
 
                 $this->logger->log([
                     'sql'            => $this->statement->queryString,

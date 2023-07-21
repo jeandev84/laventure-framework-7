@@ -2,10 +2,7 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DML;
 
 use Laventure\Component\Database\Builder\SQL\Commands\DML\Contract\InsertBuilderInterface;
-use Laventure\Component\Database\Builder\SQL\Commands\HasAttributes;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
-use Laventure\Component\Database\Connection\ConnectionInterface;
-use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
 
 
 /**
@@ -13,8 +10,6 @@ use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
 */
 class Insert extends SQlBuilder implements InsertBuilderInterface
 {
-
-    use HasAttributes;
 
 
     /**
@@ -55,50 +50,6 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
 
          return $this;
     }
-
-
-
-
-
-    /**
-     * @param array $attributes
-     *
-     * @return $this
-    */
-    private function add(array $attributes): static
-    {
-         $attributes      = $this->resolver->resolveAttributes($attributes);
-         $this->columns   = array_keys($attributes);
-         $this->values[]  = '('. join(', ', array_values($attributes)) . ')';
-
-         $this->index++;
-
-         return $this;
-    }
-
-
-
-
-
-    /**
-     * @inheritdoc
-    */
-    protected function resolveAttributes(array $attributes): array
-    {
-          $resolved = [];
-
-          foreach ($attributes as $column => $value) {
-               if ($this->hasPdoConnection()) {
-                    $resolved[$column] = ":{$column}_{$this->index}";
-                    $this->setParameter("{$column}_{$this->index}", $value);
-               } else {
-                   $resolved[$column] = $this->resolveAttributeValue($value);
-               }
-          }
-
-          return $resolved;
-    }
-
 
 
 
@@ -149,4 +100,47 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     {
         return $this->statement()->execute();
     }
+
+
+
+
+
+
+    /**
+     * @param array $attributes
+     *
+     * @return void
+    */
+    public function add(array $attributes): void
+    {
+        $attributes      = $this->resolveAttributes($attributes);
+        $this->columns   = array_keys($attributes);
+        $this->values[]  = '('. join(', ', array_values($attributes)) . ')';
+
+        $this->index++;
+    }
+
+
+
+
+
+    /**
+     * @inheritdoc
+    */
+    protected function resolveAttributes(array $attributes): array
+    {
+        $resolved = [];
+
+        foreach ($attributes as $column => $value) {
+            if ($this->hasPdoConnection()) {
+                $resolved[$column] = ":{$column}_{$this->index}";
+                $this->setParameter("{$column}_{$this->index}", $value);
+            } else {
+                $resolved[$column] = "'$value'";
+            }
+        }
+
+        return $resolved;
+    }
+
 }
