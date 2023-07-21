@@ -17,10 +17,11 @@ class MysqlBlueprint extends Blueprint
     */
     public function createTable(): bool
     {
-        $columns = $this->builder->printNewColumns();
-        $sql     = sprintf("CREATE TABLE IF NOT EXISTS %s (%s);", $this->getTable(), $columns);
+        if(! $columns = $this->builder->printNewColumns()) {
+             return false;
+        }
 
-        $this->exec($sql);
+        $this->exec(sprintf("CREATE TABLE IF NOT EXISTS %s (%s);", $this->getTable(), $columns));
 
         return $this->hasTable();
     }
@@ -37,7 +38,9 @@ class MysqlBlueprint extends Blueprint
     */
     public function updateTable(): bool
     {
-         return $this->exec('');
+        if (! $this->hasTable()) { return false; }
+
+        return $this->connection->exec(sprintf('ALTER TABLE %s %s;', $this->getTable(), $this->builder->printAlteredColumns()));
     }
 
 
