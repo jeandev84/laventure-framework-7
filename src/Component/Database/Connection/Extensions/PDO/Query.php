@@ -54,6 +54,26 @@ class Query implements QueryInterface
 
 
     /**
+     * @var array
+    */
+    protected array $parameters = [];
+
+
+
+
+    /**
+     * @var array
+    */
+    protected array $bindParamTypes = [
+        'integer' => \PDO::PARAM_INT,
+        'boolean' => \PDO::PARAM_BOOL,
+        'null'    => \PDO::PARAM_NULL
+    ];
+
+
+
+
+    /**
      * @param PDO $pdo
     */
     public function __construct(PDO $pdo)
@@ -94,21 +114,39 @@ class Query implements QueryInterface
 
 
 
-    protected $params = [];
-
     /**
      * @inheritDoc
      */
     public function bindParams(array $params): static
     {
         foreach ($params as $key => $value) {
-            #$this->statement->bindParam($key, $value);
+            $this->bindParam($key, $value);
         }
 
-        $this->params = $params;
-        #$this->bindings['params'][] = $params;
-
         return $this;
+    }
+
+
+
+
+    /**
+     * @param string $column
+     *
+     * @param $value
+     *
+     * @return $this
+    */
+    public function bindParam(string $column, $value): static
+    {
+           $type = strtolower(gettype($value));
+
+           $code = $this->bindParamTypes[$type] ?? \PDO::PARAM_STR;
+
+           $this->statement->bindParam(":$column", $value, $code);
+
+           $this->bindings['params'][$column] = $value;
+
+           return $this;
     }
 
 
@@ -120,6 +158,8 @@ class Query implements QueryInterface
     */
     public function bindColumns(array $columns): static
     {
+        // todo refactoring
+
         foreach ($columns as $key => $value) {
             $this->statement->bindColumn($key, $value);
         }
@@ -139,6 +179,7 @@ class Query implements QueryInterface
     */
     public function bindValues(array $values): static
     {
+        // todo refactoring
         foreach ($values as $key => $value) {
             $this->statement->bindValue($key, $value);
         }
@@ -155,13 +196,12 @@ class Query implements QueryInterface
     /**
      * @inheritDoc
     */
-    public function map(string $class): static
+    public function setParameters(array $parameters): static
     {
-         $this->statement->setFetchMode(PDO::FETCH_CLASS, $class);
+        $this->parameters = $parameters;
 
-         return $this;
+        return $this;
     }
-
 
 
 
@@ -170,21 +210,20 @@ class Query implements QueryInterface
     /**
      * @inheritDoc
     */
-    public function execute(array $parameters = []): bool
+    public function execute(): bool
     {
         try {
 
-            if ($status = $this->statement->execute($parameters ?: $this->params)) {
+            if ($status = $this->statement->execute($this->parameters)) {
 
                 $this->logger->log([
                     'sql'            => $this->statement->queryString,
                     'bindings'       => $this->bindings,
-                    'parameters'     => $parameters
+                    'parameters'     => $this->parameters
                 ]);
             }
 
         } catch (PDOException $e) {
-            dd($e);
             $this->abort($e);
         }
 
@@ -198,7 +237,7 @@ class Query implements QueryInterface
     /**
      * @inheritDoc
     */
-    public function exec(string $sql): false|int
+    public function exec(string $sql): bool
     {
         try {
 

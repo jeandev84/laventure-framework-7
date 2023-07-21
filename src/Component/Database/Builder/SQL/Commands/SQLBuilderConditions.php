@@ -10,7 +10,6 @@ abstract class SQLBuilderConditions extends SQlBuilder implements HasCriteriaInt
       use HasConditions;
 
 
-
      /**
       * @inheritDoc
      */

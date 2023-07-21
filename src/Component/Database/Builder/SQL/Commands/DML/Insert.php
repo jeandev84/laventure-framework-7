@@ -98,7 +98,7 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     */
     public function execute(): bool
     {
-        return $this->statement()->execute();
+        return parent::execute();
     }
 
 

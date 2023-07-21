@@ -178,8 +178,18 @@ abstract class SQlBuilder
 
 
 
-      /**
-       * @return string
-      */
-      abstract public function getSQL(): string;
+       /**
+        * @return bool
+       */
+       protected function execute(): bool
+       {
+           return $this->statement()->execute();
+       }
+
+
+
+       /**
+        * @return string
+       */
+       abstract public function getSQL(): string;
 }

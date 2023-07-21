@@ -81,13 +81,24 @@ interface QueryInterface
 
 
         /**
-         * Execute query
+         * Set params to execute
          *
          * @param array $parameters
          *
+         * @return $this
+        */
+        public function setParameters(array $parameters): static;
+
+
+
+
+
+        /**
+         * Execute query
+         *
          * @return mixed
         */
-        public function execute(array $parameters = []): mixed;
+        public function execute(): mixed;
 
 
 
@@ -102,19 +113,6 @@ interface QueryInterface
          * @return mixed
         */
         public function exec(string $sql): mixed;
-
-
-
-
-
-        /**
-         * Map class
-         *
-         * @param string $class
-         *
-         * @return mixed
-        */
-        public function map(string $class): static;
 
 
 

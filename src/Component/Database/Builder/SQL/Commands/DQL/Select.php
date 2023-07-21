@@ -96,6 +96,17 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
 
 
 
+
+
+    /**
+     * @var string|null
+    */
+    protected ?string $classname = null;
+
+
+
+
+
     /**
      * @inheritDoc
     */
@@ -308,12 +319,39 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
 
 
     /**
+     * @param string $classname
+     *
+     * @return $this
+    */
+    public function map(string $classname): static
+    {
+        $this->classname = $classname;
+
+        return $this;
+    }
+
+
+
+
+
+    /**
      * @inheritDoc
     */
-    public function fetch(): QueryResultInterface
+    public function fetch(string $class = null): QueryResultInterface
     {
-        return $this->statement()->fetch();
+        $fetch = $this->statement()->fetch();
+
+        if ($this->hydrate) {
+            $fetch = $this->hydrate;
+        }
+
+        if (! $class) {
+            return $fetch;
+        }
+
+        return $fetch->map($class);
     }
+
 
 
 
@@ -324,7 +362,7 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     */
     public function getQuery(): QueryHydrateInterface
     {
-        return new Query($this->hydrate ?: $this->fetch());
+        return new Query($this->fetch($this->classname));
     }
 
 

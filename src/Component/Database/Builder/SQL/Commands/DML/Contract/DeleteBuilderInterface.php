@@ -12,11 +12,4 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DML\Contract;
 */
 interface DeleteBuilderInterface
 {
-
-     /**
-      * Returns execute query
-      *
-      * @return mixed
-     */
-     public function execute(): mixed;
 }

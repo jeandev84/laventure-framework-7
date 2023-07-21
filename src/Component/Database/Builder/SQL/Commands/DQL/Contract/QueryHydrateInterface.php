@@ -14,6 +14,8 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract;
 */
 interface QueryHydrateInterface
 {
+
+
     /**
      * Returns all records
      *

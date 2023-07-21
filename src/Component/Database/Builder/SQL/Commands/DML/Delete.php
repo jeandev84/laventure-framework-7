@@ -30,6 +30,6 @@ class Delete extends SQLBuilderConditions implements DeleteBuilderInterface
     */
     public function execute(): bool
     {
-        return $this->statement()->execute();
+        return parent::execute();
     }
 }

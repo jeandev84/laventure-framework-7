@@ -52,6 +52,6 @@ class Update extends SQLBuilderConditions implements UpdateBuilderInterface
     */
     public function execute(): bool
     {
-        return $this->statement()->execute();
+        return parent::execute();
     }
 }

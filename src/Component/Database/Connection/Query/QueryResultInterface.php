@@ -14,6 +14,18 @@ namespace Laventure\Component\Database\Connection\Query;
 interface QueryResultInterface
 {
 
+
+    /**
+     * @param string $classname
+     *
+     * @return $this
+    */
+    public function map(string $classname): static;
+
+
+
+
+
     /**
      * Fetch all result
      *
