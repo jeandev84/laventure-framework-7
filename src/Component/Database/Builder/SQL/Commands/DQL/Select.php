@@ -6,6 +6,7 @@ use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\QueryHydrateI
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\SelectBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
 use Laventure\Component\Database\Builder\SQL\Commands\SQLBuilderConditions;
+use Laventure\Component\Database\Connection\ConnectionInterface;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
 
@@ -103,6 +104,20 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     */
     protected ?string $classname = null;
 
+
+
+    /**
+     * @param ConnectionInterface $connection
+     *
+     * @param string $table
+     *
+     * @param string $selected
+    */
+    public function __construct(ConnectionInterface $connection, string $table, string $selected = '')
+    {
+         parent::__construct($connection, $table);
+         $this->addSelect($selected);
+    }
 
 
 
