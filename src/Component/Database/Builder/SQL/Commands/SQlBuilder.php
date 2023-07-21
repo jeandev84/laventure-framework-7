@@ -123,7 +123,7 @@ abstract class SQlBuilder
        *
        * @return array
       */
-      protected function resolveAttributes(array $attributes): array
+      protected function resolveBindingParameters(array $attributes): array
       {
            $resolved = [];
 
@@ -162,32 +162,6 @@ abstract class SQlBuilder
       {
            return $this->connection instanceof PdoConnectionInterface;
       }
-
-
-
-
-
-
-      /**
-       * @param array $parameters
-       *
-       * @return array
-      */
-      protected function resolveBindingParameters(array $parameters): array
-      {
-          $resolved = [];
-
-          foreach ($parameters as $column => $value) {
-              if ($this->hasPdoConnection()) {
-                  $resolved[] = "$column = :$column";
-              } else {
-                  $resolved[] = "$column = '$value'";
-              }
-          }
-
-          return $resolved;
-      }
-
 
 
 

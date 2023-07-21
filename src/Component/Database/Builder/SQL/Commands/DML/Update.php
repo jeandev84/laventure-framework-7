@@ -26,7 +26,7 @@ class Update extends SQLBuilderConditions implements UpdateBuilderInterface
     {
          $this->setParameters($attributes);
 
-         return $this->data($this->resolveAttributes($attributes));
+         return $this->data($this->resolveBindingParameters($attributes));
     }
 
 

@@ -113,7 +113,7 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     */
     public function add(array $attributes): void
     {
-        $attributes      = $this->resolveAttributes($attributes);
+        $attributes      = $this->resolveBindingParameters($attributes);
         $this->columns   = array_keys($attributes);
         $this->values[]  = '('. join(', ', array_values($attributes)) . ')';
 
@@ -127,7 +127,7 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     /**
      * @inheritdoc
     */
-    protected function resolveAttributes(array $attributes): array
+    protected function resolveBindingParameters(array $attributes): array
     {
         $resolved = [];
 
