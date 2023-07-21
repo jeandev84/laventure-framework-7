@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract;
+namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
@@ -11,7 +11,7 @@ use Laventure\Component\Database\Connection\Query\QueryResultInterface;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract
+ * @package Laventure\Component\Database\Builder\SQL\Commands\DQL
 */
 class Query
 {
@@ -58,5 +58,17 @@ class Query
       public function getArrayResult(): array
       {
           return $this->fetch->assoc();
+      }
+
+
+
+
+
+      /**
+       * @return array
+      */
+      public function getArrayColumns(): array
+      {
+           return $this->fetch->columns();
       }
 }

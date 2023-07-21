@@ -2,8 +2,12 @@
 namespace Laventure\Component\Database\Migration;
 
 
+use Laventure\Component\Database\Builder\QueryBuilder;
+use Laventure\Component\Database\Builder\QueryBuilderFactory;
 use Laventure\Component\Database\Connection\ConnectionInterface;
 use Laventure\Component\Database\Migration\Contract\MigratorInterface;
+use Laventure\Component\Database\Schema\Blueprint\Blueprint;
+use Laventure\Component\Database\Schema\Schema;
 
 
 /**
@@ -21,7 +25,7 @@ class Migrator implements MigratorInterface
     /**
      * @var string
     */
-    protected string $table = 'migrations';
+    protected string $table;
 
 
 
@@ -39,13 +43,46 @@ class Migrator implements MigratorInterface
 
 
 
+
+    /**
+     * @var Schema
+    */
+    protected Schema $schema;
+
+
+
+
+    /**
+     * @var QueryBuilder
+    */
+    protected QueryBuilder $queryBuilder;
+
+
+
+
+    /**
+     * @var string[]
+    */
+    protected array $log = [];
+
+
+
+
+
+
     /**
      * @param ConnectionInterface $connection
+     *
+     * @param string $table
     */
-    public function __construct(ConnectionInterface $connection)
+    public function __construct(ConnectionInterface $connection, string $table = 'migrations')
     {
-         $this->connection = $connection;
+         $this->schema       = new Schema($connection);
+         $this->queryBuilder = QueryBuilderFactory::make($connection, $table);
+         $this->connection   = $connection;
+         $this->table        = $table;
     }
+
 
 
 
@@ -107,8 +144,13 @@ class Migrator implements MigratorInterface
     */
     public function install(): bool
     {
-
+        return $this->schema->create($this->getTable(), function (Blueprint $table) {
+            $table->id();
+            $table->string('version');
+            $table->datetime('executed_at');
+        });
     }
+
 
 
 
@@ -118,8 +160,28 @@ class Migrator implements MigratorInterface
     */
     public function migrate(): bool
     {
+         $this->install();
 
+         if ($migrations = $this->getMigrationsToApply()) {
+             foreach ($migrations as $migration) {
+                 $migrationName = $migration->getName();
+                 $this->log("Started migration $migrationName ...");
+                 $migration->up();
+
+                 $this->queryBuilder->insert([
+                     'version'     => $migrationName,
+                     'executed_at' => date('Y-m-d H:i:s')
+                 ]);
+
+                 $this->log("Applied migration $migrationName.");
+             }
+         }
+
+         return true;
     }
+
+
+
 
 
 
@@ -129,8 +191,13 @@ class Migrator implements MigratorInterface
     */
     public function rollback(): bool
     {
+         foreach ($this->getMigrations() as $migration) {
+             $migration->down();
+         }
 
+         return $this->schema->truncate($this->getTable());
     }
+
 
 
 
@@ -141,7 +208,9 @@ class Migrator implements MigratorInterface
     */
     public function reset(): bool
     {
+         $this->rollback();
 
+         return $this->schema->drop($this->getTable());
     }
 
 
@@ -154,30 +223,45 @@ class Migrator implements MigratorInterface
     */
     public function refresh(): bool
     {
+         $this->reset();
 
+         return $this->migrate();
     }
+
+
+
 
 
 
 
     /**
      * @inheritDoc
+     *
+     * @return Migration[]
     */
     public function getMigrations(): array
     {
-
+        return $this->migrations;
     }
+
+
 
 
 
 
     /**
      * @inheritDoc
+     *
+     * @return Migration[]
     */
     public function getMigrationsToApply(): array
     {
-
+         return array_filter($this->getMigrations(), function (Migration $migration) {
+              return ! in_array($migration->getName(), $this->getAppliedMigrations());
+         });
     }
+
+
 
 
 
@@ -187,6 +271,52 @@ class Migrator implements MigratorInterface
     */
     public function getAppliedMigrations(): array
     {
-        // TODO: Implement getAppliedMigrations() method.
+         return $this->queryBuilder
+                     ->select('version')
+                     ->from($this->getTable())
+                     ->getQuery()
+                     ->getArrayColumns();
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+
+
+
+    /**
+     * Log process migration
+     *
+     * @param string $message
+     *
+     * @return void
+    */
+    public function log(string $message): void
+    {
+        $this->log[] = "[". date('Y-m-d H:i:s') . "] $message";
+    }
+
+
+
+
+
+
+    /**
+     * Log migrator process
+     *
+     * @return string
+    */
+    public function processLog(): string
+    {
+         return join("\n", $this->log);
     }
 }

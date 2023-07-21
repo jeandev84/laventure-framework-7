@@ -136,4 +136,27 @@ class Schema implements SchemaInterface
     {
         return $this->connection->getTables();
     }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function describe(string $table): mixed
+    {
+         return BluePrintFactory::make($this->connection, $table)->describeTable();
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function columns(string $table): array
+    {
+         return BluePrintFactory::make($this->connection, $table)->getTableColumns();
+    }
 }

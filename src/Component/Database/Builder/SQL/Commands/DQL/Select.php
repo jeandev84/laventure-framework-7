@@ -2,7 +2,6 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 
 
-use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\Query;
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\SelectBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
 use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;

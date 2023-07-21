@@ -113,4 +113,17 @@ interface MigratorInterface
     */
     public function getAppliedMigrations(): array;
 
+
+
+
+
+
+
+    /**
+     * Returns version table
+     *
+     * @return string
+    */
+    public function getTable(): string;
+
 }
