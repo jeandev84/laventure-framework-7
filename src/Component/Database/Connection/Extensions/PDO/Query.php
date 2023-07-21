@@ -195,13 +195,22 @@ class Query implements QueryInterface
     /**
      * @inheritDoc
     */
-    public function exec(string $sql): bool
+    public function exec(string $sql): false|int
     {
-        if ($executed = $this->pdo->exec($sql)) {
-            $this->logger->log(compact('sql'));
-        }
+        try {
 
-        return (bool)$executed;
+            $this->pdo->exec($sql);
+
+            $this->logger->log(compact('sql'));
+
+            return true;
+
+        } catch (PDOException $e) {
+
+            (function () use ($e) {
+                throw new QueryException($e->getMessage(), $e->getCode());
+            })();
+        }
     }
 
 

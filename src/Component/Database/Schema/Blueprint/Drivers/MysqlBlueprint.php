@@ -17,11 +17,14 @@ class MysqlBlueprint extends Blueprint
     */
     public function createTable(): bool
     {
-        $columns = $this->builder->buildNewColumns();
+        $columns = $this->builder->printNewColumns();
         $sql     = sprintf("CREATE TABLE IF NOT EXISTS %s (%s);", $this->getTable(), $columns);
 
-        return $columns ? $this->exec($sql) : false;
+        $this->exec($sql);
+
+        return $this->hasTable();
     }
+
 
 
 
@@ -205,6 +208,9 @@ class MysqlBlueprint extends Blueprint
         return $this->addColumn($name, 'DATETIME');
     }
 
+
+
+
     /**
      * @inheritDoc
      */
@@ -377,6 +383,10 @@ class MysqlBlueprint extends Blueprint
     */
     public function hasColumn(string $name): bool
     {
+        if (! $this->hasTable()) {
+             return false;
+        }
+
         $statement = $this->statement("SHOW FULL COLUMNS FROM {$this->getTable()} LIKE '$name'");
 
         return $statement->fetch()->numRows();

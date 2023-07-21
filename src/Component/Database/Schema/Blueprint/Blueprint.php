@@ -83,7 +83,7 @@ abstract class Blueprint implements BlueprintInterface
         {
              $column = new Column($name, $type, $constraints);
 
-             if ($this->hasTable() && ! $this->hasColumn($name)) {
+             if ($this->hasColumn($name)) {
                  $column = new AddColumn($name, $type, $constraints);
              }
 
@@ -378,12 +378,15 @@ abstract class Blueprint implements BlueprintInterface
 
 
 
-       /**
-        * @param string $name
-        *
-        * @return bool
-       */
-       abstract public function hasColumn(string $name): bool;
+        /**
+         * Determine if the column name exist in existent table
+         *
+         * @param string $name
+         *
+         * @return bool
+        */
+        abstract public function hasColumn(string $name): bool;
+
 
 
 

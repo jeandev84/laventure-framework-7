@@ -144,7 +144,7 @@ class BlueprintBuilder
       /**
        * @return string
       */
-      public function buildNewColumns(): string
+      public function printNewColumns(): string
       {
            return join([
                join(", ", array_values($this->getColumns())),
@@ -157,11 +157,10 @@ class BlueprintBuilder
 
 
 
-
       /**
        * @return string
       */
-      public function buildAlteredColumns(): string
+      public function printAlteredColumns(): string
       {
           return join(", ", array_values($this->altered));
       }
