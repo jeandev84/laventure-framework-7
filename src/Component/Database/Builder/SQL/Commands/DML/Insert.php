@@ -2,7 +2,7 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DML;
 
 use Laventure\Component\Database\Builder\SQL\Commands\DML\Contract\InsertBuilderInterface;
-use Laventure\Component\Database\Builder\SQL\Commands\HasAttributeResolvable;
+use Laventure\Component\Database\Builder\SQL\Commands\HasAttributes;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
 use Laventure\Component\Database\Connection\ConnectionInterface;
 use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
@@ -14,7 +14,7 @@ use Laventure\Component\Database\Connection\Extensions\PDO\PdoConnection;
 class Insert extends SQlBuilder implements InsertBuilderInterface
 {
 
-    use HasAttributeResolvable;
+    use HasAttributes;
 
 
     /**
@@ -67,7 +67,7 @@ class Insert extends SQlBuilder implements InsertBuilderInterface
     */
     private function add(array $attributes): static
     {
-         $attributes      = $this->resolveAttributes($attributes);
+         $attributes      = $this->resolver->resolveAttributes($attributes);
          $this->columns   = array_keys($attributes);
          $this->values[]  = '('. join(', ', array_values($attributes)) . ')';
 

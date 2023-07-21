@@ -49,7 +49,7 @@ interface EntityRepositoryInterface
     /**
      * Returns all records
      *
-     * @return object[]
+     * @return array|object[]|string[]
     */
     public function findAll(): array;
 
@@ -76,4 +76,19 @@ interface EntityRepositoryInterface
      * @return object[]
     */
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): mixed;
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns class name
+     *
+     * @return string
+    */
+    public function getClassName(): string;
 }

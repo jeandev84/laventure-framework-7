@@ -41,13 +41,23 @@ abstract class SQlBuilder
 
 
 
-      /**
-       * @param ConnectionInterface $connection
-       *
-       * @param string $table
+
+       /**
+        * @var SQlParameterResolver
+       */
+       protected SQlParameterResolver $resolver;
+
+
+
+
+       /**
+        * @param ConnectionInterface $connection
+        *
+        * @param string $table
       */
       public function __construct(ConnectionInterface $connection, string $table)
       {
+            $this->resolver   = new SQlParameterResolver($connection);
             $this->connection = $connection;
             $this->table      = $table;
       }

@@ -3,7 +3,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 
 /**
- * @HasAttributeResolvable
+ * @HasAttributes
  *
  * @author Jean-Claude <jeanyao@ymail.com>
  *
@@ -11,7 +11,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands;
  *
  * @package Laventure\Component\Database\Builder\SQL\Commands
 */
-trait HasAttributeResolvable
+trait HasAttributes
 {
 
 

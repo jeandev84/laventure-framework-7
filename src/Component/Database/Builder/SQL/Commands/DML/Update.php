@@ -3,7 +3,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands\DML;
 
 use Laventure\Component\Database\Builder\SQL\Commands\DML\Contract\UpdateBuilderInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\HasConditions;
-use Laventure\Component\Database\Builder\SQL\Commands\HasAttributeResolvable;
+use Laventure\Component\Database\Builder\SQL\Commands\HasAttributes;
 use Laventure\Component\Database\Builder\SQL\Commands\HasCriteriaInterface;
 use Laventure\Component\Database\Builder\SQL\Commands\IsSettable;
 use Laventure\Component\Database\Builder\SQL\Commands\SQlBuilder;
@@ -16,7 +16,7 @@ class Update extends SQlBuilder implements UpdateBuilderInterface, HasCriteriaIn
 {
 
 
-    use HasConditions, IsSettable, HasAttributeResolvable;
+    use HasConditions, IsSettable, HasAttributes;
 
 
 
