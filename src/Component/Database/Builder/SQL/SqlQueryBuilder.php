@@ -57,9 +57,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     */
     public function select(string $selects = null): Select
     {
-         $command = new Select($this->connection, $this->table);
-         $command->addSelect($selects ?: "*");
-         return $command;
+         return new Select($this->connection, $this->table, $selects);
     }
 
 
@@ -99,28 +97,5 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface
     public function delete(): Delete
     {
         return new Delete($this->connection, $this->table);
-    }
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getTable(): string
-    {
-        return $this->table;
-    }
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function getConnection(): ConnectionInterface
-    {
-        return $this->connection;
     }
 }

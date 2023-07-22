@@ -3,7 +3,7 @@ namespace Laventure\Component\Database\Builder\SQL\Commands;
 
 
 
-use Laventure\Component\Database\Builder\SQL\Commands\Expr\Expr;
+use Laventure\Component\Database\Builder\SQL\Commands\Expr\ExpressionBuilder;
 
 /**
  * @HasConditions
@@ -72,11 +72,11 @@ trait HasConditions
 
 
      /**
-      * @return Expr
+      * @return ExpressionBuilder
      */
-     public function expr(): Expr
+     public function expr(): ExpressionBuilder
      {
-          return new Expr();
+          return new ExpressionBuilder();
      }
 
 

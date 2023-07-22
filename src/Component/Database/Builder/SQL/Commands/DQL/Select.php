@@ -90,9 +90,9 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
 
 
     /**
-     * @var QueryResultInterface|null
+     * @var QueryHydrateInterface|null
     */
-    protected ?QueryResultInterface $hydrate = null;
+    protected ?QueryHydrateInterface $query = null;
 
 
 
@@ -106,17 +106,20 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
 
 
 
+
+
+
     /**
      * @param ConnectionInterface $connection
      *
      * @param string $table
      *
-     * @param string $selected
+     * @param string|null $selected
     */
-    public function __construct(ConnectionInterface $connection, string $table, string $selected = '')
+    public function __construct(ConnectionInterface $connection, string $table, string $selected = null)
     {
          parent::__construct($connection, $table);
-         $this->addSelect($selected);
+         $this->addSelect($selected ?: "*");
     }
 
 
@@ -321,9 +324,9 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     /**
      * @inheritDoc
     */
-    public function hydrate(QueryResultInterface $hydrate): static
+    public function setQuery(QueryHydrateInterface $query): static
     {
-        $this->hydrate = $hydrate;
+        $this->query = $query;
 
         return $this;
     }
@@ -352,19 +355,9 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     /**
      * @inheritDoc
     */
-    public function fetch(string $class = null): QueryResultInterface
+    public function fetch(): QueryResultInterface
     {
-        $fetch = $this->statement()->fetch();
-
-        if ($this->hydrate) {
-            $fetch = $this->hydrate;
-        }
-
-        if (! $class) {
-            return $fetch;
-        }
-
-        return $fetch->map($class);
+        return $this->statement()->fetch();
     }
 
 
@@ -377,8 +370,9 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     */
     public function getQuery(): QueryHydrateInterface
     {
-        return new Query($this->fetch($this->classname));
+        return $this->query ?: new Query($this, $this->classname);
     }
+
 
 
 
@@ -416,7 +410,7 @@ class Select extends SQLBuilderConditions implements SelectBuilderInterface
     private function selectSQL(): string
     {
         $command  =  $this->distinct ? 'SELECT DISTINCT' : 'SELECT';
-        $columns  =  join(', ', $this->selected);
+        $columns  =  join(', ', array_filter($this->selected));
         $selected =  join(' ', [$command, $columns]);
 
         return sprintf('%s FROM %s', $selected, $this->getTable());

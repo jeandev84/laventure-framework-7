@@ -168,11 +168,11 @@ class PdoConnection implements PdoConnectionInterface
 
 
     /**
-     * @return void
+     * @return bool
     */
-    public function beginTransaction(): void
+    public function beginTransaction(): bool
     {
-        $this->getPdo()->beginTransaction();
+        return $this->pdo?->beginTransaction();
     }
 
 
@@ -184,18 +184,7 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function hasActiveTransaction(): bool
     {
-        return $this->getPdo()->inTransaction();
-    }
-
-
-
-
-    /**
-     * @return void
-    */
-    public function commit(): void
-    {
-        $this->getPdo()->commit();
+        return $this->pdo?->inTransaction();
     }
 
 
@@ -203,12 +192,26 @@ class PdoConnection implements PdoConnectionInterface
 
 
     /**
-     * @return void
+     * @return bool
     */
-    public function rollback(): void
+    public function commit(): bool
     {
-        $this->getPdo()->rollBack();
+        return $this->pdo?->commit();
     }
+
+
+
+
+
+
+    /**
+     * @return bool
+    */
+    public function rollback(): bool
+    {
+       return $this->pdo?->rollBack();
+    }
+
 
 
 
@@ -216,9 +219,9 @@ class PdoConnection implements PdoConnectionInterface
     /**
      * @param Closure $closure
      *
-     * @return void
+     * @return bool
     */
-    public function transaction(Closure $closure): void
+    public function transaction(Closure $closure): bool
     {
         try {
 
@@ -226,7 +229,7 @@ class PdoConnection implements PdoConnectionInterface
 
             $closure($this);
 
-            $this->commit();
+            return $this->commit();
 
         } catch (PDOException $e) {
 
@@ -249,7 +252,7 @@ class PdoConnection implements PdoConnectionInterface
     */
     public function lastInsertId($name = null): int
     {
-        return $this->getPdo()->lastInsertId($name);
+        return $this->pdo?->lastInsertId($name);
     }
 
 
@@ -286,6 +289,8 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
+
     /**
      * @return array
     */
@@ -298,12 +303,13 @@ class PdoConnection implements PdoConnectionInterface
 
 
 
+
     /**
      * @param string $name
      *
      * @return bool
     */
-    public function driverExists(string $name): bool
+    public function enabledDriver(string $name): bool
     {
         return in_array($name, $this->getDrivers());
     }
@@ -316,7 +322,7 @@ class PdoConnection implements PdoConnectionInterface
     /**
      * @return array
     */
-    public function getExecutedQueries(): array
+    public function getQueriesLog(): array
     {
         return array_filter($this->queries, function (QueryInterface $query) {
               return ! empty($query->getQueryLog());

@@ -22,9 +22,9 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
 {
 
     /**
-     * @var ConfigurationInterface
+     * @var ConfigurationInterface|null
     */
-    protected ConfigurationInterface $config;
+    protected ?ConfigurationInterface $config;
 
 
 
@@ -48,7 +48,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     */
     public function setConnection(ConfigurationInterface $config): void
     {
-          if (! $this->driverExists($driver = $config->driver())) {
+          if (! $this->enabledDriver($driver = $config->driver())) {
               $this->createDriverException("Unavailable PDO driver '$driver'");
           }
 
@@ -148,7 +148,7 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
 
 
     /**
-     * @return void
+     * @ri
     */
     public function disconnect(): void
     {
@@ -164,6 +164,27 @@ abstract class DriverConnection extends PdoConnection implements ConnectionInter
     {
         return $this->config->database();
     }
+
+
+
+
+
+
+
+    /**
+     * @inheritdoc
+    */
+    public function purge(): bool
+    {
+         $this->disconnect();
+         $this->config = null;
+         return true;
+    }
+
+
+
+
+
 
 
 

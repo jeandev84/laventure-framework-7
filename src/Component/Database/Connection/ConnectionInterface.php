@@ -85,6 +85,18 @@ interface ConnectionInterface
 
 
     /**
+     * Purge connection
+     *
+     * @return mixed
+    */
+    public function purge(): mixed;
+
+
+
+
+
+
+    /**
      * Determine if connection is not established
      *
      * @return bool
@@ -97,12 +109,11 @@ interface ConnectionInterface
 
 
     /**
-     * Create a new query
+     * Create a native query
      *
      * @return QueryInterface
     */
     public function createQuery(): QueryInterface;
-
 
 
 
@@ -132,9 +143,9 @@ interface ConnectionInterface
     /**
      * Begin a transaction query
      *
-     * @return void
+     * @return bool
     */
-    public function beginTransaction(): void;
+    public function beginTransaction(): bool;
 
 
 
@@ -154,9 +165,9 @@ interface ConnectionInterface
     /**
      * Commit transaction
      *
-     * @return void
+     * @return bool
     */
-    public function commit(): void;
+    public function commit(): bool;
 
 
 
@@ -165,9 +176,9 @@ interface ConnectionInterface
     /**
      * Rollback transaction
      *
-     * @return void
+     * @return bool
     */
-    public function rollback(): void;
+    public function rollback(): bool;
 
 
 
@@ -178,9 +189,9 @@ interface ConnectionInterface
      *
      * @param Closure $closure
      *
-     * @return void
+     * @return mixed
     */
-    public function transaction(Closure $closure): void;
+    public function transaction(Closure $closure): mixed;
 
 
 
@@ -251,6 +262,8 @@ interface ConnectionInterface
 
 
 
+
+
     /**
      * Returns databases
      *
@@ -315,7 +328,7 @@ interface ConnectionInterface
 
 
     /**
-     * @return array
+     * @return mixed
     */
-    public function getExecutedQueries(): array;
+    public function getQueriesLog(): mixed;
 }

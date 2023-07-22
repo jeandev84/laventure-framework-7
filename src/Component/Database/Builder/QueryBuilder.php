@@ -20,20 +20,25 @@ use Laventure\Component\Database\Connection\ConnectionInterface;
 class QueryBuilder
 {
 
+      /**
+       * @var SqlQueryBuilderInterface
+      */
+      protected SqlQueryBuilderInterface $builder;
+
+
+
+
      /**
-      * @var SqlQueryBuilderInterface
+      * @param ConnectionInterface $connection
+      *
+      * @param string $table
      */
-     protected SqlQueryBuilderInterface $builder;
-
-
-
-     /**
-      * @param SqlQueryBuilderInterface $builder
-     */
-     public function __construct(SqlQueryBuilderInterface $builder)
+     public function __construct(ConnectionInterface $connection, string $table)
      {
-          $this->builder = $builder;
+          $this->builder = new SqlQueryBuilder($connection, $table);
      }
+
+
 
 
 

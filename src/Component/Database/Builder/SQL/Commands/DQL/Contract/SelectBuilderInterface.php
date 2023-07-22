@@ -1,6 +1,7 @@
 <?php
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract;
 
+use Laventure\Component\Database\Builder\SQL\Commands\DQL\Query;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
 
@@ -186,11 +187,27 @@ interface SelectBuilderInterface
     /**
      * Set query hydrate
      *
-     * @param QueryResultInterface $hydrate
+     * @param QueryHydrateInterface $query
      *
      * @return $this
     */
-    public function hydrate(QueryResultInterface $hydrate): static;
+    public function setQuery(QueryHydrateInterface $query): static;
+
+
+
+
+
+
+    /**
+     * @param string $classname
+     *
+     * @return $this
+    */
+    public function map(string $classname): static;
+
+
+
+
 
 
 
@@ -199,9 +216,11 @@ interface SelectBuilderInterface
     /**
      * Returns query
      *
+     *
      * @return QueryResultInterface
     */
     public function fetch(): QueryResultInterface;
+
 
 
 

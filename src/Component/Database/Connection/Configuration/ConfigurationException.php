@@ -9,7 +9,7 @@ namespace Laventure\Component\Database\Connection\Configuration;
  *
  * @license https://github.com/jeandev84/laventure-framework/blob/master/LICENSE
  *
- * @package Laventure\Component\Database\Connection\Configuration
+ * @package Laventure\Component\Database\Connection\Definition
 */
 class ConfigurationException extends \Exception
 {

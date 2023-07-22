@@ -2,6 +2,7 @@
 namespace Laventure\Component\Database\Builder\SQL\Commands\DQL;
 
 use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\QueryHydrateInterface;
+use Laventure\Component\Database\Builder\SQL\Commands\DQL\Contract\SelectBuilderInterface;
 use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 
 
@@ -17,11 +18,27 @@ use Laventure\Component\Database\Connection\Query\QueryResultInterface;
 class Query implements QueryHydrateInterface
 {
 
+
       /**
-       * @param QueryResultInterface $fetch
+       * @var QueryResultInterface
       */
-      public function __construct(protected QueryResultInterface $fetch)
+      protected QueryResultInterface $hydrate;
+
+
+
+
+      /**
+       * @param Select $builder
+       *
+       * @param string|null $classname
+      */
+      public function __construct(Select $builder, string $classname = null)
       {
+            $this->hydrate = $builder->fetch();
+
+            if ($classname) {
+                $this->hydrate->map($classname);
+            }
       }
 
 
@@ -35,8 +52,10 @@ class Query implements QueryHydrateInterface
       */
       public function getResult(): mixed
       {
-          return $this->fetch->all();
+          return $this->hydrate->all();
       }
+
+
 
 
 
@@ -47,8 +66,9 @@ class Query implements QueryHydrateInterface
       */
       public function getOneOrNullResult(): mixed
       {
-          return $this->fetch->one();
+          return $this->hydrate->one();
       }
+
 
 
 
@@ -60,7 +80,7 @@ class Query implements QueryHydrateInterface
       */
       public function getArrayResult(): array
       {
-          return $this->fetch->assoc();
+          return $this->hydrate->assoc();
       }
 
 
@@ -72,6 +92,6 @@ class Query implements QueryHydrateInterface
       */
       public function getArrayColumns(): array
       {
-           return $this->fetch->columns();
+           return $this->hydrate->columns();
       }
 }

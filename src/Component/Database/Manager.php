@@ -2,7 +2,8 @@
 namespace Laventure\Component\Database;
 
 
-use Laventure\Component\Database\ORM\Entity\Manager\EntityManagerInterface;
+use Laventure\Component\Database\ORM\Entity\Manager\Persistence\EntityManagerInterface;
+
 
 /**
  * @Manager
@@ -18,9 +19,17 @@ class Manager extends DatabaseManager
 
 
       /**
+       * @var static
+      */
+      protected static $instance;
+
+
+
+
+      /**
        * @var EntityManagerInterface
       */
-      protected EntityManagerInterface $entityManager;
+      protected EntityManagerInterface $em;
 
 
 
@@ -46,13 +55,13 @@ class Manager extends DatabaseManager
     /**
      * Set entity manager
      *
-     * @param EntityManagerInterface $entityManager
+     * @param EntityManagerInterface $em
      *
      * @return $this
     */
-    public function setEntityManager(EntityManagerInterface $entityManager): static
+    public function setEntityManager(EntityManagerInterface $em): static
     {
-        $this->entityManager = $entityManager;
+        $this->em = $em;
 
         return $this;
     }
@@ -69,6 +78,8 @@ class Manager extends DatabaseManager
     */
     public function getEntityManager(): EntityManagerInterface
     {
-        return $this->entityManager;
+        return $this->em;
     }
+
+
 }

@@ -68,27 +68,4 @@ interface SqlQueryBuilderInterface
       * @return Delete
      */
      public function delete(): Delete;
-
-
-
-
-
-
-     /**
-      * Returns table
-      *
-      * @return string
-     */
-     public function getTable(): string;
-
-
-
-
-
-
-
-     /**
-      * @return ConnectionInterface
-     */
-     public function getConnection(): ConnectionInterface;
 }
