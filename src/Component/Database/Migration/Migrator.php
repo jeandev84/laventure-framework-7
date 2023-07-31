@@ -2,8 +2,8 @@
 namespace Laventure\Component\Database\Migration;
 
 
-use Laventure\Component\Database\Builder\QueryBuilder;
-use Laventure\Component\Database\Builder\QueryBuilderFactory;
+use Laventure\Component\Database\Connection\Query\Builder\QueryBuilder;
+use Laventure\Component\Database\Connection\Query\Builder\QueryBuilderFactory;
 use Laventure\Component\Database\Connection\ConnectionInterface;
 use Laventure\Component\Database\Migration\Contract\MigratorInterface;
 use Laventure\Component\Database\Schema\Blueprint\Blueprint;
@@ -78,7 +78,7 @@ class Migrator implements MigratorInterface
     public function __construct(ConnectionInterface $connection, string $table = 'migrations')
     {
          $this->schema       = new Schema($connection);
-         $this->queryBuilder = QueryBuilderFactory::make($connection, $table);
+         $this->queryBuilder = new QueryBuilder($connection, $table);
          $this->connection   = $connection;
          $this->table        = $table;
     }
@@ -277,8 +277,8 @@ class Migrator implements MigratorInterface
          return $this->queryBuilder
                      ->select('version')
                      ->from($this->getTable())
-                     ->getQuery()
-                     ->getArrayColumns();
+                     ->fetch()
+                     ->columns();
     }
 
 

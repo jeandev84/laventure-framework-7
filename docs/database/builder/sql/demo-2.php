@@ -1,6 +1,6 @@
 <?php
 
-use Laventure\Component\Database\Builder\SQL\Commands\DQL\Select;
+use Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DQL\Select;
 use Laventure\Component\Database\Schema\Blueprint\Column\Column;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -61,7 +61,7 @@ $qb = $qb->distinct(true)
 
 dd($qb->getSQL());
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Insert($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Insert($connection, 'users');
 
 
 /*
@@ -93,7 +93,7 @@ $qb->attributes([
 $qb->execute();
 
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Update($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Update($connection, 'users');
 
 $qb->attributes([
     'username' => 'test',
@@ -107,7 +107,7 @@ $qb->where('id = :id')
 */
 
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Delete($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Delete($connection, 'users');
 
 # $qb->expr()->eq('id', ':id');
 $qb->where('id = :id')

@@ -9,6 +9,14 @@ use Laventure\Component\Database\ORM\Persistence\Manager\Contract\UnitOfWorkInte
 class UnitOfWork implements UnitOfWorkInterface
 {
 
+        const STATE_MANAGED   = 1;
+        const STATE_NEW       = 2;
+        const STATE_DETACHED  = 3;
+        const STATE_REMOVED   = 4;
+
+
+
+
         /**
          * @var EntityManager
         */
@@ -22,7 +30,7 @@ class UnitOfWork implements UnitOfWorkInterface
         */
         public function __construct(EntityManager $em)
         {
-            $this->em = $em;
+             $this->em = $em;
         }
 
 
@@ -40,12 +48,13 @@ class UnitOfWork implements UnitOfWorkInterface
 
 
         /**
-         * @inheritDoc
+         * @inheritdoc
         */
         public function persist(object $object)
         {
             // TODO: Implement persist() method.
         }
+
 
 
 

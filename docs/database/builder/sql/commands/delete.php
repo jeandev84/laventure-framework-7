@@ -15,7 +15,7 @@ $connection = $manager->connection();
 
 
 # DELETE
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Delete($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Delete($connection, 'users');
 
 $qb->where('id = :id')
     ->setParameter('id', 3)

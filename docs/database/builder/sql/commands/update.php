@@ -17,7 +17,7 @@ $connection = $manager->connection();
 
 # UPDATE
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Update($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Update($connection, 'users');
 
 $qb->attributes([
     'name' => 'jeanyao@ymail.com',

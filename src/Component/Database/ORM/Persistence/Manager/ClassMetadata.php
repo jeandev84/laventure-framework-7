@@ -1,14 +1,16 @@
 <?php
 namespace Laventure\Component\Database\ORM\Persistence\Manager;
 
+use ReflectionClass;
+
 class ClassMetadata
 {
 
 
       /**
-       * @var \ReflectionClass
+       * @var ReflectionClass
       */
-      protected \ReflectionClass $reflection;
+      protected ReflectionClass $reflection;
 
 
       /**
@@ -18,16 +20,16 @@ class ClassMetadata
       */
       public function __construct(string $class)
       {
-          $this->reflection  = new \ReflectionClass($class);
+          $this->reflection  = new ReflectionClass($class);
       }
 
 
 
 
      /**
-      * @return \ReflectionClass
+      * @return ReflectionClass
      */
-     public function getReflection(): \ReflectionClass
+     public function getReflection(): ReflectionClass
      {
         return $this->reflection;
      }

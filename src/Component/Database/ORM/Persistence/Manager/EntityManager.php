@@ -3,7 +3,6 @@ namespace Laventure\Component\Database\ORM\Persistence\Manager;
 
 use Closure;
 use Laventure\Component\Database\Connection\ConnectionInterface;
-use Laventure\Component\Database\ORM\Persistence\Event\EventManager;
 use Laventure\Component\Database\ORM\Persistence\Manager\Contract\EntityManagerInterface;
 use Laventure\Component\Database\ORM\Persistence\Manager\Contract\UnitOfWorkInterface;
 use Laventure\Component\Database\ORM\Persistence\Repository\EntityRepository;
@@ -38,7 +37,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * @var EntityRepositoryFactory
     */
-    protected EntityRepositoryFactory $factory;
+    protected EntityRepositoryFactory $repositoryFactory;
 
 
 
@@ -58,12 +57,6 @@ class EntityManager implements EntityManagerInterface
 
 
 
-    /**
-     * @var string
-    */
-    protected string $classname;
-
-
 
 
     /**
@@ -81,12 +74,13 @@ class EntityManager implements EntityManagerInterface
     */
     public function __construct(ConnectionInterface $connection, Definition $definition)
     {
-         $this->connection   = $connection;
-         $this->definition   = $definition;
-         $this->factory      = $definition->getRepositoryFactory();
-         $this->eventManager = $definition->getEventManager();
-         $this->unitOfWork   = new UnitOfWork($this);
+         $this->connection        = $connection;
+         $this->definition        = $definition;
+         $this->repositoryFactory = $definition->getRepositoryFactory();
+         $this->eventManager      = $definition->getEventManager();
+         $this->unitOfWork        = new UnitOfWork($this);
     }
+
 
 
 
@@ -95,34 +89,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * @param string $classname
      *
-     * @return void
+     * @return $this
     */
-    public function registerClass(string $classname): void
-    {
-         $this->classname = $classname;
-    }
-
-
-
-
-
-    /**
-     * @return string
-    */
-    public function getClassname(): string
-    {
-        return $this->classname;
-    }
-
-
-
-
-
-
-    /**
-     * @inheritDoc
-    */
-    public function isOpen(): bool
+    public function map(string $classname): static
     {
 
     }
@@ -138,22 +107,6 @@ class EntityManager implements EntityManagerInterface
     {
         return $this->connection;
     }
-
-
-
-
-
-
-    /**
-     * Returns connection driver
-     *
-     * @return mixed
-    */
-    public function getConnector(): mixed
-    {
-         return $this->connection->getConnection();
-    }
-
 
 
 
@@ -287,8 +240,9 @@ class EntityManager implements EntityManagerInterface
              return $this->repositories[$classname];
         }
 
-        return $this->repositories[$classname] = $this->factory->createRepository($classname);
+        return $this->repositories[$classname] = $this->repositoryFactory->createRepository($classname);
     }
+
 
 
 
@@ -299,9 +253,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * @inheritDoc
     */
-    public function getClassMetadata(string $classname): mixed
+    public function getClassMetadata(string $classname): ClassMetadata
     {
-
+         return new ClassMetadata($classname);
     }
 
 
@@ -461,6 +415,15 @@ class EntityManager implements EntityManagerInterface
     }
 
 
+
+
+    /**
+     * @inheritDoc
+    */
+    public function isOpen(): bool
+    {
+
+    }
 
 
 

@@ -14,7 +14,7 @@ $manager->addConnections($config);
 $connection = $manager->connection();
 
 
-$qb = \Laventure\Component\Database\Builder\QueryBuilderFactory::make($connection, 'users');
+$qb = \Laventure\Component\Database\Connection\Query\Builder\QueryBuilderFactory::make($connection, 'users');
 
 $qb = $qb->select();
 $qb->from('users', 'u');

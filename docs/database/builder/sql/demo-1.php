@@ -34,7 +34,7 @@ dd($status);
 
 /*
 # SELECT
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DQL\Select($connection, 'users u');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DQL\Select($connection, 'users u');
 
 $sql = $qb->distinct(true)
           ->addSelect('o.id, o.invoiceNumber, o.user_id')
@@ -76,7 +76,7 @@ LIMIT 10 OFFSET 1;
 
 
 # UPDATE
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Update($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Update($connection, 'users');
 
 $qb->attributes([
     'name' => 'jeanyao@ymail.com',
@@ -100,7 +100,7 @@ dd($qb->getSQL());
 UPDATE users SET name = :name, password = :password, ebook = :ebook WHERE id = :id AND demo = :demo;
 
 # DELETE
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Delete($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Delete($connection, 'users');
 
 $qb->where('id = :id')
    ->setParameter('id', 3)
@@ -114,7 +114,7 @@ dd($qb->getSQL());
 
 # INSERT
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Insert($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Insert($connection, 'users');
 
 
 $qb->attributes([

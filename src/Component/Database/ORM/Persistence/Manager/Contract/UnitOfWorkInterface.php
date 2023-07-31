@@ -14,10 +14,10 @@ namespace Laventure\Component\Database\ORM\Persistence\Manager\Contract;
 interface UnitOfWorkInterface
 {
 
-     const STATE_NEW     = "NEW";
-     const STATE_CLEAN   = "CLEAN";
-     const STATE_DIRTY   = "DIRTY";
-     const STATE_REMOVED = "REMOVED";
+     const STATE_MANAGED   = 1;
+     const STATE_NEW       = 2;
+     const STATE_DETACHED  = 3;
+     const STATE_REMOVED   = 4;
 
 
 
@@ -73,6 +73,8 @@ interface UnitOfWorkInterface
       * @return void
      */
      public function refresh(object $object): void;
+
+
 
 
 

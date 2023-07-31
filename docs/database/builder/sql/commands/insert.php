@@ -17,7 +17,7 @@ $connection = $manager->connection();
 
 # INSERT
 
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DML\Insert($connection, 'users');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DML\Insert($connection, 'users');
 
 
 $qb->attributes([

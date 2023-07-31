@@ -33,7 +33,7 @@ dd($status);
 // QueryBuilder
 
 # SELECT
-$qb = new \Laventure\Component\Database\Builder\SQL\Commands\DQL\Select($connection, 'users u');
+$qb = new \Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DQL\Select($connection, 'users u');
 
 $sql = $qb->distinct(true)
     ->addSelect('o.id, o.invoiceNumber, o.user_id')

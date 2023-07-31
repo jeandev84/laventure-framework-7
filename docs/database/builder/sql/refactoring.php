@@ -1,6 +1,6 @@
 <?php
 
-use Laventure\Component\Database\Builder\SQL\Commands\DQL\Select;
+use Laventure\Component\Database\Connection\Query\Builder\SQL\Commands\DQL\Select;
 use Laventure\Component\Database\Schema\Blueprint\Column\Column;
 
 require_once __DIR__ . '/vendor/autoload.php';

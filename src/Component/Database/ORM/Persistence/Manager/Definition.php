@@ -1,7 +1,7 @@
 <?php
 namespace Laventure\Component\Database\ORM\Persistence\Manager;
 
-use Laventure\Component\Database\ORM\Persistence\Event\EventManager;
+use Laventure\Component\Database\ORM\Persistence\Mapping\ClassMetadataInterface;
 use Laventure\Component\Database\ORM\Persistence\Repository\EntityRepositoryFactory;
 
 
@@ -18,6 +18,12 @@ class Definition
 {
 
        /**
+        * @var ClassMetadataInterface
+       */
+       protected ClassMetadataInterface $classMetadata;
+
+
+       /**
         * @param EntityRepositoryFactory $repositoryFactory
         *
         * @param EventManager $eventManager
@@ -28,7 +34,6 @@ class Definition
        )
        {
        }
-
 
 
 

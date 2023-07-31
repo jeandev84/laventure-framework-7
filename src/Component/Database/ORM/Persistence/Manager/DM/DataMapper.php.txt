@@ -1,0 +1,93 @@
+<?php
+namespace Laventure\Component\Database\ORM\Persistence\Mapper;
+
+
+use Laventure\Component\Database\ORM\Persistence\Collection\EntityCollection;
+use Laventure\Component\Database\ORM\Persistence\Manager\EntityManager;
+
+/**
+ * @inheritdoc
+*/
+class DataMapper implements DataMapperInterface
+{
+
+
+    /**
+     * @var string
+    */
+    protected string $table;
+
+
+
+    protected EntityManager $em;
+
+
+
+
+    /**
+     * @var EntityCollection
+    */
+    protected EntityCollection $collection;
+
+
+
+
+
+    /**
+     * @param EntityManager $em
+     *
+     * @param EntityCollection $collection
+    */
+    public function __construct(EntityManager $em, EntityCollection $collection)
+    {
+         $this->em = $em;
+         $this->collection = $collection;
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function save(object $object): mixed
+    {
+
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function insert(object $object): mixed
+    {
+        // TODO: Implement insert() method.
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function update(object $object): mixed
+    {
+        // TODO: Implement update() method.
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function delete(object $object): mixed
+    {
+        // TODO: Implement delete() method.
+    }
+}

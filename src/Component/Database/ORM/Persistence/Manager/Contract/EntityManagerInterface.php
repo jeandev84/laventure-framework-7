@@ -53,7 +53,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return mixed
     */
-    public function getConnector(): mixed;
+    public function getConnection(): mixed;
 
 
 
